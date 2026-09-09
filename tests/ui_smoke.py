@@ -129,6 +129,7 @@ def run():
         st = get_state(driver)
         assert len(st["speakers"]) == 1, f"speakers inicial esperado 1, got {len(st['speakers'])} state={st}"
         assert len(st["moderators"]) == 0, f"moderators inicial esperado 0, got {len(st['moderators'])}"
+        print("✓ checkpoint 1/8: estado inicial ok (speakers=1 moderators=0)")
 
         # 3) click real tab Participantes + #add-speaker y esperar speakers=2
         tab_people = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-people")))
@@ -141,6 +142,7 @@ def run():
         wait_js(driver, "window.PLACTSStudio.getState().speakers.length===2", msg="tras #add-speaker speakers!=2")
         st = get_state(driver)
         assert len(st["speakers"]) == 2, f"tras agregar expositor esperado 2, got {len(st['speakers'])}"
+        print("✓ checkpoint 2/8: add speaker ok (speakers=2)")
 
         # 4) click #add-moderator y esperar moderators=1; eliminar ese moderador y volver 0
         add_mod = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "add-moderator")))
@@ -158,6 +160,7 @@ def run():
         wait_js(driver, "window.PLACTSStudio.getState().moderators.length===0", msg="tras eliminar moderador moderators!=0")
         st = get_state(driver)
         assert len(st["moderators"]) == 0, f"tras eliminar moderador esperado 0, got {len(st['moderators'])}"
+        print("✓ checkpoint 3/8: add moderator/remove ok (moderators 1→0)")
 
         # 5) comprobar que no se puede eliminar ultimo speaker (boton disabled)
         st = get_state(driver)
@@ -185,6 +188,7 @@ def run():
         time.sleep(0.5)
         st = get_state(driver)
         assert len(st["speakers"]) == 1, f"no se debe poder eliminar ultimo speaker, speakers={len(st['speakers'])} tras intento"
+        print("✓ checkpoint 4/8: mínimo speaker protegido (botón disabled, speakers=1)")
 
         # 6) navegar tab Imagenes; comprobar CTA visible Cargar imagen de fondo/principal
         tab_images = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-images")))
@@ -204,6 +208,7 @@ def run():
         hero_input = driver.find_element(By.ID, "image-hero")
         assert bg_input is not None, "#image-background no existe"
         assert hero_input is not None, "#image-hero no existe"
+        print("✓ checkpoint 5/8: CTAs vacíos ok (Cargar imagen de fondo/principal)")
 
         # 7) crear PNG 1x1 temporal en Python, send_keys a #image-background, esperar state image y CTA Reemplazar
         png_b64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAADElEQVR42mP4//8/AAX+Av6fQV8AAAAASUVORK5CYII="
@@ -220,11 +225,12 @@ def run():
         st = get_state(driver)
         assert st["images"]["background"] is not None, "images.background debe estar seteado tras upload"
         assert st["images"]["background"]["data"].startswith("data:image"), f"background.data no es data URL: {str(st['images']['background']['data'])[:60]}"
-        # esperar CTA Reemplazar
-        WebDriverWait(driver, TIMEOUT).until(lambda d: "Reemplazar" in d.find_element(By.CSS_SELECTOR, "#asset-background .btn").text)
-        bg_cta_after = driver.find_element(By.CSS_SELECTOR, "#asset-background .btn")
-        assert "Reemplazar" in bg_cta_after.text, f"tras upload CTA debe decir Reemplazar, got '{bg_cta_after.text}'"
+        # esperar CTA Reemplazar — selector específico dentro de .upload-copy evita colisión con botón Quitar
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.CSS_SELECTOR, "#asset-background .upload-copy .btn").text.strip() == "Reemplazar imagen de fondo")
+        bg_cta_after = driver.find_element(By.CSS_SELECTOR, "#asset-background .upload-copy .btn")
+        assert bg_cta_after.text.strip() == "Reemplazar imagen de fondo", f"tras upload CTA debe decir exactamente 'Reemplazar imagen de fondo', got '{bg_cta_after.text}'"
         assert "Reemplazar imagen de fondo" in bg_cta_after.text, f"CTA tras upload inesperado: '{bg_cta_after.text}'"
+        print("✓ checkpoint 6/8: upload+CTA ok (Reemplazar imagen de fondo visible en .upload-copy .btn)")
 
         # 8) probar Siguiente/Anterior
         # actualmente en Imagenes (paso 3 de 4). Siguiente debe ir a Fecha y acceso
@@ -245,9 +251,11 @@ def run():
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-images").is_displayed())
         step_back = driver.find_element(By.ID, "step-count").text
         assert "Paso 3" in step_back or "3 de 4" in step_back, f"tras Anterior debe volver a Paso 3 de 4, got '{step_back}'"
+        print("✓ checkpoint 7/8: navegación ok (Paso 3→4→3, Siguiente/Anterior)")
 
         # 9) capturar browser console severe final
         assert_no_severe_logs(driver)
+        print("✓ checkpoint 8/8: consola limpia sin SEVERE")
 
         print("UI smoke OK: speakers/moderators, CTA, upload y navegacion verificados")
 
