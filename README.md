@@ -6,7 +6,7 @@ Entrypoint publicado: `index.html` en la raíz (GitHub Pages sirve `index.html` 
 
 ## Descripción
 
-- Formulario en 4 pasos: contenido, personas (1–6 expositores + hasta 2 moderadores), imágenes (fondo + hero), encuentro (fecha/hora/plataforma/URL/QR).
+ - Formulario en 4 apartados: contenido, participantes (1–6 expositores + hasta 2 moderadores), imágenes del diseño (fondo + hero), fecha y acceso (fecha/hora/plataforma/enlace).
 - Seis variantes compiladas en `canvas`: 3 pósters (Institucional / Panorámica / Editorial) y 3 para redes (Estado / Historia / Publicación) conmutables con `Pósters` / `Estados e Instagram`.
 - Exportación sin recorte ni estirado: PNG por variante o ZIP del grupo visible (`Exportar los 3`). El ZIP de redes incluye además `texto-para-compartir.txt` con la URL completa (el PNG no tiene enlaces clicables).
 - Identidad incorporada: 8 SVGs en `window.BRAND_ASSETS` como `data:image/svg+xml;base64` + fondo de ondas reconstruido en `window.WAVE_ASSET`. Los logos se colocan con proporciones y colores originales. Tipografía por defecto `Clear Sans` cargada desde CDN si no está instalada (alternativas: Lato / Open Sans / Inter).
@@ -26,7 +26,7 @@ Sin dependencias ni build. Cualquiera de estas dos formas:
    npx serve .
    ```
 
-Flujo: completar los 4 apartados → `Compilar las seis versiones` → cambiar grupo/formato → `PNG` (variante) o `Exportar los 3` (ZIP).
+ Flujo: completar los 4 apartados → `Generar piezas` → cambiar grupo/formato → `PNG` (variante) o `Exportar los 3` (ZIP).
 
 ## Privacidad y persistencia en el cliente
 
