@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+
+# Windows (por si el repo se clona allí)
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Editores / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.code-workspace
+.project
+.classpath
+
+# Logs y temporales
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
