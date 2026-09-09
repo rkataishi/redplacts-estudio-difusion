@@ -1,0 +1,49 @@
+name: UI Smoke
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  ui-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Selenium
+        run: pip install selenium
+
+      - name: Start static server
+        run: |
+          nohup python -m http.server 8000 > /tmp/http.log 2>&1 &
+          echo $! > /tmp/http.pid
+          for i in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -sSf http://127.0.0.1:8000/ > /dev/null; then
+              echo "server up"
+              break
+            fi
+            sleep 1
+          done
+          curl -sS http://127.0.0.1:8000/ | head -n 20
+
+      - name: Run UI smoke test
+        run: python tests/ui_smoke.py
+
+      - name: Upload failure artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-smoke-failure
+          path: |
+            /tmp/ui-smoke-failure.png
+            /tmp/ui-smoke-failure.html
+            /tmp/http.log
+          if-no-files-found: warn
