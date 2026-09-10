@@ -346,22 +346,22 @@ def run():
         # ============================================================
         # 4. ZOOM-DOWNLOAD PNG
         # ============================================================
-        # open zoom via view-focus then card click
-        view_focus = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.ID, "view-focus"))
+        # preview único sin selector #view-focus oculto: stage ya en mode-focus o card visible, abrir zoom desde poster frame
+        wait_state(
+            "document.getElementById('stage').classList.contains('mode-focus') || !!document.querySelector('.poster-card.is-selected') || !!document.querySelector('.poster-card:not([hidden])')",
+            msg="stage no en mode-focus ni card visible antes de zoom",
         )
-        real_click(driver, view_focus)
-        time.sleep(0.5)
-        zoom_open = driver.execute_script("return document.getElementById('zoom-dialog').open")
-        if not zoom_open:
-            focus_card = WebDriverWait(driver, TIMEOUT).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected"))
-            )
-            real_click(driver, focus_card)
-            WebDriverWait(driver, TIMEOUT).until(
-                lambda d: d.execute_script("return document.getElementById('zoom-dialog').open"),
-                message="zoom dialog no abrió tras focus card",
-            )
+        _stage_mode_focus = driver.execute_script("return document.getElementById('stage').classList.contains('mode-focus')")
+        _card_visible = driver.execute_script("return !!document.querySelector('.poster-card.is-selected') || !!document.querySelector('.poster-card:not([hidden])')")
+        assert _stage_mode_focus or _card_visible, "preview único: stage sin mode-focus ni card visible antes de zoom"
+        poster_frame = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected .poster-frame"))
+        )
+        real_click(driver, poster_frame)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script("return document.getElementById('zoom-dialog').open"),
+            message="zoom dialog no abrió tras poster frame",
+        )
         print("✓ zoom dialog abierto")
 
         before_png2 = _pre_files("*.png")
