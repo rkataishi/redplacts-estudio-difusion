@@ -367,91 +367,70 @@ def run():
         assert editor_width >= 400, f".editor width esperado >=400, got {editor_width}"
         print(f"✓ checkpoint editor ancho ok: .editor rect width={editor_width:.1f} >=400")
 
-        # referencias inline (figuras removidas → field-location / placement-inline)
-        ref_figs = driver.find_elements(By.CSS_SELECTOR, ".ref-figure")
-        assert len(ref_figs) == 0, f"esperado 0 .ref-figure (figuras removidas), got {len(ref_figs)}"
-        field_locs = driver.find_elements(By.CSS_SELECTOR, ".field-location")
-        assert len(field_locs) >= 13, f"esperado al menos 13 .field-location, got {len(field_locs)}"
-        zone_tops = driver.find_elements(By.CSS_SELECTOR, ".field-location.zone-top")
-        assert len(zone_tops) == 4, f"esperado 4 .field-location.zone-top (Encabezado), got {len(zone_tops)}"
-        zone_middles = driver.find_elements(By.CSS_SELECTOR, ".field-location.zone-middle")
-        assert len(zone_middles) == 2, f"esperado 2 .field-location.zone-middle, got {len(zone_middles)}"
-        zone_bottoms = driver.find_elements(By.CSS_SELECTOR, ".field-location.zone-bottom")
-        assert len(zone_bottoms) == 7, f"esperado 7 .field-location.zone-bottom (Franja inferior), got {len(zone_bottoms)}"
-        bg_inline = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#asset-background .asset-upload-row .placement-inline")))
-        bg_text = bg_inline.text.casefold()
-        assert "En las 6 piezas".casefold() in bg_text, f"background placement debe contener 'En las 6 piezas', got '{bg_text}'"
-        assert "Detrás del contenido".casefold() in bg_text, f"background placement debe contener 'Detrás del contenido', got '{bg_text}'"
-        hero_inline = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#asset-hero .asset-upload-row .placement-inline")))
-        hero_text = hero_inline.text.casefold()
-        assert "Póster".casefold() in hero_text, f"hero placement debe contener 'Póster', got '{hero_text}'"
-        assert "lateral".casefold() in hero_text, f"hero placement debe contener 'lateral', got '{hero_text}'"
-        assert "Historia".casefold() in hero_text and "fondo".casefold() in hero_text, f"hero placement debe contener 'Historia · fondo', got '{hero_text}'"
-        assert "Publicación".casefold() in hero_text, f"hero placement debe contener 'Publicación', got '{hero_text}'"
-        # .photo-row .photo-placement tras abrir speaker
-        tab_people_inline = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-people")))
-        real_click(driver, tab_people_inline)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-people").is_displayed())
-        first_detail = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#speakers-list details.person")))
-        if first_detail.get_attribute("open") is None:
-            summary_el = first_detail.find_element(By.CSS_SELECTOR, "summary")
-            real_click(driver, summary_el)
-            WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.CSS_SELECTOR, "#speakers-list details[open]") is not None)
-        photo_placement = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".photo-row .photo-placement")))
-        assert photo_placement is not None, ".photo-row .photo-placement no encontrado tras abrir speaker"
-        photo_text = photo_placement.text.casefold()
-        assert "Pósters".casefold() in photo_text and "cuerpo".casefold() in photo_text, f"photo placement debe contener 'Pósters · cuerpo', got '{photo_text}'"
-        assert "Redes".casefold() in photo_text and "miniaturas".casefold() in photo_text, f"photo placement debe contener 'Redes · miniaturas', got '{photo_text}'"
-        print(f"✓ checkpoint referencias inline ok: 0 .ref-figure, {len(field_locs)} .field-location (4 top / 2 middle / 7 bottom), placements bg/hero/photo ok")
+        # referencias eliminadas intencionalmente: field-location / placement-inline / photo-placement → count 0
+        for sel in (".field-location", ".placement-inline", ".photo-placement"):
+            count = len(driver.find_elements(By.CSS_SELECTOR, sel))
+            assert count == 0, f"esperado 0 '{sel}' (eliminadas intencionalmente), got {count}"
+        print("✓ checkpoint referencias inline ok: .field-location / .placement-inline / .photo-placement → count 0")
         # volver a Imagenes para preview único
         tab_images_inline = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-images")))
         real_click(driver, tab_images_inline)
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-images").is_displayed())
 
-        # exactamente una .poster-card is_displayed
-        poster_cards = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
-        displayed_cards = [c for c in poster_cards if c.is_displayed()]
-        assert len(displayed_cards) == 1, f"esperado exactamente una .poster-card is_displayed, got {len(displayed_cards)} de {len(poster_cards)} total"
-        # exactamente 3 [data-variant-select] is_displayed
+        # exactamente una .poster-card.is-selected
+        selected_cards = driver.find_elements(By.CSS_SELECTOR, ".poster-card.is-selected")
+        assert len(selected_cards) == 1, f"esperado exactamente 1 .poster-card.is-selected, got {len(selected_cards)}"
+        selected_card = selected_cards[0]
+        initial_selected_val = selected_card.get_attribute("data-card")
+        assert initial_selected_val is not None, ".poster-card.is-selected sin data-card"
+
+        # exactamente 9 [data-variant-select] displayed
         variant_btns = driver.find_elements(By.CSS_SELECTOR, "[data-variant-select]")
         displayed_variants = [b for b in variant_btns if b.is_displayed()]
-        assert len(displayed_variants) == 3, f"esperado exactamente 3 [data-variant-select] is_displayed, got {len(displayed_variants)} de {len(variant_btns)} total (visibles: {[b.get_attribute('data-variant-select') for b in displayed_variants]})"
-        print(f"✓ checkpoint preview único ok: 1 .poster-card displayed ({displayed_cards[0].get_attribute('data-card')}), 3 [data-variant-select] displayed ({[b.get_attribute('data-variant-select') for b in displayed_variants]})")
+        assert len(displayed_variants) == 9, f"esperado exactamente 9 [data-variant-select] displayed, got {len(displayed_variants)}"
+        variant_vals = [b.get_attribute("data-variant-select") for b in displayed_variants]
+        assert len(set(variant_vals)) == 9, f"variantes duplicadas: {variant_vals}"
 
-        # click en otro variant visible cambia .is-selected y mantiene 1 card displayed
-        # identificar variant actualmente seleccionado (aria-pressed true)
+        # exactamente 9 .poster-card displayed con data-card únicos 0..8
+        poster_cards = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
+        displayed_cards = [c for c in poster_cards if c.is_displayed()]
+        assert len(displayed_cards) == 9, f"esperado exactamente 9 .poster-card displayed, got {len(displayed_cards)}"
+        card_vals = sorted([c.get_attribute("data-card") for c in displayed_cards])
+        expected_vals = [str(i) for i in range(9)]
+        assert card_vals == expected_vals, f"card values esperados {expected_vals}, got {card_vals}"
+        print(f"✓ checkpoint preview galería ok: 1 selected ({initial_selected_val}), 9 variant buttons, 9 overview cards 0..8")
+
+        # click en otro variant cambia .is-selected y mantiene 9 cards
         current_variant = None
         for b in displayed_variants:
             if b.get_attribute("aria-pressed") == "true":
                 current_variant = b
                 break
-        # fallback: si ninguno marcado, tomar primero como current
         if current_variant is None:
             current_variant = displayed_variants[0]
         target_variant = next((b for b in displayed_variants if b != current_variant), None)
-        assert target_variant is not None, "no se encontró otro variant visible para click"
-        prev_selected = driver.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card")
-        prev_target_pressed = target_variant.get_attribute("aria-pressed")
-        real_click(driver, target_variant)
-        # esperar que .is-selected cambie al target
+        assert target_variant is not None, "no se encontró otro variant para click"
         target_val = target_variant.get_attribute("data-variant-select")
+        real_click(driver, target_variant)
+        # esperar .is-selected cambie
         WebDriverWait(driver, TIMEOUT).until(
             lambda d: d.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card") == target_val,
-            message=f".is-selected no cambió a {target_val} tras click en variant {target_val}, prev={prev_selected}"
+            message=f".is-selected no cambió a {target_val} tras click en variant"
         )
         WebDriverWait(driver, TIMEOUT).until(
             lambda d: d.execute_script("return document.querySelector('[data-variant-select][aria-pressed=\"true\"]')?.dataset.variantSelect") == target_val,
-            message=f"aria-pressed no cambió a variant {target_val} tras click"
+            message=f"aria-pressed no cambió a {target_val} tras click"
         )
-        # verificar mantiene 1 card displayed
-        poster_cards_after = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
-        displayed_after = [c for c in poster_cards_after if c.is_displayed()]
-        assert len(displayed_after) == 1, f"tras cambiar variant debe mantenerse 1 .poster-card displayed, got {len(displayed_after)}"
+        # verificar thumbnail / poster-card.is-selected refleja el cambio
         selected_after = driver.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card")
         assert selected_after == target_val, f"tras click .is-selected esperado {target_val}, got {selected_after}"
+        # mantener 9 cards displayed tras cambio
+        poster_cards_after = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
+        displayed_after = [c for c in poster_cards_after if c.is_displayed()]
+        assert len(displayed_after) == 9, f"tras cambiar variant deben mantenerse 9 .poster-card displayed, got {len(displayed_after)}"
         is_selected_count = len(driver.find_elements(By.CSS_SELECTOR, ".poster-card.is-selected"))
         assert is_selected_count == 1, f"debe haber exactamente 1 .is-selected tras click, got {is_selected_count}"
-        print(f"✓ checkpoint variant click ok: click variant {target_val} cambió .is-selected {prev_selected}->{selected_after}, mantiene 1 card displayed")
+        print(f"✓ checkpoint variant click ok: click variant {target_val} cambió .is-selected {initial_selected_val}->{selected_after}, 9 cards maintained")
 
         # 9) capturar browser console severe final
         assert_no_severe_logs(driver)
