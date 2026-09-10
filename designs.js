@@ -125,17 +125,18 @@
  }
 
  /** Meeting band: date, time, timezone, platform, link, location */
- function drawMeetingBand(ctx,p){
-  if(!p.meeting)return;
-  var m=p.meeting,x=56,y=p.metaY||p.h-220,w=m.width||(p.w-112),font=p.font;
-  api.box(ctx,x-18,y-8,w+36,m.h+16,'#edf0f6',12);
-  /* left column: date + time + zone */
-  var ly=y+16;
-  api.drawText(ctx,api.textSpec(m.date.text||'',x,ly,m.leftW,m.date.size||31,700,api.C.ink,font),'m-date');
-  ly+=m.date.h+9;
-  api.drawText(ctx,api.textSpec(m.time.text||'',x,ly,m.leftW,m.time.size||28,400,api.C.ink,font),'m-time');
-  ly+=m.time.h+6;
-  api.drawText(ctx,api.textSpec(m.zone.text||'',x,ly,m.leftW,m.zone.size||18,400,api.C.muted,font),'m-zone');
+  function drawMeetingBand(ctx,p){
+   if(!p.meeting)return;
+   var m=p.meeting,x=56,y=p.metaY||p.h-220,w=m.width||(p.w-112),font=p.font;
+   api.box(ctx,x-18,y-8,w+36,m.h+16,'#edf0f6',12);
+   /* left column: date + time + zone — accept both poster & social keys */
+   var date=m.date||m.d,time=m.time||m.t,zone=m.zone||m.z;
+   var ly=y+16;
+   if(date)api.drawText(ctx,api.textSpec(date.text||'',x,ly,m.leftW,date.size||31,700,api.C.ink,font),'m-date');
+   ly+=(date&&date.h?date.h:0)+9;
+   if(time)api.drawText(ctx,api.textSpec(time.text||'',x,ly,m.leftW,time.size||28,400,api.C.ink,font),'m-time');
+   ly+=(time&&time.h?time.h:0)+6;
+   if(zone)api.drawText(ctx,api.textSpec(zone.text||'',x,ly,m.leftW,zone.size||18,400,api.C.muted,font),'m-zone');
   /* right column: platform + link + location */
   var ry=y+16,rx=x+m.rightX;
   api.drawText(ctx,api.textSpec(m.platform.text||'',rx,ry,m.rightX?w-m.rightX:w*.50,m.platform.size||21,700,api.C.ink,font),'m-platform');
