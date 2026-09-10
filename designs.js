@@ -481,7 +481,7 @@
      if(p.v===3) p.hero={x:p.w-424,y:145,w:368,h:260};
      else if(p.v===4) p.hero={x:p.w-424,y:145,w:368,h:300};
      else if(p.v===6) p.hero={x:p.w-424,y:145,w:368,h:300};
-     else if(p.v===5) p.hero={x:56,y:720,w:p.w-112,h:500};
+     else if(p.v===5) p.hero={x:56,y:820,w:p.w-112,h:360};
      else if(p.v===7) p.hero={x:0,y:0,w:p.w,h:560};
      else if(p.v===8) p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
      else if(!p.hero){
@@ -495,6 +495,22 @@
      else if(p.v===8) p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
     }
     if(p.intro&&(p.v===3||p.v===4||p.v===6)) p.intro.w=500;
+     /* recompute title size so it fits panel: max 64px, max 3 lines */
+     if(p.intro&&(p.v===3||p.v===4||p.v===6)){
+      var _max=64,_min=32,_cap=3;
+      for(var _ts2=_max;_ts2>=_min;_ts2-=2){
+       var _ln=api.wrapLines(p.s.event.title||'Título del evento',p.intro.w,_ts2,700,p.font);
+       if(_ln.length<=_cap){p.intro.title.size=_ts2;p.intro.title.h=_ln.length*_ts2*1.06;p.intro.title.lines=_ln;break;}
+      }
+     }
+     /* v5: hero at y820, title must end before hero — max 76px, max 3 lines */
+     if(p.v===5&&p.intro){
+      var _max5=76,_min5=32,_cap5=3;
+      for(var _ts5=_max5;_ts5>=_min5;_ts5-=2){
+       var _ln5=api.wrapLines(p.s.event.title||'Título del evento',p.intro.w||p.w-112,_ts5,700,p.font);
+       if(_ln5.length<=_cap5){p.intro.title.size=_ts5;p.intro.title.h=_ln5.length*_ts5*1.06;p.intro.title.lines=_ln5;break;}
+      }
+     }
      /* draw hero before title so text overlays the image */
      await drawHero(ctx,p);
      await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
@@ -504,9 +520,9 @@
      else if(p.v===8)api.box(ctx,40,450,p.w-80,430,'rgba(255,255,255,0.94)',18);
     drawTitleBlock(ctx,p);
     /* white translucent panel for names readability */
-    if(p.namesY&&p.names&&p.names.h){
-     api.box(ctx,56,p.namesY-18,p.w-112,p.names.h+36,'rgba(255,255,255,0.94)',18);
-    }
+     if(p.namesY&&p.names&&p.names.h){
+      api.box(ctx,56,p.namesY-8,p.w-112,p.names.h+16,'rgba(255,255,255,0.94)',18);
+     }
    if(api.drawSocialNames){
      await api.drawSocialNames(ctx,p,audit);
     } else {
