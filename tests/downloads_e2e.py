@@ -207,6 +207,29 @@ def run():
         wait_state("window.PLACTSStudio.getState().event.title==='E2E Downloads'")
         print("✓ fields filled")
 
+        # --- expositor requerido (mínimo 1) ---
+        driver.execute_script(
+            """
+            const state = window.PLACTSStudio.getState();
+            const firstId = state.speakers[0].id;
+            let el = document.getElementById('name-' + firstId);
+            if (!el) el = document.querySelector('[data-person=\"' + firstId + '\"] [data-person-field=\"name\"]');
+            if (!el) throw new Error('input expositor no encontrado: name-' + firstId);
+            el.focus();
+            el.value = 'Expositor E2E';
+            el.dispatchEvent(new Event('input', {bubbles: true}));
+            el.dispatchEvent(new Event('change', {bubbles: true}));
+            """
+        )
+        wait_state("window.PLACTSStudio.getState().speakers[0].name==='Expositor E2E'", msg="expositor E2E no reflejado en state")
+        print("✓ expositor E2E seteado")
+
+        # validación sin errores antes de Generar
+        wait_state("window.PLACTSStudio.validationErrors(window.PLACTSStudio.getState()).length===0", msg="validationErrors no es 0 antes de Generar")
+        _err_len = driver.execute_script("return window.PLACTSStudio.validationErrors(window.PLACTSStudio.getState()).length")
+        assert _err_len == 0, f"validationErrors antes de Generar: esperado 0, got {_err_len}"
+        print("✓ validationErrors 0 antes de Generar")
+
         # --- Generar ---
         compile_btn = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.ID, "compile-button"))
