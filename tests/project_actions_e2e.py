@@ -318,7 +318,6 @@ def run():
         assert os.path.exists(abs_saved)
         project_input = WebDriverWait(driver,TIMEOUT).until(EC.presence_of_element_located((By.ID,"project-file")))
         # hidden input: make interactable via JS? send_keys should work even hidden, but ensure not disabled
-        driver.execute_script("document.getElementById('project-file').removeAttribute('hidden'); document.getElementById('project-file').style.display='block';")
         project_input.send_keys(abs_saved)
         # importProject will show confirm "¿Abrir este proyecto?"
         WebDriverWait(driver,TIMEOUT).until(lambda d: d.execute_script("return document.getElementById('confirm-dialog').open===true"), message="confirm-dialog no abrió tras importar JSON")
