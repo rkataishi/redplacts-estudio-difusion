@@ -477,11 +477,15 @@
     await drawModerators(ctx,p);
     drawMeetingBand(ctx,p);
    } else {
-   /* other versions — current behaviour */
+   /* other versions — current behaviour (social v>=3 uses drawSocialNames when available) */
    drawTitleBlock(ctx,p);
    await drawHero(ctx,p);
-   await drawPeopleGrid(ctx,p);
-   await drawModerators(ctx,p);
+   if(api.drawSocialNames){
+    await api.drawSocialNames(ctx,p,audit);
+   } else {
+    await drawPeopleGrid(ctx,p);
+    await drawModerators(ctx,p);
+   }
    drawMeetingBand(ctx,p);
   }
 
