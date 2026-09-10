@@ -478,9 +478,10 @@
      ?{x:0,y:0,w:p.w,h:Math.round(p.h*.52)}
      :{x:0,y:Math.round(p.h*.68),w:p.w,h:Math.round(p.h*.25)};
    }
-   /* draw hero before title so text overlays the image */
-   await drawHero(ctx,p);
-   drawTitleBlock(ctx,p);
+    /* draw hero before title so text overlays the image */
+    await drawHero(ctx,p);
+    await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
+    drawTitleBlock(ctx,p);
    if(api.drawSocialNames){
      await api.drawSocialNames(ctx,p,audit);
     } else {
