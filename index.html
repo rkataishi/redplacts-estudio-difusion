@@ -1698,7 +1698,7 @@ const VARIANTS=[
  {id:'ushuaia-historia',name:'Ushuaia · visual',description:'9:16 · Una apertura visual y una invitación directa al encuentro. 1080 × 1920 px.',width:1080,height:1350},
  {id:'ushuaia-publicacion',name:'Ushuaia · publicación',description:'4:5 o 1:1 · Titular amplio, fecha clara y una mención breve de participantes.',width:1080,height:1920},
  {id:'digital-estado',name:'Digital · tipográfico',description:'9:16 · El tema en primer plano. Nombres secundarios, sin biografías. 1080 × 1920 px.',width:1080,height:1350},
- {id:'digital-historia',name:'Digital · visual',description:'9:16 · Una apertura visual y una invitación directa al encuentro. 1080 × 1920 px.',width:1200,height:1200},
+ {id:'digital-historia',name:'Digital · visual',description:'9:16 · Una apertura visual y una invitación directa al encuentro. 1080 × 1920 px.',width:1080,height:1080},
  {id:'digital-publicacion',name:'Digital · publicación',description:'4:5 o 1:1 · Titular amplio, fecha clara y una mención breve de participantes.',width:1080,height:1920}
 ];
 const LOGO_LABELS={'logo-color':'Firma · color','logo-mono':'Firma · monocromo','isotipo-color':'Isotipo · color','isotipo-mono':'Isotipo · monocromo','completo-arg-color':'Completo con Argentina · color','completo-arg-mono':'Completo con Argentina · monocromo','completo-color':'Completo · color','completo-mono':'Completo · monocromo'};
@@ -1882,7 +1882,7 @@ function sidebarLayout(s,font,height){const w=210,p=dateParts(s),blocks=[];let y
  return {blocks,end:y,hero:s.images.hero&&heroH>=100?{x:50,y:y+9,w:210,h:heroH}:null,qr,qrSize,qrY:limit-qrSize,overflow:remaining<0||(Boolean(s.images.hero)&&heroH<100)};
 }
 function computePlan(s,v,font=loadedFont){
- if(v>=3){const legacyV=3+(v-3)%3;return {...computeSocialPlan(s,legacyV,font),v,legacyV,w:VARIANTS[v].width,h:VARIANTS[v].height};}
+ if(v>=3){const socialState=clone(s);let legacyV;if(v===3||v===6){socialState.options.feedFormat='portrait';legacyV=5;}else if(v===4||v===7){socialState.options.feedFormat='square';legacyV=5;}else{legacyV=4;}return {...computeSocialPlan(socialState,legacyV,font),v,legacyV,w:VARIANTS[v].width,h:VARIANTS[v].height};}
  if(v===2)return {...computeEditorialPlan(s,font),v,legacyV:v,w:VARIANTS[v].width,h:VARIANTS[v].height};
  const h=FORMATS[s.options.format],m=56,width=WIDTH-2*m,footerTop=h-87;let last=null;
  for(const compact of [1,.95,.90,.85,.80,.75]){
