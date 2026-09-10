@@ -325,17 +325,19 @@
   p.mods={items:modItems, label:mods.length===1?'MODERA':'MODERAN'};
   p.modsX=980; p.modsY=545;
 
-  /* Meeting band: bottom */
-  p.metaY=H-200;
-  p.meeting={
-   width:W-MX*2, h:115,
-   date:{size:31},
-   time:{size:28},
-   zone:{size:18},
-   platform:{size:21},
-   link:{size:19},
-   location:{size:18}
-  };
+  /* Meeting band: bottom — merge layout sizing into incoming meeting */
+   var mH=(p.meeting&&p.meeting.h)||115;
+   p.metaY=Math.min(H-200,H-mH-8);
+   p.meeting={
+    ...p.meeting,
+    width:W-MX*2, h:mH,
+    date:{...(p.meeting||{}).date,size:31},
+    time:{...(p.meeting||{}).time,size:28},
+    zone:{...(p.meeting||{}).zone,size:18},
+    platform:{...(p.meeting||{}).platform,size:21},
+    link:{...(p.meeting||{}).link,size:19},
+    location:{...(p.meeting||{}).location,size:18}
+   };
   p.footerTop=H-75;
  }
 
