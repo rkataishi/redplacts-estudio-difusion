@@ -44,6 +44,10 @@ except ImportError:
             opts.add_argument("--disable-gpu")
             opts.add_argument("--window-size=1280,900")
             try:
+                opts.add_experimental_option("prefs", {"profile": {"default_content_setting_values": {"automatic_downloads": 1}}})
+            except Exception:
+                pass
+            try:
                 opts.set_capability("goog:loggingPrefs", {"browser": "ALL"})
             except Exception:
                 pass
@@ -338,6 +342,22 @@ def run():
         # ============================================================
         # 7. Ctrl/Cmd+S download JSON
         # ============================================================
+        # robustez filename repetido: elimina JSON descargado/esperado antes del shortcut
+        expected_json_name = Path(json_path).name
+        expected_json_path = DOWNLOAD_DIR / expected_json_name
+        try:
+            os.remove(json_path)
+        except FileNotFoundError:
+            pass
+        except Exception:
+            pass
+        _t0 = time.time()
+        while expected_json_path.exists() and time.time() - _t0 < 2:
+            time.sleep(0.1)
+            try:
+                os.remove(str(expected_json_path))
+            except Exception:
+                pass
         before_json2 = _pre_files("*.json")
         # focus body
         driver.execute_script("document.body.focus();")
@@ -349,7 +369,35 @@ def run():
         body.send_keys(mod + "s")
         time.sleep(0.3)
         body.send_keys(Keys.NULL)
-        json_path2, json_sz2 = _wait_new_file("*.json", before_json2, "Ctrl/Cmd+S download", timeout=10, min_size=50)
+        # espera que reaparezca mismo path o nuevo JSON >50
+        deadline = time.time() + 10
+        json_path2 = None
+        json_sz2 = 0
+        while time.time() < deadline:
+            if expected_json_path.exists():
+                try:
+                    sz = expected_json_path.stat().st_size
+                except Exception:
+                    sz = 0
+                if sz > 50:
+                    json_path2 = str(expected_json_path)
+                    json_sz2 = sz
+                    break
+            new = set(glob.glob(str(DOWNLOAD_DIR / "*.json"))) - before_json2
+            if new:
+                for cand in list(new):
+                    try:
+                        csz = os.path.getsize(cand)
+                    except Exception:
+                        continue
+                    if csz > 50:
+                        json_path2 = cand
+                        json_sz2 = csz
+                        break
+                if json_path2:
+                    break
+            time.sleep(0.5)
+        assert json_path2, f"Ctrl/Cmd+S download: no reapareció {expected_json_name} ni nuevo JSON en 10s (before={before_json2})"
         assert json_path2.lower().endswith(".json")
         with open(json_path2,"r",encoding="utf-8") as f:
             data2 = json.load(f)
