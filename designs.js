@@ -171,6 +171,95 @@
  }
 
  /* ------------------------------------------------------------------ */
+ /*  v0 — Institutional layout with fixed portrait zones                */
+ /* ------------------------------------------------------------------ */
+
+ function applyV0Layout(p){
+  /* Fixed dimensions for institutional poster (1080×1350 class) */
+  var W=p.w, H=p.h, MX=56;
+  var contentW=W-MX*2;
+
+  /* Intro block: title + subtitle + reinforcement */
+  p.intro={
+   x:MX, y:155, w:contentW,
+   title:{size:52},
+   sub:{size:26},
+   reinforcement:{size:21}
+  };
+
+  /* Hero occupies centre band when present */
+  p.hero={x:MX, y:260, w:contentW, h:260};
+
+  /* People: 2-column fixed portrait grid, centred vertically */
+  var cols=2, gap=30;
+  var colW=Math.round((contentW-gap*(cols-1))/cols);
+  var photoSide=Math.round(colW*.42);          /* portrait square */
+  var textW=colW-photoSide-18;
+  var rowH=photoSide+30;
+  var startY=550;                               /* below hero */
+  var items=[];
+  var sp=p.s.speakers||[];
+  for(var i=0;i<sp.length;i++){
+   var col=i%cols, row=Math.floor(i/cols);
+   var ix=col*(colW+gap);
+   var iy=row*(rowH+18);
+   var nt=api.wrapLines(sp[i].name||'',textW,28,700,p.font);
+   var dt=api.wrapLines(sp[i].description||'',textW,20,400,p.font);
+   var ntH=nt.length*28*1.13;
+   var dtH=dt.length*20*1.24;
+   items.push({
+    x:ix, y:iy, w:colW, h:rowH,
+    person:sp[i], photo:photoSide,
+    shape:'rect', vertical:false,
+    nt:{size:28,h:ntH,lines:nt},
+    dt:{size:20,h:dtH,lines:dt}
+   });
+  }
+  p.people={
+   items:items, columns:cols,
+   columnW:colW, rowH:rowH
+  };
+  p.peopleX=MX; p.peopleY=startY;
+
+  /* Moderators: single row below speakers */
+  var modStartY=startY+Math.ceil(sp.length/cols)*(rowH+18)+30;
+  var mods=p.s.moderators||[];
+  var modItems=[];
+  var modColW=Math.round((contentW-gap*Math.max(mods.length-1,0))/Math.max(mods.length,1));
+  for(var j=0;j<mods.length;j++){
+   var mPhoto=Math.round(modColW*.38);
+   var mTextW=modColW-mPhoto-16;
+   var mNt=api.wrapLines(mods[j].name||'',mTextW,24,700,p.font);
+   var mDt=api.wrapLines(mods[j].description||'',mTextW,20,400,p.font);
+   modItems.push({
+    x:j*(modColW+gap), photo:mPhoto,
+    w:modColW, person:mods[j],
+    nt:{size:24,h:mNt.length*24*1.13,lines:mNt},
+    dt:{size:20,h:mDt.length*20*1.24,lines:mDt}
+   });
+  }
+  p.mods={
+   items:modItems,
+   label:mods.length===1?'MODERA':'MODERAN'
+  };
+  p.modsX=MX; p.modsY=modStartY;
+
+  /* Meeting band: pinned near bottom, above footer */
+  var mbH=130;
+  p.metaY=H-260;
+  p.meeting={
+   width:contentW, h:mbH,
+   date:{size:31},
+   time:{size:28},
+   zone:{size:18},
+   platform:{size:21},
+   link:{size:19},
+   location:{size:18}
+  };
+  p.footerTop=H-87;
+ }
+
+ /* ------------------------------------------------------------------ */
  /*  Main draw entry point                                              */
  /* ------------------------------------------------------------------ */
 
@@ -188,16 +277,20 @@
   /* 3. Content: fallback or full layout */
   if(!p.valid){
    await drawFallback(ctx,p);
-  } else {
-   /* title block */
+  } else if(p.v===0){
+   /* v0 institutional layout: fixed portrait zones */
+   applyV0Layout(p);
    drawTitleBlock(ctx,p);
-   /* hero image */
    await drawHero(ctx,p);
-   /* people grid */
    await drawPeopleGrid(ctx,p);
-   /* moderators */
    await drawModerators(ctx,p);
-   /* meeting band */
+   drawMeetingBand(ctx,p);
+  } else {
+   /* other versions — current behaviour */
+   drawTitleBlock(ctx,p);
+   await drawHero(ctx,p);
+   await drawPeopleGrid(ctx,p);
+   await drawModerators(ctx,p);
    drawMeetingBand(ctx,p);
   }
 
