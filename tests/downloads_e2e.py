@@ -698,6 +698,76 @@ def run():
         print("✓ caption dialog cerrado")
 
         # ============================================================
+        # 6.5 GEOMETRY GATE: preview completo, galería sin scroll
+        # ============================================================
+        geo = driver.execute_script("""
+            // viewport
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+
+            // body / document scroll
+            const bodySH  = document.body    ? document.body.scrollHeight    : 0;
+            const docSH   = document.documentElement ? document.documentElement.scrollHeight : 0;
+
+            // selected canvas rect
+            const cv = document.querySelector('.poster-card.is-selected canvas');
+            const cvR = cv ? cv.getBoundingClientRect() : null;
+
+            // overview grid rect
+            const og = document.getElementById('overview-grid');
+            const ogR = og ? og.getBoundingClientRect() : null;
+
+            // overview cards rects
+            const cards = document.querySelectorAll('#overview-grid .overview-card');
+            const cardRects = Array.from(cards).map(c => {
+                const r = c.getBoundingClientRect();
+                return {idx: c.dataset.overview, top: r.top, bottom: r.bottom, left: r.left, right: r.right};
+            });
+
+            return {vw, vh, bodySH, docSH, cvR: cvR && {top:cvR.top,bottom:cvR.bottom,left:cvR.left,right:cvR.right}, ogR: ogR && {top:ogR.top,bottom:ogR.bottom,left:ogR.left,right:ogR.right}, cardRects};
+        """)
+        vw, vh = geo["vw"], geo["vh"]
+        print(f"  geo: viewport {vw}×{vh}  bodySH={geo['bodySH']}  docSH={geo['docSH']}")
+        if geo["cvR"]:
+            print(f"  geo: canvas rect top={geo['cvR']['top']:.0f} bottom={geo['cvR']['bottom']:.0f} left={geo['cvR']['left']:.0f} right={geo['cvR']['right']:.0f}")
+        if geo["ogR"]:
+            print(f"  geo: overview-grid rect top={geo['ogR']['top']:.0f} bottom={geo['ogR']['bottom']:.0f}")
+        print(f"  geo: overview-cards {len(geo['cardRects'])} rects")
+
+        # canvas fully inside viewport with 4px bottom margin
+        cv = geo["cvR"]
+        assert cv is not None, "geometry: selected canvas not found"
+        assert cv["top"] >= 0, f"geometry: canvas top {cv['top']} < 0"
+        assert cv["left"] >= 0, f"geometry: canvas left {cv['left']} < 0"
+        assert cv["right"] <= vw, f"geometry: canvas right {cv['right']} > vw {vw}"
+        assert cv["bottom"] <= vh - 4, (
+            f"geometry: canvas bottom {cv['bottom']} > vh-4 {vh - 4} — gallery overflows viewport"
+        )
+        print("  ✓ canvas inside viewport (4px bottom margin)")
+
+        # exactly 9 cards, each inside overview grid and viewport
+        cards = geo["cardRects"]
+        assert len(cards) == 9, f"geometry: expected 9 overview-cards, got {len(cards)}"
+        og = geo["ogR"]
+        for c in cards:
+            assert c["top"] >= 0 and c["bottom"] <= vh, (
+                f"geometry: card {c['idx']} outside viewport top={c['top']:.0f} bottom={c['bottom']:.0f}"
+            )
+            if og:
+                assert c["top"] >= og["top"] and c["bottom"] <= og["bottom"], (
+                    f"geometry: card {c['idx']} outside overview-grid "
+                    f"card[{c['top']:.0f},{c['bottom']:.0f}] grid[{og['top']:.0f},{og['bottom']:.0f}]"
+                )
+        print("  ✓ 9 overview-cards inside overview-grid & viewport")
+
+        # no scroll
+        max_scroll = max(geo["bodySH"], geo["docSH"])
+        assert max_scroll <= vh + 2, (
+            f"geometry: scrollable page bodySH={geo['bodySH']} docSH={geo['docSH']} > vh+2 {vh+2}"
+        )
+        print(f"  ✓ no scroll (max {max_scroll} ≤ {vh + 2})")
+
+        # ============================================================
         # 7. SCREENSHOT
         # ============================================================
         SCREENSHOT.parent.mkdir(parents=True, exist_ok=True)
