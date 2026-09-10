@@ -51,6 +51,10 @@ except ImportError:
             opts.add_argument("--disable-gpu")
             opts.add_argument("--window-size=1280,900")
             try:
+                opts.add_experimental_option("prefs", {"profile": {"default_content_setting_values": {"automatic_downloads": 1}}})
+            except Exception:
+                pass
+            try:
                 opts.set_capability("goog:loggingPrefs", {"browser": "ALL"})
             except Exception:
                 pass
@@ -236,6 +240,22 @@ def run():
         json_path, json_sz = _wait_new_file("*.json", before_json, "save-project click", min_size=50)
         assert json_path.lower().endswith(".json"), f"save-project: extensión no es .json: {json_path}"
         print(f"✓ save-project (click) ok: {Path(json_path).name} ({json_sz} bytes)")
+        # robustez mismo nombre: eliminar primer JSON y esperar que Ctrl/Cmd+S lo recree
+        expected_json_name = Path(json_path).name
+        expected_json_path = DOWNLOAD_DIR / expected_json_name
+        try:
+            os.remove(json_path)
+        except FileNotFoundError:
+            pass
+        except Exception:
+            pass
+        _t0 = time.time()
+        while expected_json_path.exists() and time.time() - _t0 < 2:
+            time.sleep(0.1)
+            try:
+                os.remove(str(expected_json_path))
+            except Exception:
+                pass
 
         # ============================================================
         # 2. SAVE-PROJECT JSON (Ctrl/Cmd+S)
@@ -251,7 +271,37 @@ def run():
         body.send_keys(mod + "s")
         time.sleep(0.2)
         body.send_keys(Keys.NULL)  # release modifier
-        json_path2, json_sz2 = _wait_new_file("*.json", before_json2, "Ctrl/Cmd+S", min_size=50)
+        # esperar que reaparezca el mismo archivo (robusto al mismo nombre) + fallback genérico
+        deadline = time.time() + 8
+        json_path2 = None
+        json_sz2 = 0
+        while time.time() < deadline:
+            if expected_json_path.exists():
+                try:
+                    sz = expected_json_path.stat().st_size
+                except Exception:
+                    sz = 0
+                if sz > 50:
+                    json_path2 = str(expected_json_path)
+                    json_sz2 = sz
+                    break
+            new = _post_files("*.json", before_json2)
+            if new:
+                for cand in list(new):
+                    try:
+                        csz = os.path.getsize(cand)
+                    except Exception:
+                        continue
+                    if csz > 50:
+                        json_path2 = cand
+                        json_sz2 = csz
+                        break
+                if json_path2:
+                    break
+            time.sleep(0.5)
+        assert json_path2, f"Ctrl/Cmd+S: no reapareció {expected_json_name} ni nuevo JSON en 8s (before={before_json2})"
+        assert json_path2.lower().endswith(".json"), f"Ctrl/Cmd+S: extensión no es .json: {json_path2}"
+        assert json_sz2 > 50, f"Ctrl/Cmd+S: archivo demasiado pequeño ({json_sz2} bytes): {json_path2}"
         print(f"✓ save-project (Ctrl/Cmd+S) ok: {Path(json_path2).name} ({json_sz2} bytes)")
 
         # ============================================================
