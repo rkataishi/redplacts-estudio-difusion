@@ -362,7 +362,7 @@ def run():
         # ============================================================
         # 4. ZOOM-DOWNLOAD PNG
         # ============================================================
-        # preview único sin selector #view-focus oculto: stage ya en mode-focus o card visible, abrir zoom desde poster frame
+        # preview único: stage ya en mode-focus o card visible, abrir zoom desde poster frame
         wait_state(
             "document.getElementById('stage').classList.contains('mode-focus') || !!document.querySelector('.poster-card.is-selected') || !!document.querySelector('.poster-card:not([hidden])')",
             msg="stage no en mode-focus ni card visible antes de zoom",
@@ -418,7 +418,7 @@ def run():
         assert zsz > 1000, f"zoom-download PNG: archivo demasiado pequeño ({zsz} bytes): {zp}"
         print(f"✓ zoom-download PNG ok: {Path(zp).name} ({zsz} bytes)")
 
-        # close zoom
+        # close zoom — asegurar cerrado
         close_zoom = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-close='zoom-dialog']"))
         )
@@ -426,13 +426,9 @@ def run():
         WebDriverWait(driver, TIMEOUT).until(
             lambda d: not d.execute_script("return document.getElementById('zoom-dialog').open")
         )
-        # back to compare mode
-        view_compare = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.ID, "view-compare"))
-        )
-        real_click(driver, view_compare)
-        time.sleep(0.3)
-        print("✓ zoom cerrado, compare mode restaurado")
+        wait_state("!document.getElementById('zoom-dialog').open", msg="zoom-dialog sigue abierto tras cierre")
+        time.sleep(0.2)
+        print("✓ zoom cerrado")
 
         # ============================================================
         # 5. EXPORT-ALL ZIP en POSTERS
