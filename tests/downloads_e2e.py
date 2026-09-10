@@ -101,6 +101,7 @@ except ImportError:
             with open(path, "wb") as f:
                 f.write(sig + ihdr + idat + iend)
 
+import shutil
 import py_compile
 
 TIMEOUT = 15
@@ -137,6 +138,13 @@ def run():
     try:
         driver = _driver()
         DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+        # Limpiar descargas previas para evitar falsos fallos por archivos viejos
+        for item in DOWNLOAD_DIR.iterdir():
+            if item.is_file():
+                item.unlink()
+            elif item.is_dir():
+                shutil.rmtree(item)
 
         # Chrome download prefs
         driver.execute_cdp_cmd("Page.setDownloadBehavior", {
