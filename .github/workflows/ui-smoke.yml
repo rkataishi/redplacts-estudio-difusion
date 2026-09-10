@@ -37,13 +37,18 @@ jobs:
       - name: Run UI smoke test
         run: python tests/ui_smoke.py
 
+      - name: Run image canvas E2E
+        run: python tests/image_canvas_e2e.py
+
       - name: Upload failure artifacts
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ui-smoke-failure
           path: |
+            /tmp/ui-e2e/*.png
+            /tmp/ui-e2e/failure.html
             /tmp/ui-smoke-failure.png
             /tmp/ui-smoke-failure.html
             /tmp/http.log
-          if-no-files-found: warn
+          if-no-files-found: ignore
