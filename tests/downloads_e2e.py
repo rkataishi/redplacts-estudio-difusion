@@ -356,6 +356,33 @@ def run():
         print("✓ Generar → canvas visible")
 
         # ============================================================
+        # 0. OVERVIEW-GRID: 9 miniaturas únicas
+        # ============================================================
+        overview_cards = driver.find_elements(By.CSS_SELECTOR, "#overview-grid .overview-card")
+        count = len(overview_cards)
+        assert count == 9, f"overview-grid: esperado 9 overview-card, got {count}"
+        print(f"✓ overview-grid: {count} overview-card encontrados")
+
+        # collect data-overview indices
+        _indices = []
+        for _card in overview_cards:
+            _idx = _card.get_attribute("data-overview")
+            assert _idx is not None, "overview-card sin attribute data-overview"
+            _indices.append(int(_idx))
+        assert sorted(_indices) == list(range(9)), (
+            f"overview-grid: data-overview indices inesperados: {sorted(_indices)}"
+        )
+        print(f"✓ overview-grid: data-overview 0..8 únicos — {_indices}")
+
+        # all displayed
+        for _card in overview_cards:
+            assert _card.is_displayed(), (
+                f"overview-card data-overview={_card.get_attribute('data-overview')} not displayed"
+            )
+        print("✓ overview-grid: 9 miniaturas visibles")
+        # CHECKPOINT: overview-grid assertions passed
+
+        # ============================================================
         # 1. SAVE-PROJECT JSON (click)
         # ============================================================
         before_json = _pre_files("*.json")
