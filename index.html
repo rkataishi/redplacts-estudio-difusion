@@ -1677,7 +1677,7 @@ async function drawSocialPoster(p,scale){
  return {canvas,audit};
 }
 
-</script><script>
+</script><script src="designs.js"></script><script>
 'use strict';
 /* Nuevo: aplicación local, con assets de marca originales y compositor de formato fijo. */
 const KIND='redplacts.flyers', VERSION=3, WIDTH=1080;
@@ -1917,7 +1917,10 @@ async function drawIcon(ctx,name,x,y,size,color=C.ink){const src='data:image/svg
 async function drawFooter(ctx,p,audit){const y=p.footerTop;box(ctx,0,y,WIDTH,p.h-y,C.paper);line(ctx,56,y,1024,y,'#d9deea',1);drawText(ctx,textSpec('redplacts.org',56,y+29,218,23,700,C.ink,p.font),audit,'website');let x=293;for(const n of NETWORKS){await drawIcon(ctx,n.icon,x,y+34,19,C.muted);drawText(ctx,textSpec(n.handle,x+27,y+32,149,17,400,C.muted,p.font),audit,'social');x+=184;}}
 function drawIntro(ctx,p,audit){const i=p.intro;let y=i.y;drawText(ctx,moveText(i.title,i.x,y),audit,'event-title');y+=i.title.h;if(i.sub.h){y+=14;drawText(ctx,moveText(i.sub,i.x,y),audit,'event-subtitle');y+=i.sub.h;}if(i.reinforcement.h){y+=15;drawText(ctx,moveText(i.reinforcement,i.x,y),audit,'event-reinforcement');}}
 function drawMeeting(ctx,p,audit){const m=p.meeting,x=56,y=p.metaY;box(ctx,x-18,y-5,p.width+36,m.h+11,p.v===1?'#e7eaf2':'#edf0f6',12);let ty=y+16;drawText(ctx,moveText(m.date,x,ty),audit,'meeting-date');ty+=m.date.h+9;drawText(ctx,moveText(m.time,x,ty),audit,'meeting-time');ty+=m.time.h+6;drawText(ctx,moveText(m.zone,x,ty),audit,'meeting-zone');let ry=y+16;const rx=x+m.rightX;drawText(ctx,moveText(m.platform,rx,ry),audit,'meeting-platform');ry+=m.platform.h+8;drawText(ctx,moveText(m.link,rx,ry),audit,'meeting-link');ry+=m.link.h+8;if(m.location.h)drawText(ctx,moveText(m.location,rx,ry),audit,'meeting-location');if(m.qr)drawQR(ctx,m.qr,WIDTH-56-m.qrSize,y+16,m.qrSize);}
+function designApi(){return{newCanvas,box,line,coverImage,containImage,drawAvatar,drawText,textSpec,drawQR,getQR,wrapLines:wrap,BRAND_ASSETS,WAVE_ASSET,C};}
 async function drawPoster(p,scale=1){
+ try{if(window.RedPlactsDesigns&&window.RedPlactsDesigns.draw){const origV=p.v;const result=await window.RedPlactsDesigns.draw(p,scale,designApi());if(result&&result.canvas){return result;}}}
+ catch(e){console.warn('[designs.js] delegación falló, usando renderer original:',e);}
  if(p.v>=3)return drawSocialPoster(p,scale);
  if(p.v===2)return drawEditorialPoster(p,scale);
  const canvas=document.createElement('canvas');canvas.width=Math.round(WIDTH*scale);canvas.height=Math.round(p.h*scale);canvas.setAttribute('role','img');canvas.setAttribute('aria-label',`${VARIANTS[p.v].name}: ${p.s.event.title||'Evento en preparación'}`);const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.imageSmoothingQuality='high';const audit=[];box(ctx,0,0,WIDTH,p.h,C.paper);
