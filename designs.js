@@ -34,13 +34,13 @@
   api.box(ctx,0,0,w,h,'#f4f5f9');
   /* wave decoration */
   await api.coverImage(ctx,{src:api.WAVE_ASSET},Math.round(w*.38),0,Math.round(w*.65),Math.round(h*.78),{x:55,y:46,zoom:1},0,.55);
-  /* user background image — full bleed, at least .55 opacity */
+  /* user background image — full bleed, at least .85 opacity */
   if(p.s.images.background){
-   var opacity=Math.max(.55,(p.s.options.bgOpacity||55)/100);
+   var opacity=Math.max(.85,(p.s.options.bgOpacity||85)/100);
    await api.coverImage(ctx,p.s.images.background,0,0,w,h,null,0,opacity);
   }
-  /* global white veil reduced to .18 so image reads through everywhere */
-  ctx.fillStyle='rgba(255,255,255,.18)';
+  /* global white veil reduced to .08 so image reads through everywhere */
+  ctx.fillStyle='rgba(255,255,255,.08)';
   ctx.fillRect(0,0,w,h);
   /* header veil kept separately semitransparent for readability */
   var hg=ctx.createLinearGradient(0,0,0,130);
