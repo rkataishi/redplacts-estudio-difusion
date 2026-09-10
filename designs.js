@@ -477,9 +477,15 @@
     await drawModerators(ctx,p);
     drawMeetingBand(ctx,p);
    } else {
-   /* other versions — current behaviour (social v>=3 uses drawSocialNames when available) */
-   drawTitleBlock(ctx,p);
+   /* social v>=3: assign hero rect if image present but rect missing */
+   if(p.s.images.hero&&!p.hero){
+    p.hero=p.story
+     ?{x:0,y:0,w:p.w,h:Math.round(p.h*.52)}
+     :{x:0,y:Math.round(p.h*.68),w:p.w,h:Math.round(p.h*.25)};
+   }
+   /* draw hero before title so text overlays the image */
    await drawHero(ctx,p);
+   drawTitleBlock(ctx,p);
    if(api.drawSocialNames){
     await api.drawSocialNames(ctx,p,audit);
    } else {
