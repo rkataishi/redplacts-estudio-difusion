@@ -199,26 +199,26 @@ def run():
         # click Participantes
         tab_people = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-people")))
         real_click(driver, tab_people)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true")
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-people").is_displayed())
         assert get_state(driver)  # state intacta
         print("✓ tab click Participantes -> aria-selected true y panel visible")
         # click Imágenes
         tab_images = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-images")))
         real_click(driver, tab_images)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected") == "true")
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-images").is_displayed())
         print("✓ tab click Imágenes ok")
         # click Fecha y acceso
         tab_meeting = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-meeting")))
         real_click(driver, tab_meeting)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-meeting").is_displayed())
         print("✓ tab click Fecha y acceso ok")
         # click Contenido para volver
         tab_content = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-content")))
         real_click(driver, tab_content)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected") == "true")
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-content").is_displayed())
         print("✓ tab click Contenido (vuelta) ok")
 
@@ -228,33 +228,33 @@ def run():
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return document.activeElement.id==='tab-content'"))
         # ArrowRight -> Participantes
         driver.find_element(By.ID, "tab-content").send_keys(Keys.ARROW_RIGHT)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true")
         print("✓ keyboard ArrowRight 0->1 ok")
         # ArrowRight -> Imágenes
         driver.execute_script("document.getElementById('tab-people').focus()")
         driver.find_element(By.ID, "tab-people").send_keys(Keys.ARROW_RIGHT)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected") == "true")
         print("✓ keyboard ArrowRight 1->2 ok")
         # ArrowLeft -> Participantes
         driver.execute_script("document.getElementById('tab-images').focus()")
         driver.find_element(By.ID, "tab-images").send_keys(Keys.ARROW_LEFT)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true")
         print("✓ keyboard ArrowLeft 2->1 ok")
         # Home -> Contenido
         driver.execute_script("document.getElementById('tab-people').focus()")
         driver.find_element(By.ID, "tab-people").send_keys(Keys.HOME)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected") == "true")
         print("✓ keyboard Home -> Contenido ok")
         # End -> Fecha y acceso
         driver.execute_script("document.getElementById('tab-content').focus()")
         driver.find_element(By.ID, "tab-content").send_keys(Keys.END)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-meeting").is_displayed())
         print("✓ keyboard End -> Fecha y acceso ok")
         # volver a Contenido via Home para siguiente sección
         driver.execute_script("document.getElementById('tab-meeting').focus()")
         driver.find_element(By.ID, "tab-meeting").send_keys(Keys.HOME)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected") == "true")
         print("✓ keyboard navegación completa (ArrowRight/Left/Home/End)")
 
         # --- previous/next y disabled ---
@@ -268,19 +268,19 @@ def run():
         print(f"✓ step 0 previous disabled/next enabled ({step_count})")
         # next -> paso 2
         real_click(driver, next_btn)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true")
         assert "Paso 2" in driver.find_element(By.ID, "step-count").text
         print("✓ next 1->2 ok")
         # next -> paso 3
         next_btn = driver.find_element(By.ID, "next-step")
         real_click(driver, next_btn)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected") == "true")
         assert "Paso 3" in driver.find_element(By.ID, "step-count").text
         print("✓ next 2->3 ok")
         # next -> paso 4
         next_btn = driver.find_element(By.ID, "next-step")
         real_click(driver, next_btn)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
         step4 = driver.find_element(By.ID, "step-count").text
         assert "Paso 4" in step4
         assert driver.find_element(By.ID, "next-step").get_attribute("disabled") is not None or not driver.find_element(By.ID, "next-step").is_enabled(), "next debe estar disabled en último paso"
@@ -289,16 +289,16 @@ def run():
         prev_btn = driver.find_element(By.ID, "previous-step")
         assert prev_btn.is_enabled(), "previous debe estar habilitado en paso 3"
         real_click(driver, prev_btn)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected") == "true")
         assert "Paso 3" in driver.find_element(By.ID, "step-count").text
         print("✓ previous 4->3 ok")
         # previous -> paso 2
         real_click(driver, driver.find_element(By.ID, "previous-step"))
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true")
         print("✓ previous 3->2 ok")
         # previous -> paso 1
         real_click(driver, driver.find_element(By.ID, "previous-step"))
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected")==="true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected") == "true")
         assert "Paso 1" in driver.find_element(By.ID, "step-count").text
         assert driver.find_element(By.ID, "previous-step").get_attribute("disabled") is not None
         print("✓ previous 2->1 ok y previous disabled")
