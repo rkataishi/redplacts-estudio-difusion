@@ -56,15 +56,13 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
 @media(max-width:1210px){.workspace{grid-template-columns:minmax(380px,44vw) minmax(0,1fr)}}
 @media(max-width:970px){.workspace{display:flex;flex-direction:column}.editor{position:static;width:100%}.form-scroll{max-height:65vh}}
 
-/* Referencias graficas compactas — decorativas, cercanas a cada panel */
-.ref-figure{margin:13px 0 16px;padding:11px 12px;border:1px solid #dde0ee;border-radius:10px;background:#f6f7fb;color:#3d4260;display:grid;gap:9px;font-size:11px;line-height:1.55}
-.mini-poster{width:90px;height:120px;background:#fff;border:1px solid #cbd0e6;border-radius:8px;padding:5px;display:grid;grid-template-rows:repeat(3,1fr);gap:3px;position:relative;box-shadow:0 1px 6px #1a254a0f}
-.mini-zone{border-radius:4px;background:#e8ebf6;border:1px dashed #c3c8e0;min-height:12px}
-.mini-zone.is-active{background:#737bbd33;border-color:#737bbd;border-style:solid;box-shadow:inset 0 0 0 1px #737bbd22}
-.ref-legend{font-size:11px;color:#3d4260;font-weight:700;letter-spacing:.15px;line-height:1.4}
-.ref-caption{font-size:11px;color:#3d4260;line-height:1.65}
-.field-location{font-size:11px;color:#3d4260;background:#eef0f8;border:1px solid #dde0ee;border-radius:999px;padding:2px 8px;margin-left:7px;font-weight:600;vertical-align:middle;white-space:nowrap}
-@media(max-width:710px){.ref-figure{padding:10px;gap:8px}.mini-poster{width:78px;height:105px}.field-location{display:inline-block;margin-top:4px;margin-left:5px}}
+/* Indicador inline de zona en cada campo del formulario. */
+.field-location{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#3d4260;background:#eef0f8;border:1px solid #dde0ee;border-radius:999px;padding:2px 8px 2px 4px;margin-left:7px;font-weight:600;vertical-align:middle;white-space:nowrap}
+.field-location::before{content:'';display:inline-block;width:16px;height:22px;border:1.5px solid #737bbd;border-radius:2px;background:linear-gradient(to bottom,#737bbd33 0%,#737bbd33 33%,transparent 33%,transparent 36%,#737bbd33 36%,#737bbd33 66%,transparent 66%,transparent 69%,#737bbd33 69%,#737bbd33 100%);flex-shrink:0}
+.field-location.zone-top::before{background:linear-gradient(to bottom,#737bbd55 0%,#737bbd55 33%,#e8ebf6 33%,#e8ebf6 100%)}
+.field-location.zone-middle::before{background:linear-gradient(to bottom,#e8ebf6 0%,#e8ebf6 33%,#737bbd55 33%,#737bbd55 66%,#e8ebf6 66%,#e8ebf6 100%)}
+.field-location.zone-bottom::before{background:linear-gradient(to bottom,#e8ebf6 0%,#e8ebf6 66%,#737bbd55 66%,#737bbd55 100%)}
+@media(max-width:710px){.field-location{display:inline-flex;margin-top:4px;margin-left:5px}}
 
 </style>
 </head>
@@ -87,15 +85,10 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
    <div class="form-scroll" id="form-scroll">
     <section id="panel-content" class="step-panel" role="tabpanel" aria-labelledby="tab-content">
       <h3 class="panel-heading">Título y tipo de evento</h3><p class="panel-description">Los textos y campos opcionales se usan solo donde correspondan en cada pieza.</p>
-      <figure class="ref-figure">
-      <div class="ref-legend">Ubicación en la pieza</div>
-      <div class="mini-poster" aria-hidden="true"><div class="mini-zone is-active"></div><div class="mini-zone"></div><div class="mini-zone"></div></div>
-      <figcaption class="ref-caption">Tipo, título, subtítulo y texto adicional aparecen en el encabezado.</figcaption>
-      </figure>
-     <div class="field"><label for="event-type">Tipo de evento <span class="field-location" aria-hidden="true">Encabezado</span></label><select id="event-type" data-event="type"><option>Conversatorio</option><option>Charla</option><option>Mesa redonda</option><option>Seminario</option><option>Presentación</option><option>Encuentro</option></select></div>
-      <div class="field"><label for="event-title">Título <span class="optional">Obligatorio</span> <span class="field-location" aria-hidden="true">Encabezado</span></label><textarea id="event-title" data-event="title" rows="3" maxlength="150" required placeholder="Completar"></textarea><div class="field-meta"><span>Los saltos de línea son opcionales.</span><span class="counter" data-count="title">0/150</span></div></div>
-     <div class="field"><label for="event-subtitle">Subtítulo <span class="optional">Opcional</span> <span class="field-location" aria-hidden="true">Encabezado</span></label><textarea id="event-subtitle" data-event="subtitle" rows="2" maxlength="170" placeholder="Una segunda línea para precisar el enfoque"></textarea><div class="field-meta"><span></span><span class="counter" data-count="subtitle">0/170</span></div></div>
-      <div class="field"><label for="event-reinforcement">Texto adicional <span class="optional">Opcional</span> <span class="field-location" aria-hidden="true">Encabezado</span></label><textarea id="event-reinforcement" data-event="reinforcement" rows="2" maxlength="180" placeholder="Agregar una idea breve o una invitación"></textarea><div class="field-meta"><span>Una o dos frases.</span><span class="counter" data-count="reinforcement">0/180</span></div></div>
+     <div class="field"><label for="event-type">Tipo de evento <span class="field-location zone-top" aria-hidden="true">Encabezado</span></label><select id="event-type" data-event="type"><option>Conversatorio</option><option>Charla</option><option>Mesa redonda</option><option>Seminario</option><option>Presentación</option><option>Encuentro</option></select></div>
+      <div class="field"><label for="event-title">Título <span class="optional">Obligatorio</span> <span class="field-location zone-top" aria-hidden="true">Encabezado</span></label><textarea id="event-title" data-event="title" rows="3" maxlength="150" required placeholder="Completar"></textarea><div class="field-meta"><span>Los saltos de línea son opcionales.</span><span class="counter" data-count="title">0/150</span></div></div>
+     <div class="field"><label for="event-subtitle">Subtítulo <span class="optional">Opcional</span> <span class="field-location zone-top" aria-hidden="true">Encabezado</span></label><textarea id="event-subtitle" data-event="subtitle" rows="2" maxlength="170" placeholder="Una segunda línea para precisar el enfoque"></textarea><div class="field-meta"><span></span><span class="counter" data-count="subtitle">0/170</span></div></div>
+      <div class="field"><label for="event-reinforcement">Texto adicional <span class="optional">Opcional</span> <span class="field-location zone-top" aria-hidden="true">Encabezado</span></label><textarea id="event-reinforcement" data-event="reinforcement" rows="2" maxlength="180" placeholder="Agregar una idea breve o una invitación"></textarea><div class="field-meta"><span>Una o dos frases.</span><span class="counter" data-count="reinforcement">0/180</span></div></div>
      <!-- Nuevo: solo afecta los diseños de redes; no modifica el contenido de los pósters. -->
       <details class="social-copy-panel"><summary>Texto breve para estados e Instagram <span>Opcional</span></summary><div class="social-copy-body">
        <p>El título y el subtítulo del evento se usan por defecto. Estos campos permiten abreviarlos solo en las versiones 4, 5 y 6.</p>
