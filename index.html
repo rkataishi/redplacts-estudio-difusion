@@ -1969,7 +1969,7 @@ function zipStore(entries){const encoder=new TextEncoder(),locals=[],centrals=[]
 async function exportAll(){
  if(exportBusy||!await ensureExportable())return;
  exportBusy=true;setBusy();
- const snapshot=clone(state),indices=[0,1,2,3,4,5],posters=compiled.slice(),entries=[],name=stem();
+ const snapshot=clone(state), indices=[...Array(VARIANTS.length).keys()],posters=compiled.slice(),entries=[],name=stem();
  try{
   for(const [position,i] of indices.entries()){
    $('#export-status').textContent=`Exportando ${position+1} de ${indices.length} · ${VARIANTS[i].name}`;
@@ -1978,7 +1978,7 @@ async function exportAll(){
   }
   entries.push({name:'proyecto-redplacts.json',bytes:new TextEncoder().encode(JSON.stringify(snapshot,null,2))});
   const measures=indices.map(i=>`${VARIANTS[i].name}: ${WIDTH*snapshot.options.scale} × ${posters[i].plan.h*snapshot.options.scale} px`).join('\n');
-   entries.push({name:'LEEME.txt',bytes:new TextEncoder().encode(`Red PLACTS · 6 piezas de difusión\n\n${measures}\n\nEl proyecto JSON conserva todos los textos, imágenes y preferencias. Las versiones para redes mencionan a todos los participantes, sin biografías. Las fotos pequeñas y el QR social son opcionales. Los PNG no contienen enlaces clicables; comparte también el enlace del evento.\n`)});
+   entries.push({name:'LEEME.txt',bytes:new TextEncoder().encode(`Red PLACTS · 9 piezas de difusión\n\n${measures}\n\nEl proyecto JSON conserva todos los textos, imágenes y preferencias. Las versiones para redes mencionan a todos los participantes, sin biografías. Las fotos pequeñas y el QR social son opcionales. Los PNG no contienen enlaces clicables; comparte también el enlace del evento.\n`)});
   entries.push({name:'texto-para-acompanar.txt',bytes:new TextEncoder().encode(socialCaption(snapshot))});
   downloadBlob(zipStore(entries),`${name}-piezas.zip`);
   toast(`ZIP preparado con ${indices.length} composiciones y el texto para acompañarlas.`);
