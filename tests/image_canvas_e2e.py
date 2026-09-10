@@ -3,7 +3,7 @@
 Prueba E2E visual independiente: demuestra que tres clases de imagen modifican el canvas.
 - Reutiliza helpers desde ui_smoke (_driver, real_click, wait_js, _write_solid_png, assert_no_severe_logs, BASE_URL)
 - Flujo: abrir/limpiar storage compatible → esperar ready → completar title/date/time/timezone → Generar
-         → colección social variante Estado → canvas visible → /tmp/ui-e2e 01-base
+         → variante Estado (index3) directa → canvas visible → /tmp/ui-e2e 01-base
          → fingerprint JS estable → PNGs sólidos 2400x1600 (foto azul, fondo rojo, hero verde)
          → upload foto speaker → espera state/socialPhotos/render/fingerprint → 02-photo
          → upload background → espera state/bgOpacity/fingerprint → 03-background
@@ -284,25 +284,14 @@ def run():
         time.sleep(0.6)  # pequeño respiro para render estable
         print("✓ Generar click: canvas inicial disponible")
 
-        # 4) seleccionar colección social variante Estado (data-collection social, variant 3)
-        # colección social
+        # 4) seleccionar variante Estado directamente (navegación plana, sin colecciones)
         try:
-            col_social = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-collection="social"]')))
-            # si ya está pressed true, igual click asegura estado
-            real_click(driver, col_social)
-            WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return document.querySelector('[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'"))
-        except Exception as e:
-            raise AssertionError(f"no se pudo seleccionar colección social: {e}") from e
-        print("✓ colección social seleccionada")
-
-        # variante Estado = 3
-        try:
-            var_estado = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, '[data-variant-select="3"]')))
-            # esperar que sea visible (no hidden)
-            WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return !document.querySelector('[data-variant-select=\"3\"]').hidden"))
+            var_estado = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-variant-select="3"]')))
             real_click(driver, var_estado)
-            WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card==='3'"))
-            WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return document.querySelector('[data-variant-select=\"3\"][aria-pressed=\"true\"]')!==null"))
+            WebDriverWait(driver, TIMEOUT).until(
+                lambda d: d.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card==='3'"),
+                message="poster-card selected data-card 3 no apareció tras click variante",
+            )
         except Exception as e:
             raise AssertionError(f"no se pudo seleccionar variante Estado (3): {e}") from e
         # esperar canvas visible válido
@@ -378,19 +367,15 @@ def run():
             return WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, sel)))
 
         def _return_to_social_estado():
-            # volver a seleccionar social + estado para fingerprint
+            # volver a seleccionar variante 3 para fingerprint
             try:
-                col = driver.find_element(By.CSS_SELECTOR, '[data-collection="social"]')
-                if col.get_attribute("aria-pressed") != "true":
-                    real_click(driver, col)
-                    WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return document.querySelector('[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'"))
                 var = driver.find_element(By.CSS_SELECTOR, '[data-variant-select="3"]')
                 if var.get_attribute("aria-pressed") != "true":
                     real_click(driver, var)
                     WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card==='3'"))
                 WebDriverWait(driver, TIMEOUT).until(lambda d: d.execute_script("return document.querySelector('.poster-card.is-selected canvas') && document.querySelector('.poster-card.is-selected canvas').width>0"))
             except Exception as e:
-                print(f"warn: no se pudo volver a social/Estado: {e}", file=sys.stderr)
+                print(f"warn: no se pudo volver a variante 3: {e}", file=sys.stderr)
 
         # 6) Upload foto primer speaker; esperar photo state, socialPhotos true, render actualizado y fingerprint distinto; screenshot 02-photo
         photo_input = _ensure_photo_input_visible()
