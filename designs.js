@@ -260,6 +260,85 @@
  }
 
  /* ------------------------------------------------------------------ */
+ /*  v1 — True landscape 1350×1080 layout                              */
+ /* ------------------------------------------------------------------ */
+
+ function applyV1Layout(p){
+  var W=1350, H=1080, MX=56;
+
+  /* Title block: left column x56..620, y150 */
+  p.intro={
+   x:MX, y:150, w:564,
+   title:{size:52},
+   sub:{size:26},
+   reinforcement:{size:21}
+  };
+
+  /* Hero image: right column x690 y145, 604×380 */
+  p.hero={x:690, y:145, w:604, h:380};
+
+  /* Speakers lower strip: x56 y560, w900 */
+  var sp=p.s.speakers||[];
+  var cols=sp.length<=3?3:sp.length<=6?3:4;
+  var gap=20;
+  var stripW=900;
+  var colW=Math.round((stripW-gap*(cols-1))/cols);
+  var photoSide=Math.round(colW*.38);
+  var textW=colW-photoSide-14;
+  var rowH=photoSide+24;
+  var items=[];
+  for(var i=0;i<sp.length;i++){
+   var col=i%cols, row=Math.floor(i/cols);
+   var ix=col*(colW+gap);
+   var iy=row*(rowH+16);
+   var nt=api.wrapLines(sp[i].name||'',textW,24,700,p.font);
+   var dt=api.wrapLines(sp[i].description||'',textW,17,400,p.font);
+   items.push({
+    x:ix, y:iy, w:colW, h:rowH,
+    person:sp[i], photo:photoSide,
+    shape:'rect', vertical:false,
+    nt:{size:24,h:nt.length*24*1.13,lines:nt},
+    dt:{size:17,h:dt.length*17*1.24,lines:dt}
+   });
+  }
+  p.people={items:items, columns:cols, columnW:colW, rowH:rowH};
+  p.peopleX=MX; p.peopleY=560;
+
+  /* Moderators right: x980, below hero */
+  var mods=p.s.moderators||[];
+  var modItems=[];
+  var modW=W-MX-980; /* ~314 */
+  var modGap=16;
+  for(var j=0;j<mods.length;j++){
+   var mPhoto=Math.round(modW*.35);
+   var mTextW=modW-mPhoto-12;
+   var mNt=api.wrapLines(mods[j].name||'',mTextW,20,700,p.font);
+   var mDt=api.wrapLines(mods[j].description||'',mTextW,16,400,p.font);
+   modItems.push({
+    x:0, y:j*(rowH+modGap), photo:mPhoto,
+    w:modW, person:mods[j],
+    nt:{size:20,h:mNt.length*20*1.13,lines:mNt},
+    dt:{size:16,h:mDt.length*16*1.24,lines:mDt}
+   });
+  }
+  p.mods={items:modItems, label:mods.length===1?'MODERA':'MODERAN'};
+  p.modsX=980; p.modsY=545;
+
+  /* Meeting band: bottom */
+  p.metaY=H-200;
+  p.meeting={
+   width:W-MX*2, h:115,
+   date:{size:31},
+   time:{size:28},
+   zone:{size:18},
+   platform:{size:21},
+   link:{size:19},
+   location:{size:18}
+  };
+  p.footerTop=H-75;
+ }
+
+ /* ------------------------------------------------------------------ */
  /*  Main draw entry point                                              */
  /* ------------------------------------------------------------------ */
 
@@ -277,15 +356,23 @@
   /* 3. Content: fallback or full layout */
   if(!p.valid){
    await drawFallback(ctx,p);
-  } else if(p.v===0){
-   /* v0 institutional layout: fixed portrait zones */
-   applyV0Layout(p);
-   drawTitleBlock(ctx,p);
-   await drawHero(ctx,p);
-   await drawPeopleGrid(ctx,p);
-   await drawModerators(ctx,p);
-   drawMeetingBand(ctx,p);
-  } else {
+   } else if(p.v===0){
+    /* v0 institutional layout: fixed portrait zones */
+    applyV0Layout(p);
+    drawTitleBlock(ctx,p);
+    await drawHero(ctx,p);
+    await drawPeopleGrid(ctx,p);
+    await drawModerators(ctx,p);
+    drawMeetingBand(ctx,p);
+   } else if(p.v===1){
+    /* v1 true landscape 1350×1080 */
+    applyV1Layout(p);
+    drawTitleBlock(ctx,p);
+    await drawHero(ctx,p);
+    await drawPeopleGrid(ctx,p);
+    await drawModerators(ctx,p);
+    drawMeetingBand(ctx,p);
+   } else {
    /* other versions — current behaviour */
    drawTitleBlock(ctx,p);
    await drawHero(ctx,p);
