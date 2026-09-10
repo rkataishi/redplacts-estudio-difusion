@@ -342,6 +342,22 @@ def run():
         png_path, png_sz = _wait_new_file("*.png", before_png, "individual PNG", timeout=10, min_size=2000)
         assert png_path.lower().endswith(".png"), f"individual PNG: extensión incorrecta: {png_path}"
         print(f"✓ individual PNG ok: {Path(png_path).name} ({png_sz} bytes)")
+        # robustez mismo nombre: guardar y eliminar PNG individual antes de zoom-download
+        expected_png_name = Path(png_path).name
+        expected_png_path = DOWNLOAD_DIR / expected_png_name
+        try:
+            os.remove(png_path)
+        except FileNotFoundError:
+            pass
+        except Exception:
+            pass
+        _t0 = time.time()
+        while expected_png_path.exists() and time.time() - _t0 < 2:
+            time.sleep(0.1)
+            try:
+                os.remove(str(expected_png_path))
+            except Exception:
+                pass
 
         # ============================================================
         # 4. ZOOM-DOWNLOAD PNG
@@ -369,7 +385,37 @@ def run():
             EC.element_to_be_clickable((By.ID, "zoom-download"))
         )
         real_click(driver, zoom_dl)
-        zp, zsz = _wait_new_file("*.png", before_png2, "zoom-download PNG", min_size=1000)
+        # esperar que reaparezca el mismo path (robusto al mismo nombre) o nuevo PNG >1000
+        deadline = time.time() + 10
+        zp = None
+        zsz = 0
+        while time.time() < deadline:
+            if expected_png_path.exists():
+                try:
+                    sz = expected_png_path.stat().st_size
+                except Exception:
+                    sz = 0
+                if sz > 1000:
+                    zp = str(expected_png_path)
+                    zsz = sz
+                    break
+            new = _post_files("*.png", before_png2)
+            if new:
+                for cand in list(new):
+                    try:
+                        csz = os.path.getsize(cand)
+                    except Exception:
+                        continue
+                    if csz > 1000:
+                        zp = cand
+                        zsz = csz
+                        break
+                if zp:
+                    break
+            time.sleep(0.5)
+        assert zp, f"zoom-download PNG: no reapareció {expected_png_name} ni nuevo PNG >1000 en 10s (before={before_png2})"
+        assert zp.lower().endswith(".png"), f"zoom-download PNG: extensión incorrecta: {zp}"
+        assert zsz > 1000, f"zoom-download PNG: archivo demasiado pequeño ({zsz} bytes): {zp}"
         print(f"✓ zoom-download PNG ok: {Path(zp).name} ({zsz} bytes)")
 
         # close zoom
