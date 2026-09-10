@@ -1895,7 +1895,7 @@ function computePlan(s,v,font=loadedFont){
 }
 
 // Nuevo: dibujo a tamaño real y exportación idéntica a la vista, sin depender de html2canvas.
-function rounded(ctx,x,y,w,h,r=0){r=Math.min(r,w/2,h/2);ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else{ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);}ctx.closePath();}
+function rounded(ctx,x,y,w,h,r=0){if(w<0||h<0)console.warn('rounded(): negative dimensions w='+w+' h='+h+' at ('+x+','+y+')');if(w<0){x+=w;w=-w;}if(h<0){y+=h;h=-h;}r=Math.max(0,Math.min(Number(r)||0,w/2,h/2));ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,w,h,r);else{ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);}ctx.closePath();}
 function box(ctx,x,y,w,h,fill,r=0){ctx.fillStyle=fill;rounded(ctx,x,y,w,h,r);ctx.fill();}
 function line(ctx,x1,y1,x2,y2,color=C.line,width=1){ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
 function drawText(ctx,t,audit=null,label=''){ctx.font=fontCSS(t.font,t.size,t.weight);ctx.textBaseline='top';ctx.fillStyle=t.color;ctx.textAlign=t.align;const x=t.align==='center'?t.x+t.w/2:t.align==='right'?t.x+t.w:t.x;t.lines.forEach((text,i)=>ctx.fillText(text,x,t.y+i*t.size*t.leading));if(audit&&t.h)audit.push({label,text:t.text,x:t.x,y:t.y,w:t.w,h:t.h,size:t.size,maxLine:Math.max(...t.lines.map(s=>measure(s,t.size,t.weight,t.font)))});}
