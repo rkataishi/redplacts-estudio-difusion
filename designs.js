@@ -514,11 +514,12 @@
      /* draw hero before title so text overlays the image */
      await drawHero(ctx,p);
      await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
-     /* white title backing panel — generic branch */
-     if(p.v===3||p.v===4||p.v===6) api.box(ctx,40,120,540,330,'rgba(255,255,255,0.94)',18);
-     else if(p.v===7)api.box(ctx,40,110,p.w-80,340,'rgba(255,255,255,0.94)',18);
-     else if(p.v===8)api.box(ctx,40,450,p.w-80,430,'rgba(255,255,255,0.94)',18);
-    drawTitleBlock(ctx,p);
+      /* white title backing panel — generic branch */
+      if(p.v===3||p.v===4||p.v===6) api.box(ctx,40,120,540,330,'rgba(255,255,255,0.94)',18);
+      else if(p.v===5)api.box(ctx,40,470,p.w-80,300,'rgba(255,255,255,0.94)',18);
+      else if(p.v===7)api.box(ctx,40,110,p.w-80,340,'rgba(255,255,255,0.94)',18);
+      else if(p.v===8)api.box(ctx,40,450,p.w-80,430,'rgba(255,255,255,0.94)',18);
+     drawTitleBlock(ctx,p);
     /* white translucent panel for names readability */
      if(p.namesY&&p.names&&p.names.h){
       api.box(ctx,56,p.namesY-8,p.w-112,p.names.h+16,'rgba(255,255,255,0.94)',18);
