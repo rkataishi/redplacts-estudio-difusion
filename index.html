@@ -117,49 +117,26 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
     </section>
     <section id="panel-people" class="step-panel" role="tabpanel" aria-labelledby="tab-people" hidden>
       <h3 class="panel-heading">Participantes</h3><p class="panel-description">De 1 a 6 expositores y hasta 2 moderadores. Fotos, nombres y descripciones con una jerarquía propia para cada rol.</p>
-      <figure class="ref-figure">
-      <div class="ref-legend">Ubicación en la pieza</div>
-      <div class="mini-poster" aria-hidden="true"><div class="mini-zone"></div><div class="mini-zone is-active"></div><div class="mini-zone"></div></div>
-      <figcaption class="ref-caption">Fotos, nombres y descripciones. En redes se muestra una versión resumida.</figcaption>
-      </figure>
-     <div class="people-label"><h3>Expositores</h3><span class="count" id="speakers-count">0 / 6</span></div><p class="field-help" style="font-size:10px;color:#7d8391;margin:4px 0 10px;line-height:1.5">Mínimo obligatorio: 1 expositor. Máximo: 6.</p><div id="speakers-list"></div><button type="button" class="btn lavender full" id="add-speaker"><span data-icon="plus"></span>Agregar expositor</button>
-     <div class="people-label"><h3>Moderación <span class="optional">Opcional</span></h3><span class="count" id="moderators-count">0 / 2</span></div><p class="field-help" style="font-size:10px;color:#7d8391;margin:4px 0 10px;line-height:1.5">Moderadores opcionales: de 0 a 2.</p><div id="moderators-list"></div><button type="button" class="btn lavender full" id="add-moderator"><span data-icon="plus"></span>Agregar moderador</button>
+     <div class="people-label"><h3>Expositores <span class="field-location zone-middle" aria-label="Ubicación: cuerpo del póster">Cuerpo del póster</span></h3><span class="count" id="speakers-count">0 / 6</span></div><p class="field-help" style="font-size:10px;color:#7d8391;margin:4px 0 10px;line-height:1.5">Mínimo obligatorio: 1 expositor. Máximo: 6.</p><div id="speakers-list"></div><button type="button" class="btn lavender full" id="add-speaker"><span data-icon="plus"></span>Agregar expositor</button>
+     <div class="people-label"><h3>Moderación <span class="optional">Opcional</span> <span class="field-location zone-middle" aria-label="Ubicación: cuerpo del póster">Cuerpo del póster</span></h3><span class="count" id="moderators-count">0 / 2</span></div><p class="field-help" style="font-size:10px;color:#7d8391;margin:4px 0 10px;line-height:1.5">Moderadores opcionales: de 0 a 2.</p><div id="moderators-list"></div><button type="button" class="btn lavender full" id="add-moderator"><span data-icon="plus"></span>Agregar moderador</button>
      <div class="form-note" style="margin-top:20px">Sin fotografía se utilizan iniciales. Las descripciones breves mantienen la lectura cómoda en redes.</div>
     </section>
     <section id="panel-images" class="step-panel" role="tabpanel" aria-labelledby="tab-images" hidden>
       <h3 class="panel-heading">Imágenes del diseño</h3><p class="panel-description">Cargá imagen de fondo y/o imagen principal del póster para mejorar contraste y jerarquía visual.</p>
-     <figure class="ref-figure">
-      <div class="ref-legend">Imagen 1 · Fondo</div>
-      <div class="mini-poster" aria-hidden="true"><div class="mini-zone is-active" style="grid-row:1 / -1"></div></div>
-      <figcaption class="ref-caption">Imagen 1 · Fondo — Aparece detrás del contenido en las 6 piezas.</figcaption>
-      </figure>
-      <div id="asset-background"></div><figure class="ref-figure">
-      <div class="ref-legend">Imagen 2 · Principal</div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start" aria-hidden="true">
-        <div style="text-align:center;display:grid;gap:4px;justify-items:center"><div class="mini-poster" aria-hidden="true"><div class="mini-zone"></div><div class="mini-zone is-active" style="grid-column:1"></div><div class="mini-zone"></div></div><span class="ref-legend">Pósters · lateral</span></div>
-        <div style="text-align:center;display:grid;gap:4px;justify-items:center"><div class="mini-poster" aria-hidden="true"><div class="mini-zone is-active" style="grid-row:1 / -1"></div></div><span class="ref-legend">Historia · fondo</span></div>
-        <div style="text-align:center;display:grid;gap:4px;justify-items:center"><div class="mini-poster" aria-hidden="true"><div class="mini-zone"></div><div class="mini-zone is-active"></div><div class="mini-zone"></div></div><span class="ref-legend">Publicación · mitad derecha</span></div>
-      </div>
-      <figcaption class="ref-caption">Imagen 2 · Principal — Ubicación adaptativa según formato.</figcaption>
-      </figure>
-      <div id="asset-hero"></div>
+       <div id="asset-background"></div>
+       <div id="asset-hero"></div>
        <div class="form-note"><strong>Procesamiento local.</strong> Las imágenes no se suben al servidor. Formatos: JPG, PNG o WebP, hasta 20 MB. Se guardan dentro del archivo del proyecto.</div>
        <div class="form-note">Arrastrá o seleccioná una imagen de fondo o principal.</div>
     </section>
     <section id="panel-meeting" class="step-panel" role="tabpanel" aria-labelledby="tab-meeting" hidden>
       <h3 class="panel-heading">Cuándo y dónde</h3><p class="panel-description">Definí fecha, horario y acceso. Si no se usa QR, los vínculos pueden quedar vacíos.</p>
-      <figure class="ref-figure">
-      <div class="ref-legend">Ubicación en la pieza</div>
-      <div class="mini-poster" aria-hidden="true" style="position:relative"><div class="mini-zone"></div><div class="mini-zone"></div><div class="mini-zone is-active"></div><div aria-hidden="true" style="position:absolute;right:5px;bottom:5px;width:14px;height:14px;background:#737bbd;border-radius:2px;opacity:.95;border:1px solid #5a64b5"></div></div>
-      <figcaption class="ref-caption">Fecha, horario, modalidad, enlace y QR aparecen en la franja inferior.</figcaption>
-      </figure>
-     <div class="field"><label for="event-date">Fecha <span class="optional">Obligatoria</span> <span class="field-location" aria-hidden="true">Franja inferior</span></label><input type="date" id="event-date" data-event="date" required min="2000-01-01" max="2100-12-31"></div>
-      <div class="two-fields"><div class="field"><label for="event-time">Hora de inicio <span class="optional">Obligatoria</span> <span class="field-location" aria-hidden="true">Franja inferior</span></label><input type="time" id="event-time" data-event="time" required></div><div class="field"><label for="event-endTime">Hora de finalización <span class="field-location" aria-hidden="true">Franja inferior</span></label><input type="time" id="event-endTime" data-event="endTime"></div></div>
-       <div class="field"><label for="event-timezone">Zona horaria <span class="optional">Obligatoria</span> <span class="field-location" aria-hidden="true">Franja inferior</span></label><input id="event-timezone" data-event="timezone" maxlength="45" placeholder="Argentina · UTC−3" required></div>
-      <div class="field"><label for="event-platform">Modalidad <span class="field-location" aria-hidden="true">Franja inferior</span></label><select id="event-platform" data-event="platform"><option>En vivo por YouTube</option><option>Encuentro por Zoom</option><option>Encuentro por Google Meet</option><option>Presencial</option><option>Híbrido</option><option>En línea</option></select></div>
-       <div class="field"><label for="event-url">Enlace de Zoom o transmisión <span class="optional">Opcional</span> <span class="field-location" aria-hidden="true">Franja inferior</span></label><input type="url" id="event-url" data-event="url" maxlength="1600" placeholder="https://zoom.us/j/…" ></div>
+     <div class="field"><label for="event-date">Fecha <span class="optional">Obligatoria</span> <span class="field-location zone-bottom" aria-hidden="true">Franja inferior</span></label><input type="date" id="event-date" data-event="date" required min="2000-01-01" max="2100-12-31"></div>
+      <div class="two-fields"><div class="field"><label for="event-time">Hora de inicio <span class="optional">Obligatoria</span> <span class="field-location zone-bottom" aria-hidden="true">Franja inferior</span></label><input type="time" id="event-time" data-event="time" required></div><div class="field"><label for="event-endTime">Hora de finalización <span class="field-location zone-bottom" aria-hidden="true">Franja inferior</span></label><input type="time" id="event-endTime" data-event="endTime"></div></div>
+       <div class="field"><label for="event-timezone">Zona horaria <span class="optional">Obligatoria</span> <span class="field-location zone-bottom" aria-hidden="true">Franja inferior</span></label><input id="event-timezone" data-event="timezone" maxlength="45" placeholder="Argentina · UTC−3" required></div>
+      <div class="field"><label for="event-platform">Modalidad <span class="field-location zone-bottom" aria-hidden="true">Franja inferior</span></label><select id="event-platform" data-event="platform"><option>En vivo por YouTube</option><option>Encuentro por Zoom</option><option>Encuentro por Google Meet</option><option>Presencial</option><option>Híbrido</option><option>En línea</option></select></div>
+       <div class="field"><label for="event-url">Enlace de Zoom o transmisión <span class="optional">Opcional</span> <span class="field-location zone-bottom" aria-hidden="true">Franja inferior</span></label><input type="url" id="event-url" data-event="url" maxlength="1600" placeholder="https://zoom.us/j/…" ></div>
        <div class="field"><label for="event-urlLabel">Texto visible del enlace <span class="optional">Opcional</span></label><input id="event-urlLabel" data-event="urlLabel" maxlength="70" placeholder="Ej.: Zoom · Sala principal"></div>
-     <div class="field"><label for="event-location">Lugar o aclaración <span class="optional">Opcional</span> <span class="field-location" aria-hidden="true">Franja inferior</span></label><input id="event-location" data-event="location" maxlength="100" placeholder="Actividad abierta y gratuita"></div>
+     <div class="field"><label for="event-location">Lugar o aclaración <span class="optional">Opcional</span> <span class="field-location zone-bottom" aria-hidden="true">Franja inferior</span></label><input id="event-location" data-event="location" maxlength="100" placeholder="Actividad abierta y gratuita"></div>
       <label class="toggle" style="margin:18px 0 23px"><input type="checkbox" id="show-qr" data-option="showQR">Incluir QR del enlace</label>
      <div class="form-note"><strong>Redes de la red · siempre presentes</strong><div id="fixed-networks" class="network-list"></div><p class="social-note">Web y cuentas institucionales fijas en todas las versiones.</p></div>
     </section>
