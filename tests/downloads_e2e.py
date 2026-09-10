@@ -340,7 +340,17 @@ def run():
             # select variant
             sel = driver.find_element(By.CSS_SELECTOR, f'[data-variant-select="{_i}"]')
             real_click(driver, sel)
-            time.sleep(0.3)
+            WebDriverWait(driver, TIMEOUT).until(
+                lambda d: d.execute_script(
+                    "const card=document.querySelector('.poster-card.is-selected');"
+                    "const idx=arguments[0];"
+                    "const tab=document.querySelector('[data-variant-select=\"'+idx+'\"]');"
+                    "return card && String(card.dataset.card)===String(idx)"
+                    " && tab && tab.getAttribute('aria-pressed')==='true';",
+                    _i,
+                ),
+                message=f"variante {_i} no seleccionada correctamente",
+            )
 
             # save full selected canvas as PNG via dataURL
             canvas_data_url = driver.execute_script(
