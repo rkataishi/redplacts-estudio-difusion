@@ -1,0 +1,457 @@
+#!/usr/bin/env python3
+"""
+E2E: botones de descarga / exportación.
+- Fresh proyecto válido → Generar canvas
+- save-project JSON (click y Ctrl/Cmd+S)
+- individual PNG (data-export button)
+- zoom-download PNG (dialog)
+- export-all ZIP en posters (3 PNGs + proyecto JSON)
+- export-all ZIP en social (3 PNGs + proyecto JSON + texto TXT)
+- caption download TXT
+- Screenshot 32-downloads.png
+- py_compile
+"""
+import os
+import sys
+import time
+import glob
+import zipfile
+import traceback
+from pathlib import Path
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+try:
+    from tests.ui_smoke import (
+        _driver, real_click, wait_js, _write_solid_png,
+        assert_no_severe_logs, BASE_URL, get_state,
+    )
+except ImportError:
+    try:
+        from ui_smoke import (  # type: ignore
+            _driver, real_click, wait_js, _write_solid_png,
+            assert_no_severe_logs, BASE_URL, get_state,
+        )
+    except ImportError:
+        import struct as _struct
+        import zlib as _zlib
+        from selenium import webdriver as _webdriver
+        from selenium.webdriver.chrome.options import Options as _Options
+        BASE_URL = os.environ.get("PLACTS_BASE_URL", "http://127.0.0.1:8000")
+        TIMEOUT_FALLBACK = 15
+
+        def _driver():
+            opts = _Options()
+            opts.add_argument("--headless=new")
+            opts.add_argument("--no-sandbox")
+            opts.add_argument("--disable-dev-shm-usage")
+            opts.add_argument("--disable-gpu")
+            opts.add_argument("--window-size=1280,900")
+            try:
+                opts.set_capability("goog:loggingPrefs", {"browser": "ALL"})
+            except Exception:
+                pass
+            d = _webdriver.Chrome(options=opts)
+            d.set_window_size(1280, 900)
+            return d
+
+        def wait_js(driver, js_predicate, timeout=TIMEOUT_FALLBACK, msg=""):
+            WebDriverWait(driver, timeout).until(
+                lambda d: d.execute_script(f"return !!({js_predicate})"),
+                message=msg or f"timeout {js_predicate}",
+            )
+
+        def real_click(driver, element):
+            driver.execute_script("arguments[0].scrollIntoView({block:'center'});", element)
+            time.sleep(0.15)
+            try:
+                element.click()
+            except Exception:
+                driver.execute_script("arguments[0].click();", element)
+
+        def assert_no_severe_logs(driver):
+            try:
+                logs = driver.get_log("browser")
+            except Exception:
+                return
+            severe = [l for l in logs if l.get("level") == "SEVERE"]
+            assert not severe, f"Console SEVERE detectado: {severe}"
+
+        def get_state(driver):
+            return driver.execute_script("return window.PLACTSStudio.getState()")
+
+        def _write_solid_png(path, width=2400, height=1600, rgb=(180, 180, 190)):
+            def _chunk(chunk_type, data):
+                c = chunk_type + data
+                return _struct.pack(">I", len(data)) + c + _struct.pack(">I", _zlib.crc32(c) & 0xffffffff)
+            sig = b"\x89PNG\r\n\x1a\n"
+            ihdr_data = _struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+            ihdr = _chunk(b"IHDR", ihdr_data)
+            row = b"\x00" + bytes(rgb) * width
+            raw = row * height
+            compressed = _zlib.compress(raw)
+            idat = _chunk(b"IDAT", compressed)
+            iend = _chunk(b"IEND", b"")
+            with open(path, "wb") as f:
+                f.write(sig + ihdr + idat + iend)
+
+import py_compile
+
+TIMEOUT = 15
+SCREENSHOT = Path("/tmp/ui-e2e/32-downloads.png")
+DOWNLOAD_DIR = Path("/tmp/ui-e2e/downloads-dl")
+
+
+def _pre_files(pattern):
+    return set(glob.glob(str(DOWNLOAD_DIR / pattern)))
+
+
+def _post_files(pattern, before):
+    after = set(glob.glob(str(DOWNLOAD_DIR / pattern)))
+    return after - before
+
+
+def _wait_new_file(pattern, before, label, timeout=8, min_size=100):
+    """Poll for new file matching pattern until timeout."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        new = _post_files(pattern, before)
+        if new:
+            p = new.pop()
+            sz = os.path.getsize(p)
+            assert sz > min_size, f"{label}: archivo demasiado pequeño ({sz} bytes)"
+            return p, sz
+        time.sleep(0.5)
+    raise AssertionError(f"{label}: no apareció archivo nuevo ({pattern}) en {timeout}s")
+
+
+def run():
+    driver = None
+    start_all = time.time()
+    try:
+        driver = _driver()
+        DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
+
+        # Chrome download prefs
+        driver.execute_cdp_cmd("Page.setDownloadBehavior", {
+            "behavior": "allow",
+            "downloadPath": str(DOWNLOAD_DIR),
+        })
+
+        # --- fresh state ---
+        driver.get(BASE_URL)
+        WebDriverWait(driver, 10).until(
+            lambda d: d.execute_script("return document.readyState === 'complete'")
+        )
+        driver.execute_script("try{localStorage.clear();}catch(e){} try{sessionStorage.clear();}catch(e){}")
+        try:
+            driver.execute_async_script(
+                """
+                const cb = arguments[arguments.length-1];
+                (async () => {
+                    try{
+                        if (window.indexedDB && indexedDB.databases) {
+                            const dbs = await indexedDB.databases();
+                            for (const db of dbs) { try{ indexedDB.deleteDatabase(db.name);}catch(e){} }
+                        } else {
+                            try{ indexedDB.deleteDatabase('redplacts-estudio-v2'); }catch(e){}
+                            try{ indexedDB.deleteDatabase('redplacts-estudio'); }catch(e){}
+                        }
+                    }catch(e){}
+                    try{ localStorage.clear(); }catch(e){}
+                    try{ sessionStorage.clear(); }catch(e){}
+                    cb(true);
+                })();
+                """
+            )
+        except Exception:
+            pass
+        driver.get(BASE_URL)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script("return !!(window.PLACTSStudio && window.PLACTSStudio.whenReady)"),
+            message="PLACTSStudio.whenReady no disponible",
+        )
+        driver.execute_async_script(
+            """
+            const cb = arguments[arguments.length-1];
+            window.PLACTSStudio.whenReady().then(()=>cb(true)).catch(e=>cb('error:'+e));
+            """
+        )
+        assert driver.execute_script("return !!(window.PLACTSStudio)"), "PLACTSStudio no existe"
+        assert_no_severe_logs(driver)
+        print("✓ fresh state ready")
+
+        # --- fill all required fields ---
+        driver.execute_script(
+            """
+            const set=(sel,val)=>{
+              const el=document.querySelector(sel); if(!el) return;
+              el.focus(); el.value=val;
+              el.dispatchEvent(new Event('input',{bubbles:true}));
+              el.dispatchEvent(new Event('change',{bubbles:true}));
+            };
+            set('#event-title','E2E Downloads');
+            set('#event-date','2026-10-05');
+            set('#event-time','18:00');
+            set('#event-timezone','Argentina · UTC−3');
+            """
+        )
+        wait_state = lambda js, msg="": wait_js(driver, js, timeout=TIMEOUT, msg=msg)
+        wait_state("window.PLACTSStudio.getState().event.title==='E2E Downloads'")
+        print("✓ fields filled")
+
+        # --- Generar ---
+        compile_btn = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "compile-button"))
+        )
+        real_click(driver, compile_btn)
+        WebDriverWait(driver, 20).until(
+            lambda d: d.execute_script(
+                "return document.querySelector('.poster-card canvas') && document.querySelector('.poster-card canvas').width>0"
+            ),
+            message="canvas no apareció tras Generar",
+        )
+        print("✓ Generar → canvas visible")
+
+        # Ensure posters collection active
+        btn_posters = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-collection="posters"]'))
+        )
+        real_click(driver, btn_posters)
+        wait_state("document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
+        time.sleep(0.5)
+        print("✓ collection posters activada")
+
+        # ============================================================
+        # 1. SAVE-PROJECT JSON (click)
+        # ============================================================
+        before_json = _pre_files("*.json")
+        save_btn = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "save-project"))
+        )
+        real_click(driver, save_btn)
+        json_path, json_sz = _wait_new_file("*.json", before_json, "save-project click", min_size=50)
+        assert json_path.lower().endswith(".json"), f"save-project: extensión no es .json: {json_path}"
+        print(f"✓ save-project (click) ok: {Path(json_path).name} ({json_sz} bytes)")
+
+        # ============================================================
+        # 2. SAVE-PROJECT JSON (Ctrl/Cmd+S)
+        # ============================================================
+        before_json2 = _pre_files("*.json")
+        # focus body to ensure keydown fires
+        driver.execute_script("document.body.focus();")
+        time.sleep(0.2)
+        body = driver.find_element(By.TAG_NAME, "body")
+        # Ctrl+S on macOS = Meta+S
+        is_mac = driver.execute_script("return navigator.platform||''").lower().find("mac") >= 0
+        mod = Keys.COMMAND if is_mac else Keys.CONTROL
+        body.send_keys(mod + "s")
+        time.sleep(0.2)
+        body.send_keys(Keys.NULL)  # release modifier
+        json_path2, json_sz2 = _wait_new_file("*.json", before_json2, "Ctrl/Cmd+S", min_size=50)
+        print(f"✓ save-project (Ctrl/Cmd+S) ok: {Path(json_path2).name} ({json_sz2} bytes)")
+
+        # ============================================================
+        # 3. INDIVIDUAL PNG (data-export button)
+        # ============================================================
+        before_png = _pre_files("*.png")
+        # posters collection is active; select first variant
+        v0 = driver.find_element(By.CSS_SELECTOR, '[data-variant-select="0"]')
+        real_click(driver, v0)
+        time.sleep(0.3)
+        export_btn = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected .poster-actions .btn[data-export]"))
+        )
+        real_click(driver, export_btn)
+        png_path, png_sz = _wait_new_file("*.png", before_png, "individual PNG", timeout=10, min_size=2000)
+        assert png_path.lower().endswith(".png"), f"individual PNG: extensión incorrecta: {png_path}"
+        print(f"✓ individual PNG ok: {Path(png_path).name} ({png_sz} bytes)")
+
+        # ============================================================
+        # 4. ZOOM-DOWNLOAD PNG
+        # ============================================================
+        # open zoom via view-focus then card click
+        view_focus = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "view-focus"))
+        )
+        real_click(driver, view_focus)
+        time.sleep(0.5)
+        zoom_open = driver.execute_script("return document.getElementById('zoom-dialog').open")
+        if not zoom_open:
+            focus_card = WebDriverWait(driver, TIMEOUT).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected"))
+            )
+            real_click(driver, focus_card)
+            WebDriverWait(driver, TIMEOUT).until(
+                lambda d: d.execute_script("return document.getElementById('zoom-dialog').open"),
+                message="zoom dialog no abrió tras focus card",
+            )
+        print("✓ zoom dialog abierto")
+
+        before_png2 = _pre_files("*.png")
+        zoom_dl = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "zoom-download"))
+        )
+        real_click(driver, zoom_dl)
+        zp, zsz = _wait_new_file("*.png", before_png2, "zoom-download PNG", min_size=1000)
+        print(f"✓ zoom-download PNG ok: {Path(zp).name} ({zsz} bytes)")
+
+        # close zoom
+        close_zoom = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "[data-close='zoom-dialog']"))
+        )
+        real_click(driver, close_zoom)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: not d.execute_script("return document.getElementById('zoom-dialog').open")
+        )
+        # back to compare mode
+        view_compare = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "view-compare"))
+        )
+        real_click(driver, view_compare)
+        time.sleep(0.3)
+        print("✓ zoom cerrado, compare mode restaurado")
+
+        # ============================================================
+        # 5. EXPORT-ALL ZIP en POSTERS
+        # ============================================================
+        real_click(driver, btn_posters)
+        wait_state("document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
+        time.sleep(0.5)
+
+        before_zip = _pre_files("*.zip")
+        export_all = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "export-all"))
+        )
+        real_click(driver, export_all)
+        zip_path, zip_sz = _wait_new_file("*.zip", before_zip, "export-all posters ZIP", timeout=12, min_size=5000)
+        assert zip_path.lower().endswith(".zip"), f"export-all: extensión no es .zip: {zip_path}"
+        with zipfile.ZipFile(zip_path, "r") as zf:
+            names = zf.namelist()
+            png_count = sum(1 for n in names if n.lower().endswith(".png"))
+            json_count = sum(1 for n in names if n.lower().endswith(".json"))
+            assert png_count == 3, f"ZIP posters: esperado 3 PNGs, got {png_count} in {names}"
+            assert json_count >= 1, f"ZIP posters: esperado ≥1 JSON, got {json_count} in {names}"
+            for n in names:
+                info = zf.getinfo(n)
+                assert info.file_size > 0, f"ZIP entry vacía: {n}"
+        print(f"✓ export-all posters ZIP ok: {Path(zip_path).name} ({zip_sz} bytes, {len(names)} entries: {png_count} PNG + {json_count} JSON)")
+
+        # ============================================================
+        # 6. EXPORT-ALL ZIP en SOCIAL
+        # ============================================================
+        btn_social = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-collection="social"]'))
+        )
+        real_click(driver, btn_social)
+        wait_state("document.querySelector('[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'")
+        time.sleep(0.5)
+
+        before_zip2 = _pre_files("*.zip")
+        export_all2 = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "export-all"))
+        )
+        real_click(driver, export_all2)
+        zip_path2, zip_sz2 = _wait_new_file("*.zip", before_zip2, "export-all social ZIP", timeout=12, min_size=5000)
+        assert zip_path2.lower().endswith(".zip"), f"export-all social: extensión no es .zip: {zip_path2}"
+        with zipfile.ZipFile(zip_path2, "r") as zf2:
+            names2 = zf2.namelist()
+            png_count2 = sum(1 for n in names2 if n.lower().endswith(".png"))
+            json_count2 = sum(1 for n in names2 if n.lower().endswith(".json"))
+            txt_count2 = sum(1 for n in names2 if n.lower().endswith(".txt"))
+            assert png_count2 == 3, f"ZIP social: esperado 3 PNGs, got {png_count2} in {names2}"
+            assert json_count2 >= 1, f"ZIP social: esperado ≥1 JSON, got {json_count2} in {names2}"
+            assert txt_count2 >= 1, f"ZIP social: esperado ≥1 TXT, got {txt_count2} in {names2}"
+            for n in names2:
+                info2 = zf2.getinfo(n)
+                assert info2.file_size > 0, f"ZIP social entry vacía: {n}"
+        print(f"✓ export-all social ZIP ok: {Path(zip_path2).name} ({zip_sz2} bytes, {len(names2)} entries: {png_count2} PNG + {json_count2} JSON + {txt_count2} TXT)")
+
+        # ============================================================
+        # 7. CAPTION DOWNLOAD TXT
+        # ============================================================
+        caption_btn = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "copy-caption"))
+        )
+        real_click(driver, caption_btn)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script("return document.getElementById('caption-dialog').open"),
+            message="caption-dialog no abrió",
+        )
+        print("✓ caption dialog abierto")
+
+        before_txt = _pre_files("*.txt")
+        dl_txt = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "download-caption"))
+        )
+        real_click(driver, dl_txt)
+        txt_path, txt_sz = _wait_new_file("*.txt", before_txt, "caption download TXT", min_size=10)
+        assert txt_path.lower().endswith(".txt"), f"caption TXT: extensión incorrecta: {txt_path}"
+        print(f"✓ caption download TXT ok: {Path(txt_path).name} ({txt_sz} bytes)")
+
+        # close caption dialog
+        close_caption = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "#caption-dialog [data-close='caption-dialog']"))
+        )
+        real_click(driver, close_caption)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: not d.execute_script("return document.getElementById('caption-dialog').open"),
+            message="caption-dialog no se cerró",
+        )
+        print("✓ caption dialog cerrado")
+
+        # ============================================================
+        # 8. SCREENSHOT
+        # ============================================================
+        SCREENSHOT.parent.mkdir(parents=True, exist_ok=True)
+        driver.save_screenshot(str(SCREENSHOT))
+        assert SCREENSHOT.exists() and SCREENSHOT.stat().st_size > 0
+        print(f"✓ screenshot {SCREENSHOT} ({SCREENSHOT.stat().st_size} bytes)")
+
+        # ============================================================
+        # 9. CONSOLE NO SEVERE
+        # ============================================================
+        assert_no_severe_logs(driver)
+        print("✓ consola sin SEVERE")
+
+        total = time.time() - start_all
+        print(f"\n=== DOWNLOADS E2E OK === total {total:.2f}s")
+        print(f"  downloads: {DOWNLOAD_DIR}")
+        for f in sorted(DOWNLOAD_DIR.iterdir()):
+            print(f"    {f.name} ({f.stat().st_size} bytes)")
+
+    except Exception as e:
+        print("\n--- DOWNLOADS E2E FAILURE ---", file=sys.stderr)
+        traceback.print_exc()
+        try:
+            if driver:
+                SCREENSHOT.parent.mkdir(parents=True, exist_ok=True)
+                fail_path = SCREENSHOT.parent / "failure-32-downloads.png"
+                driver.save_screenshot(str(fail_path))
+                print(f"screenshot fallo en {fail_path}", file=sys.stderr)
+                try:
+                    with open(SCREENSHOT.parent / "failure-32-downloads.html", "w", encoding="utf-8") as f:
+                        f.write(driver.page_source)
+                except Exception:
+                    pass
+        except Exception as se:
+            print(f"no se pudo guardar screenshot fallo: {se}", file=sys.stderr)
+        raise AssertionError(f"downloads_e2e fallo: {e}") from e
+    finally:
+        try:
+            if driver:
+                driver.quit()
+        except Exception:
+            pass
+
+
+def test_downloads_e2e():
+    """Entry para pytest."""
+    run()
+
+
+if __name__ == "__main__":
+    run()

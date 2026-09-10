@@ -8,7 +8,7 @@ on:
 jobs:
   ui-smoke:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,6 +37,27 @@ jobs:
       - name: Run UI smoke test
         run: python tests/ui_smoke.py
 
+      - name: Run content meeting E2E
+        run: python tests/content_meeting_e2e.py
+
+      - name: Run people controls E2E
+        run: python tests/people_controls_e2e.py
+
+      - name: Run asset controls E2E
+        run: python tests/asset_controls_e2e.py
+
+      - name: Run stage controls E2E
+        run: python tests/stage_controls_e2e.py
+
+      - name: Run downloads E2E
+        run: python tests/downloads_e2e.py
+
+      - name: Run project actions E2E
+        run: python tests/project_actions_e2e.py
+
+      - name: Run dialogs E2E
+        run: python tests/dialogs_e2e.py
+
       - name: Run image canvas E2E
         run: python tests/image_canvas_e2e.py
 
@@ -47,6 +68,10 @@ jobs:
           name: ui-smoke-failure
           path: |
             /tmp/ui-e2e/*.png
+            /tmp/ui-e2e/**/*.png
+            /tmp/ui-e2e/**/*.json
+            /tmp/ui-e2e/**/*.zip
+            /tmp/ui-e2e/**/*.txt
             /tmp/ui-e2e/failure.html
             /tmp/ui-smoke-failure.png
             /tmp/ui-smoke-failure.html
