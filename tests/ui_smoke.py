@@ -394,7 +394,7 @@ def run():
         # exactamente 9 #overview-grid .overview-card con data-card únicos 0..8
         overview_cards = driver.find_elements(By.CSS_SELECTOR, "#overview-grid .overview-card")
         assert len(overview_cards) == 9, f"esperado exactamente 9 #overview-grid .overview-card, got {len(overview_cards)}"
-        overview_card_vals = sorted([c.get_attribute("data-card") for c in overview_cards])
+        overview_card_vals = sorted([c.get_attribute("data-overview") for c in overview_cards])
         expected_vals = [str(i) for i in range(9)]
         assert overview_card_vals == expected_vals, f"overview card values esperados {expected_vals}, got {overview_card_vals}"
         print(f"✓ checkpoint preview galería ok: 1 selected ({initial_selected_val}), 9 variant buttons, 9 overview cards 0..8")
