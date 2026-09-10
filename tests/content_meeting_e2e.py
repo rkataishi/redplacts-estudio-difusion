@@ -357,6 +357,26 @@ def run():
 
         # --- Generar valid, errors vacío ---
         # asegurar título y fecha/time/timezone ya válidos; title ya seteado arriba
+        # fixture: nombre obligatorio del expositor -> fijar Expositor E2E antes de Generar
+        try:
+            tab_people_fix = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-people")))
+            real_click(driver, tab_people_fix)
+            WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-people").is_displayed())
+        except Exception:
+            driver.execute_script("document.getElementById('tab-people')?.click()")
+            WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-people").is_displayed())
+        speaker_id = driver.execute_script("return (window.PLACTSStudio.getState().speakers[0]||{}).id || null")
+        assert speaker_id, "no se encontró primer speaker id para fijar nombre"
+        driver.execute_script("const el=document.querySelector('[data-person=\"'+arguments[0]+'\"]'); if(el && !el.hasAttribute('open')) el.open=true;", speaker_id)
+        js_set_value(driver, f"#name-{speaker_id}", "Expositor E2E")
+        wait_state(driver, f"window.PLACTSStudio.getState().speakers.find(x=>x.id==='{speaker_id}').name==='Expositor E2E'", msg="speaker name Expositor E2E no reflejado en state")
+        print(f"✓ checkpoint speaker name obligatorio 'Expositor E2E' fijado -> state id={speaker_id[:6]}")
+        try:
+            tab_meeting_fix = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-meeting")))
+            real_click(driver, tab_meeting_fix)
+            WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-meeting").is_displayed())
+        except Exception:
+            driver.execute_script("document.getElementById('tab-meeting')?.click()")
         # click Generar
         compile_btn = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "compile-button")))
         real_click(driver, compile_btn)
