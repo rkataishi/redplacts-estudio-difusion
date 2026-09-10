@@ -444,6 +444,19 @@ def run():
         # ============================================================
         # 8. CAPTION DIALOG: open, copy, close
         # ============================================================
+        # asegurar contexto social antes de Texto para compartir
+        _social_for_caption = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-collection='social']"))
+        )
+        real_click(driver, _social_for_caption)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script("return document.querySelector('button[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'"),
+            message="collection social no quedó activa antes de copy-caption",
+        )
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script("return document.getElementById('copy-caption') && document.getElementById('copy-caption').hidden===false"),
+            message="#copy-caption sigue hidden tras activar social",
+        )
         caption_btn = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.ID, "copy-caption"))
         )
