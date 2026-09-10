@@ -5,8 +5,8 @@ E2E: botones de descarga / exportación.
 - save-project JSON (click y Ctrl/Cmd+S)
 - individual PNG (data-export button)
 - zoom-download PNG (dialog)
-- export-all ZIP en posters (3 PNGs + proyecto JSON)
-- export-all ZIP en social (3 PNGs + proyecto JSON + texto TXT)
+- export-all ZIP en posters (9 PNGs + proyecto JSON)
+- export-all ZIP en social (9 PNGs + proyecto JSON + texto TXT)
 - caption download TXT
 - Screenshot 32-downloads.png
 - py_compile
@@ -328,21 +328,61 @@ def run():
         print(f"✓ save-project (Ctrl/Cmd+S) ok: {Path(json_path2).name} ({json_sz2} bytes)")
 
         # ============================================================
-        # 3. INDIVIDUAL PNG (data-export button)
+        # 3. INDIVIDUAL PNG × 9 (data-export button per variant)
         # ============================================================
-        before_png = _pre_files("*.png")
-        # posters collection is active; select first variant
-        v0 = driver.find_element(By.CSS_SELECTOR, '[data-variant-select="0"]')
-        real_click(driver, v0)
-        time.sleep(0.3)
-        export_btn = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected .poster-actions .btn[data-export]"))
-        )
-        real_click(driver, export_btn)
-        png_path, png_sz = _wait_new_file("*.png", before_png, "individual PNG", timeout=10, min_size=2000)
-        assert png_path.lower().endswith(".png"), f"individual PNG: extensión incorrecta: {png_path}"
-        print(f"✓ individual PNG ok: {Path(png_path).name} ({png_sz} bytes)")
-        # robustez mismo nombre: guardar y eliminar PNG individual antes de zoom-download
+        OUTPUT_DIR = Path("/tmp/ui-e2e")
+        OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        plans = driver.execute_script("return window.PLACTSStudio.getPlans()")
+        assert plans and len(plans) >= 9, f"getPlans() devolvió {len(plans) if plans else 0} planes, esperado ≥9"
+        print(f"✓ getPlans() → {len(plans)} planes")
+
+        for _i in range(9):
+            # select variant
+            sel = driver.find_element(By.CSS_SELECTOR, f'[data-variant-select="{_i}"]')
+            real_click(driver, sel)
+            time.sleep(0.3)
+
+            # save full selected canvas as PNG via dataURL
+            canvas_data_url = driver.execute_script(
+                "const c=document.querySelector('.poster-card.is-selected canvas'); "
+                "return c ? c.toDataURL('image/png') : null;"
+            )
+            assert canvas_data_url, f"output-{_i}: no se obtuvo canvas dataURL"
+            # strip data URL prefix
+            import base64 as _b64
+            _header, _data = canvas_data_url.split(",", 1)
+            _png_bytes = _b64.b64decode(_data)
+            _out_path = OUTPUT_DIR / f"output-{_i}.png"
+            _out_path.write_bytes(_png_bytes)
+            assert _out_path.exists() and _out_path.stat().st_size > 500, \
+                f"output-{_i}: archivo demasiado pequeño ({_out_path.stat().st_size} bytes)"
+            print(f"✓ output-{_i}.png saved ({_out_path.stat().st_size} bytes)")
+
+            # assert canvas dimensions match getPlans()[i]
+            plan = plans[_i]
+            _cw = driver.execute_script(
+                "const c=document.querySelector('.poster-card.is-selected canvas'); "
+                "return c ? c.width : 0;"
+            )
+            _ch = driver.execute_script(
+                "const c=document.querySelector('.poster-card.is-selected canvas'); "
+                "return c ? c.height : 0;"
+            )
+            assert _cw == plan["width"], f"output-{_i}: canvas width {_cw} != plan width {plan['width']}"
+            assert _ch == plan["height"], f"output-{_i}: canvas height {_ch} != plan height {plan['height']}"
+            print(f"✓ output-{_i}: canvas {_cw}×{_ch} matches plan {plan['width']}×{plan['height']}")
+
+            # click individual data-export and await PNG download
+            before_png = _pre_files("*.png")
+            export_btn = WebDriverWait(driver, TIMEOUT).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected .poster-actions .btn[data-export]"))
+            )
+            real_click(driver, export_btn)
+            png_path, png_sz = _wait_new_file("*.png", before_png, f"individual PNG variant {_i}", timeout=10, min_size=2000)
+            assert png_path.lower().endswith(".png"), f"individual PNG variant {_i}: extensión incorrecta: {png_path}"
+            print(f"✓ individual PNG variant {_i} ok: {Path(png_path).name} ({png_sz} bytes)")
+
+        # robustez: clean up last downloaded PNG before zoom-download
         expected_png_name = Path(png_path).name
         expected_png_path = DOWNLOAD_DIR / expected_png_name
         try:
@@ -448,7 +488,7 @@ def run():
             names = zf.namelist()
             png_count = sum(1 for n in names if n.lower().endswith(".png"))
             json_count = sum(1 for n in names if n.lower().endswith(".json"))
-            assert png_count == 3, f"ZIP posters: esperado 3 PNGs, got {png_count} in {names}"
+            assert png_count == 9, f"ZIP posters: esperado 9 PNGs, got {png_count} in {names}"
             assert json_count >= 1, f"ZIP posters: esperado ≥1 JSON, got {json_count} in {names}"
             for n in names:
                 info = zf.getinfo(n)
@@ -477,7 +517,7 @@ def run():
             png_count2 = sum(1 for n in names2 if n.lower().endswith(".png"))
             json_count2 = sum(1 for n in names2 if n.lower().endswith(".json"))
             txt_count2 = sum(1 for n in names2 if n.lower().endswith(".txt"))
-            assert png_count2 == 3, f"ZIP social: esperado 3 PNGs, got {png_count2} in {names2}"
+            assert png_count2 == 9, f"ZIP social: esperado 9 PNGs, got {png_count2} in {names2}"
             assert json_count2 >= 1, f"ZIP social: esperado ≥1 JSON, got {json_count2} in {names2}"
             assert txt_count2 >= 1, f"ZIP social: esperado ≥1 TXT, got {txt_count2} in {names2}"
             for n in names2:
