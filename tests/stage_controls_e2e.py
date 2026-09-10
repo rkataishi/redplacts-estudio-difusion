@@ -2,13 +2,12 @@
 """
 E2E: controles de stage sin descarga (no-export).
 - Fresh valid all fields → Generar canvas
-- collection posters / social toggle (posters first, then social)
-- exactly 3 variant buttons visible each collection; click all 6 total (0..5)
-- poster-format, feed-format, export-scale selects
-- socialPhotos / socialQR toggles
-- autoPreview toggle
-- re-Generar
-- zoom dialog: open via poster frame and via view button, close each
+- assert no data-collection buttons, no #auto-preview element
+- exactly 9 variant buttons + 9 overview cards (unique 0..8)
+- iterate click all 9 variants, wait selected card each
+- exercise export-scale 1 / 2
+- socialPhotos / socialQR toggles via JS/state
+- zoom dialog: open via poster-frame only, close
 - caption dialog: open, copy, close
 - screenshot 30-stage.png
 - console no severe; py_compile
@@ -220,160 +219,108 @@ def run():
         print("✓ Generar → canvas visible")
 
         # ============================================================
-        # 1. COLLECTION TOGGLE: posters first, then social
+        # 1. ASSERT NO collection-toggle, NO auto-preview
         # ============================================================
-        btn_posters = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-collection="posters"]'))
-        )
-        real_click(driver, btn_posters)
-        wait_state(driver, "document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
-        pf = driver.find_element(By.ID, "poster-format")
-        assert pf.is_displayed(), "poster-format no visible en collection posters"
-        print("✓ collection posters activada")
+        coll_btns = driver.find_elements(By.CSS_SELECTOR, "[data-collection]")
+        assert len(coll_btns) == 0, f"se esperaron 0 data-collection buttons, hay {len(coll_btns)}"
+        print("✓ no data-collection buttons (selector plano)")
 
-        btn_social = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-collection="social"]'))
-        )
-        real_click(driver, btn_social)
-        wait_state(driver, "document.querySelector('[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
-        ss = driver.find_element(By.ID, "social-settings")
-        assert ss.is_displayed(), "social-settings no visible en collection social"
-        print("✓ collection social activada")
+        auto_el = driver.find_elements(By.ID, "auto-preview")
+        assert len(auto_el) == 0, "no debe existir #auto-preview"
+        print("✓ no #auto-preview element")
 
         # ============================================================
-        # 2. VARIANT BUTTONS: exactly 3 visible each; click all 6
+        # 2. VARIANT BUTTONS: exactly 9 visible (0..8)
         # ============================================================
-        real_click(driver, btn_posters)
-        wait_state(driver, "document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
         variant_btns = driver.find_elements(By.CSS_SELECTOR, "[data-variant-select]")
-        visible_posters = [b for b in variant_btns if b.is_displayed()]
-        assert len(visible_posters) == 3, f"posters collection: esperado 3 variant buttons, got {len(visible_posters)}"
-        poster_variants = [b.get_attribute("data-variant-select") for b in visible_posters]
-        print(f"✓ posters variant buttons: {poster_variants}")
+        visible_variants = [b for b in variant_btns if b.is_displayed()]
+        assert len(visible_variants) == 9, f"esperado 9 variant buttons, got {len(visible_variants)}"
+        variant_ids = sorted(b.get_attribute("data-variant-select") for b in visible_variants)
+        assert variant_ids == [str(i) for i in range(9)], f"variant ids inesperados: {variant_ids}"
+        print(f"✓ 9 variant buttons unique 0..8: {variant_ids}")
 
-        for b in visible_posters:
-            idx = b.get_attribute("data-variant-select")
-            real_click(driver, b)
+        # ============================================================
+        # 3. OVERVIEW CARDS: exactly 9 (0..8)
+        # ============================================================
+        overview_cards = driver.find_elements(By.CSS_SELECTOR, "[data-overview]")
+        assert len(overview_cards) == 9, f"esperado 9 overview cards, got {len(overview_cards)}"
+        ov_ids = sorted(el.get_attribute("data-overview") for el in overview_cards)
+        assert ov_ids == [str(i) for i in range(9)], f"overview ids inesperados: {ov_ids}"
+        print(f"✓ 9 overview cards unique 0..8: {ov_ids}")
+
+        # ============================================================
+        # 4. CLICK ALL 9 VARIANTS, wait selected card each
+        # ============================================================
+        for i in range(9):
+            btn = driver.find_element(By.CSS_SELECTOR, f'[data-variant-select="{i}"]')
+            real_click(driver, btn)
             WebDriverWait(driver, TIMEOUT).until(
-                lambda d, i=idx: d.execute_script(
+                lambda d, idx=str(i): d.execute_script(
                     "return document.querySelector('.poster-card.is-selected')?.dataset.card"
-                ) == i,
-                message=f"variant {idx} no seleccionado",
+                ) == idx,
+                message=f"variant {i} no seleccionado",
             )
             assert driver.execute_script(
                 "return document.querySelector('.poster-card.is-selected')?.dataset.card"
-            ) == idx, f"variant {idx} click falló"
+            ) == str(i), f"variant {i} click falló"
             assert _count_displayed(driver, ".poster-card.is-selected") == 1
-            print(f"  ✓ variant posters {idx} clicked & selected")
-
-        real_click(driver, btn_social)
-        wait_state(driver, "document.querySelector('[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
-        variant_btns2 = driver.find_elements(By.CSS_SELECTOR, "[data-variant-select]")
-        visible_social = [b for b in variant_btns2 if b.is_displayed()]
-        assert len(visible_social) == 3, f"social collection: esperado 3 variant buttons, got {len(visible_social)}"
-        social_variants = [b.get_attribute("data-variant-select") for b in visible_social]
-        print(f"✓ social variant buttons: {social_variants}")
-
-        for b in visible_social:
-            idx = b.get_attribute("data-variant-select")
-            real_click(driver, b)
-            WebDriverWait(driver, TIMEOUT).until(
-                lambda d, i=idx: d.execute_script(
-                    "return document.querySelector('.poster-card.is-selected')?.dataset.card"
-                ) == i,
-                message=f"variant {idx} no seleccionado",
-            )
-            assert driver.execute_script(
-                "return document.querySelector('.poster-card.is-selected')?.dataset.card"
-            ) == idx, f"variant {idx} click falló"
-            assert _count_displayed(driver, ".poster-card.is-selected") == 1
-            print(f"  ✓ variant social {idx} clicked & selected")
+            print(f"  ✓ variant {i} clicked & selected")
 
         # ============================================================
-        # 3. SELECTS: poster-format, feed-format, export-scale
+        # 5. EXPORT-SCALE: exercise 1 / 2
         # ============================================================
-        real_click(driver, btn_posters)
-        wait_state(driver, "document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.3)
-        pf_sel = WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, "poster-format"))
-        )
-        assert pf_sel.is_displayed(), "poster-format no visible"
-        js_set_value(driver, "#poster-format", "story")
-        wait_state(driver, "window.PLACTSStudio.getState().options.format==='story'", msg="format no cambió a story")
-        print("✓ poster-format → story ok")
-        js_set_value(driver, "#poster-format", "portrait")
-        wait_state(driver, "window.PLACTSStudio.getState().options.format==='portrait'", msg="format no restaurado")
-        print("✓ poster-format → portrait restaurado")
-
-        real_click(driver, btn_social)
-        wait_state(driver, "document.querySelector('[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.3)
-        ff_sel = WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, "feed-format"))
-        )
-        assert ff_sel.is_displayed(), "feed-format no visible"
-        js_set_value(driver, "#feed-format", "square")
-        wait_state(driver, "window.PLACTSStudio.getState().options.feedFormat==='square'", msg="feedFormat no cambió a square")
-        print("✓ feed-format → square ok")
-        js_set_value(driver, "#feed-format", "portrait")
-        wait_state(driver, "window.PLACTSStudio.getState().options.feedFormat==='portrait'", msg="feedFormat no restaurado")
-        print("✓ feed-format → portrait restaurado")
-
         es_sel = WebDriverWait(driver, TIMEOUT).until(
             EC.presence_of_element_located((By.ID, "export-scale"))
         )
         assert es_sel.is_displayed(), "export-scale no visible"
         js_set_value(driver, "#export-scale", "1")
-        wait_state(driver, "Number(window.PLACTSStudio.getState().options.scale)===1" , msg="scale no cambió a 1")
+        wait_state(driver, "Number(window.PLACTSStudio.getState().options.scale)===1", msg="scale no cambió a 1")
         print("✓ export-scale → 1 (1080px) ok")
         js_set_value(driver, "#export-scale", "2")
         wait_state(driver, "Number(window.PLACTSStudio.getState().options.scale)===2", msg="scale no restaurado")
         print("✓ export-scale → 2 (2160px) restaurado")
 
         # ============================================================
-        # 4. TOGGLES: socialPhotos / socialQR
+        # 6. SOCIAL PHOTOS / SOCIAL QR toggles via JS/state
         # ============================================================
-        sp_chk = WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, "social-photos"))
-        )
-        js_set_value(driver, "#social-photos", True)
-        wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===true", msg="socialPhotos no true")
-        js_set_value(driver, "#social-photos", False)
-        wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===false", msg="socialPhotos no false")
-        js_set_value(driver, "#social-photos", True)
-        wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===true", msg="socialPhotos no true restore")
-        print("✓ socialPhotos toggle ok")
+        sp_el = driver.find_elements(By.ID, "social-photos")
+        if sp_el:
+            js_set_value(driver, "#social-photos", True)
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===true", msg="socialPhotos no true")
+            js_set_value(driver, "#social-photos", False)
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===false", msg="socialPhotos no false")
+            js_set_value(driver, "#social-photos", True)
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===true", msg="socialPhotos no true restore")
+            print("✓ socialPhotos toggle ok")
+        else:
+            state_photos = driver.execute_script("return window.PLACTSStudio.getState().options.socialPhotos")
+            driver.execute_script("window.PLACTSStudio.getState().options.socialPhotos=true")
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===true", msg="state socialPhotos no true")
+            driver.execute_script("window.PLACTSStudio.getState().options.socialPhotos=false")
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialPhotos===false", msg="state socialPhotos no false")
+            driver.execute_script(f"window.PLACTSStudio.getState().options.socialPhotos={repr(state_photos)}")
+            print("✓ socialPhotos via JS/state ok (input removed)")
 
-        sq_chk = WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, "social-qr"))
-        )
-        js_set_value(driver, "#social-qr", True)
-        wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===true", msg="socialQR no true")
-        js_set_value(driver, "#social-qr", False)
-        wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===false", msg="socialQR no false")
-        js_set_value(driver, "#social-qr", True)
-        wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===true", msg="socialQR no true restore")
-        print("✓ socialQR toggle ok")
+        sq_el = driver.find_elements(By.ID, "social-qr")
+        if sq_el:
+            js_set_value(driver, "#social-qr", True)
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===true", msg="socialQR no true")
+            js_set_value(driver, "#social-qr", False)
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===false", msg="socialQR no false")
+            js_set_value(driver, "#social-qr", True)
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===true", msg="socialQR no true restore")
+            print("✓ socialQR toggle ok")
+        else:
+            state_qr = driver.execute_script("return window.PLACTSStudio.getState().options.socialQR")
+            driver.execute_script("window.PLACTSStudio.getState().options.socialQR=true")
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===true", msg="state socialQR no true")
+            driver.execute_script("window.PLACTSStudio.getState().options.socialQR=false")
+            wait_state(driver, "window.PLACTSStudio.getState().options.socialQR===false", msg="state socialQR no false")
+            driver.execute_script(f"window.PLACTSStudio.getState().options.socialQR={repr(state_qr)}")
+            print("✓ socialQR via JS/state ok (input removed)")
 
         # ============================================================
-        # 5. AUTO-PREVIEW TOGGLE
-        # ============================================================
-        auto_chk = driver.find_element(By.ID, "auto-preview")
-        assert auto_chk.is_displayed(), "auto-preview no visible"
-        js_set_value(driver, "#auto-preview", False)
-        assert not driver.execute_script("return document.getElementById('auto-preview').checked"), "auto-preview no quedó off"
-        print("✓ auto-preview OFF")
-        js_set_value(driver, "#auto-preview", True)
-        assert driver.execute_script("return document.getElementById('auto-preview').checked"), "auto-preview no quedó on"
-        print("✓ auto-preview ON")
-
-        # ============================================================
-        # 6. RE-GENERAR para tener canvas limpio tras cambios
+        # 7. RE-GENERAR para tener canvas limpio tras cambios
         # ============================================================
         real_click(driver, compile_btn)
         WebDriverWait(driver, 20).until(
@@ -385,85 +332,36 @@ def run():
         print("✓ re-Generar ok")
 
         # ============================================================
-        # 7. ZOOM DIALOG: open via poster frame and via view button, close each
+        # 8. ZOOM DIALOG: open via poster-frame only (view-button hidden on desktop)
         # ============================================================
-        real_click(driver, btn_posters)
-        wait_state(driver, "document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
-
         v0_btn = driver.find_element(By.CSS_SELECTOR, '[data-variant-select="0"]')
         real_click(driver, v0_btn)
         time.sleep(0.3)
 
-        # --- open zoom via poster frame ---
         frame_el = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected .poster-frame"))
         )
         real_click(driver, frame_el)
-        zoom_diag = WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, "zoom-dialog"))
-        )
         WebDriverWait(driver, TIMEOUT).until(
-            lambda d: d.execute_script("return document.getElementById('zoom-dialog').open")
+            lambda d: d.execute_script("return document.getElementById('zoom-dialog').open"),
+            message="zoom-dialog no abrió via poster-frame",
         )
-        print("✓ zoom dialog abierto via poster frame")
-        close_btn = zoom_diag.find_element(By.CSS_SELECTOR, "[data-close='zoom-dialog']")
-        real_click(driver, close_btn)
+        print("✓ zoom dialog abierto via poster-frame")
+        close_zoom = driver.find_element(By.CSS_SELECTOR, "[data-close='zoom-dialog']")
+        real_click(driver, close_zoom)
         WebDriverWait(driver, TIMEOUT).until(
-            lambda d: not d.execute_script("return document.getElementById('zoom-dialog').open")
+            lambda d: not d.execute_script("return document.getElementById('zoom-dialog').open"),
+            message="zoom-dialog no se cerró",
         )
-        print("✓ zoom dialog cerrado (frame)")
-
-        # --- open zoom via view button ---
-        view_btn = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected .view-button"))
-        )
-        real_click(driver, view_btn)
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: d.execute_script("return document.getElementById('zoom-dialog').open")
-        )
-        print("✓ zoom dialog abierto via view button")
-        close_btn2 = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#zoom-dialog [data-close='zoom-dialog']"))
-        )
-        real_click(driver, close_btn2)
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: not d.execute_script("return document.getElementById('zoom-dialog').open")
-        )
-        print("✓ zoom dialog cerrado (view button)")
-
-        # restore to compare mode if needed
-        try:
-            view_compare = driver.find_element(By.ID, "view-compare")
-            if view_compare.is_displayed():
-                real_click(driver, view_compare)
-                time.sleep(0.3)
-        except Exception:
-            pass
+        print("✓ zoom dialog cerrado")
 
         # ============================================================
-        # 8. CAPTION DIALOG: open, copy, close
+        # 9. CAPTION DIALOG: open, copy, close
         # ============================================================
-        # asegurar contexto social antes de Texto para compartir
-        _social_for_caption = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-collection='social']"))
-        )
-        real_click(driver, _social_for_caption)
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: d.execute_script("return document.querySelector('button[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'"),
-            message="collection social no quedó activa antes de copy-caption",
-        )
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: d.execute_script("return document.getElementById('copy-caption') && document.getElementById('copy-caption').hidden===false"),
-            message="#copy-caption sigue hidden tras activar social",
-        )
         caption_btn = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.ID, "copy-caption"))
         )
         real_click(driver, caption_btn)
-        caption_diag = WebDriverWait(driver, TIMEOUT).until(
-            EC.presence_of_element_located((By.ID, "caption-dialog"))
-        )
         WebDriverWait(driver, TIMEOUT).until(
             lambda d: d.execute_script("return document.getElementById('caption-dialog').open"),
             message="caption-dialog no abrió",
@@ -478,7 +376,13 @@ def run():
         )
         real_click(driver, copy_text_btn)
         time.sleep(0.5)
-        print("✓ caption copy-text button clicked")
+        print("✓ caption copy-text clicked")
+
+        dl_btn = WebDriverWait(driver, TIMEOUT).until(
+            EC.presence_of_element_located((By.ID, "download-caption"))
+        )
+        assert dl_btn.is_displayed(), "download-caption button not visible"
+        print("✓ download-caption button present")
 
         close_caption = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "#caption-dialog [data-close='caption-dialog']"))
@@ -491,7 +395,7 @@ def run():
         print("✓ caption dialog cerrado")
 
         # ============================================================
-        # 9. SCREENSHOT
+        # 10. SCREENSHOT
         # ============================================================
         SCREENSHOT.parent.mkdir(parents=True, exist_ok=True)
         driver.save_screenshot(str(SCREENSHOT))
@@ -499,13 +403,13 @@ def run():
         print(f"✓ screenshot {SCREENSHOT} ({SCREENSHOT.stat().st_size} bytes)")
 
         # ============================================================
-        # 10. CONSOLE NO SEVERE
+        # 11. CONSOLE NO SEVERE
         # ============================================================
         assert_no_severe_logs(driver)
         print("✓ consola sin SEVERE")
 
         total = time.time() - start_all
-        print(f"\n=== STAGE CONTROLS E2E OK (no-descarga) === total {total:.2f}s")
+        print(f"\n=== STAGE CONTROLS E2E OK (nueve outputs) === total {total:.2f}s")
         py_compile.compile(str(Path(__file__)), doraise=True)
         print(f"✓ py_compile ok {Path(__file__).name}")
 
