@@ -70,6 +70,24 @@ except ImportError:
 TIMEOUT = 15
 SCREENSHOT = Path("/tmp/ui-e2e/10-content-meeting.png")
 
+# JS: FNV-1a hash over sampled ImageData pixels (returns hex string)
+_CANVAS_HASH_JS = """\
+var c = document.querySelector('.poster-card canvas');
+if (!c) return null;
+var ctx = c.getContext('2d');
+var imgData = ctx.getImageData(0, 0, c.width, c.height);
+var d = imgData.data;
+var step = Math.max(4, Math.floor(d.length / 8000));
+var h = 0x811c9dc5;
+for (var i = 0; i < d.length; i += step) { h ^= d[i]; h = (h * 0x01000193) | 0; }
+return (h >>> 0).toString(16);
+"""
+
+
+def _canvas_hash(driver):
+    """Return FNV-1a hex hash of sampled canvas pixels."""
+    return driver.execute_script(_CANVAS_HASH_JS)
+
 
 def js_set_value(driver, selector, value):
     """Set value via JS and dispatch input/change; works even if panel hidden."""
@@ -429,47 +447,35 @@ def run():
         assert not driver.execute_script("return !!document.getElementById('auto-preview')"), "#auto-preview should not exist in DOM"
         print("✓ #auto-preview ausente en DOM (eliminado)")
 
-        # capturar fingerprint actual del canvas seleccionado
-        fp1 = driver.execute_script("""
-            var c = document.querySelector('.poster-card canvas');
-            if (!c) return null;
-            return c.toDataURL('image/png').substring(0, 120);
-        """)
+        # capturar hash visual del canvas (FNV sobre ImageData muestreado)
+        fp1 = _canvas_hash(driver)
         assert fp1, "canvas no encontrado antes de cambiar título"
-        print(f"  canvas fingerprint inicial: {fp1[:60]}...")
+        print(f"  canvas hash inicial: {fp1}")
 
         # cambiar título -> preview debe regenerarse automáticamente sin click en Generate
         js_set_value(driver, "#event-title", "Título auto-preview check")
         wait_state(driver, "window.PLACTSStudio.getState().event.title==='Título auto-preview check'", msg="title no reflejado")
-        # esperar hasta que el fingerprint del canvas cambie
+        # esperar hasta que el hash visual del canvas cambie (via argumentos)
         WebDriverWait(driver, 15).until(lambda d: d.execute_script(
-            "var c = document.querySelector('.poster-card canvas');"
-            "if (!c) return false;"
-            "var fp = c.toDataURL('image/png').substring(0, 120);"
-            f"return fp !== '{fp1}';"
+            _CANVAS_HASH_JS.replace("return (h >>> 0).toString(16);",
+                                    "return (h >>> 0).toString(16) !== arguments[0];"),
+            fp1,
         ))
-        fp2 = driver.execute_script("""
-            var c = document.querySelector('.poster-card canvas');
-            return c.toDataURL('image/png').substring(0, 120);
-        """)
+        fp2 = _canvas_hash(driver)
         assert fp2 != fp1, f"canvas no cambió tras modificar título: {fp2}"
-        print(f"  canvas cambió automáticamente tras título -> {fp2[:60]}...")
+        print(f"  canvas cambió automáticamente tras título -> {fp2}")
 
         # restaurar título y verificar que canvas cambia de nuevo
         js_set_value(driver, "#event-title", "Título E2E Contenido Final")
         wait_state(driver, "window.PLACTSStudio.getState().event.title==='Título E2E Contenido Final'", msg="title restore no reflejado")
         WebDriverWait(driver, 15).until(lambda d: d.execute_script(
-            "var c = document.querySelector('.poster-card canvas');"
-            "if (!c) return false;"
-            "var fp = c.toDataURL('image/png').substring(0, 120);"
-            f"return fp !== '{fp2}';"
+            _CANVAS_HASH_JS.replace("return (h >>> 0).toString(16);",
+                                    "return (h >>> 0).toString(16) !== arguments[0];"),
+            fp2,
         ))
-        fp3 = driver.execute_script("""
-            var c = document.querySelector('.poster-card canvas');
-            return c.toDataURL('image/png').substring(0, 120);
-        """)
+        fp3 = _canvas_hash(driver)
         assert fp3 != fp2, f"canvas no cambió tras restaurar título: {fp3}"
-        print(f"  canvas cambió automáticamente tras restaurar título -> {fp3[:60]}...")
+        print(f"  canvas cambió automáticamente tras restaurar título -> {fp3}")
         print("✓ preview siempre activo verificado (sin #auto-preview, canvas se regenera solo)")
 
         # --- screenshot ---
