@@ -109,8 +109,9 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
   .brand-titles b{font-size:12px}
   .brand-titles span{font-size:10px}
   .app-logo{width:56px;height:44px}
-  .workspace{height:auto!important;min-height:0!important;overflow:hidden}
-  .stage{position:relative;display:grid;grid-template-rows:auto auto auto minmax(260px,1fr) 120px;height:100%!important;box-sizing:border-box!important;max-height:calc(100vh - 52px);overflow:hidden;padding-top:28px}
+  .workspace{height:auto!important;min-height:0!important;overflow:hidden;grid-template-rows:minmax(0,1fr)!important}
+  .editor{min-height:0!important;height:100%!important;align-self:stretch!important;overflow:hidden!important}
+  .stage{position:relative;display:grid;grid-template-rows:auto auto auto minmax(260px,1fr) 120px;min-height:0!important;height:100%!important;align-self:stretch!important;box-sizing:border-box!important;max-height:calc(100vh - 52px);overflow:hidden!important;padding-top:28px}
   .stage-top{padding:6px 0}
   .variant-tabs{gap:4px}
   .variant-tabs .btn{font-size:10px;padding:6px 10px}
@@ -134,12 +135,15 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
   #poster-format{display:none}
   .poster-card .view-button{display:none!important}
   #toast,.toast{top:56px!important}
+  .page-footer,.composition-info{display:none!important}
 }
 /* Mobile <900: restore normal page scroll and stack */
 @media(max-width:899px){
   body{display:block;height:auto;overflow:auto}
   .workspace{height:auto;overflow:auto}
-  .stage{overflow:auto}
+  .editor{height:auto!important;overflow:visible!important}
+  .stage{overflow:auto;height:auto!important}
+  .page-footer,.composition-info{display:flex!important}
   .poster-frame canvas{height:auto!important;width:auto!important}
   #export-all{position:static}
 }
