@@ -329,10 +329,10 @@ def run():
         )
         assert es_sel.is_displayed(), "export-scale no visible"
         js_set_value(driver, "#export-scale", "1")
-        wait_state(driver, "window.PLACTSStudio.getState().options.scale==='1'" , msg="scale no cambió a 1")
+        wait_state(driver, "Number(window.PLACTSStudio.getState().options.scale)===1" , msg="scale no cambió a 1")
         print("✓ export-scale → 1 (1080px) ok")
         js_set_value(driver, "#export-scale", "2")
-        wait_state(driver, "window.PLACTSStudio.getState().options.scale==='2'", msg="scale no restaurado")
+        wait_state(driver, "Number(window.PLACTSStudio.getState().options.scale)===2", msg="scale no restaurado")
         print("✓ export-scale → 2 (2160px) restaurado")
 
         # ============================================================
