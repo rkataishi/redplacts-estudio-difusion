@@ -1532,7 +1532,7 @@ function computeEditorialPlan(s,font){
  return last;
 }
 function newCanvas(p,scale){
- const canvas=document.createElement('canvas');canvas.width=Math.round(WIDTH*scale);canvas.height=Math.round(p.h*scale);
+ const canvas=document.createElement('canvas');canvas.width=Math.round(p.w*scale);canvas.height=Math.round(p.h*scale);
  canvas.setAttribute('role','img');canvas.setAttribute('aria-label',`${VARIANTS[p.v].name}: ${p.intro?.title.text||p.s.event.title||'Evento en preparación'}`);
  const ctx=canvas.getContext('2d');ctx.scale(scale,scale);ctx.imageSmoothingQuality='high';return {canvas,ctx,audit:[]};
 }
@@ -1882,14 +1882,14 @@ function sidebarLayout(s,font,height){const w=210,p=dateParts(s),blocks=[];let y
  return {blocks,end:y,hero:s.images.hero&&heroH>=100?{x:50,y:y+9,w:210,h:heroH}:null,qr,qrSize,qrY:limit-qrSize,overflow:remaining<0||(Boolean(s.images.hero)&&heroH<100)};
 }
 function computePlan(s,v,font=loadedFont){
- if(v>=3){const legacyV=3+(v-3)%3;return {...computeSocialPlan(s,legacyV,font),v,legacyV};}
- if(v===2)return {...computeEditorialPlan(s,font),legacyV:v};
+ if(v>=3){const legacyV=3+(v-3)%3;return {...computeSocialPlan(s,legacyV,font),v,legacyV,w:VARIANTS[v].width,h:VARIANTS[v].height};}
+ if(v===2)return {...computeEditorialPlan(s,font),v,legacyV:v,w:VARIANTS[v].width,h:VARIANTS[v].height};
  const h=FORMATS[s.options.format],m=56,width=WIDTH-2*m,footerTop=h-87;let last=null;
  for(const compact of [1,.95,.90,.85,.80,.75]){
   const hasHero=Boolean(s.images.hero),titleW=hasHero?width-335:width,headerY=h===1080?142:s.speakers.length>=4?148:170;
   const intro=introLayout(s,titleW,font,compact,v,hasHero),heroH=hasHero?Math.max(198,Math.min(320,intro.h)):0,titleH=Math.max(intro.h,heroH),meeting=meetingLayout(s,width,font),metaY=footerTop-26-meeting.h,mods=moderatorLayout(s,width,font,compact),modsY=metaY-30-mods.h,titleBottom=headerY+titleH,peopleTop=titleBottom+31,peopleEnd=mods.h?modsY-26:metaY-31,space=peopleEnd-peopleTop-30;
   const plans=peopleCandidates(s,width,font,compact,v),people=plans.find(p=>p.h<=space)||plans[plans.length-1],valid=people.h<=space;
-  last={s,v,legacyV:v,h,font,compact,valid,intro:{...intro,x:m,y:headerY,w:titleW},hero:hasHero?{x:WIDTH-m-285,y:headerY,w:285,h:heroH}:null,people,peopleX:m,peopleY:peopleTop+30+Math.max(0,(space-people.h)/2),peopleLabelY:peopleTop+30+Math.max(0,(space-people.h)/2)-43,mods,modsX:m,modsY,meeting,metaY,footerTop,width,layoutName:people.mode};if(valid)return last;
+  last={s,v,legacyV:v,w:VARIANTS[v].width,h:VARIANTS[v].height,font,compact,valid,intro:{...intro,x:m,y:headerY,w:titleW},hero:hasHero?{x:WIDTH-m-285,y:headerY,w:285,h:heroH}:null,people,peopleX:m,peopleY:peopleTop+30+Math.max(0,(space-people.h)/2),peopleLabelY:peopleTop+30+Math.max(0,(space-people.h)/2)-43,mods,modsX:m,modsY,meeting,metaY,footerTop,width,layoutName:people.mode};if(valid)return last;
  }
  return last;
 }
@@ -1941,13 +1941,13 @@ async function compile(manual=false){clearTimeout(renderTimer);const ticket=++co
 function renderPreview(){const grid=$('#poster-grid'),p=compiled[selected];
  if(!p){grid.innerHTML='';return;}
  // El canvas compilado se reutiliza: solo se mueve al marco de la vista seleccionada.
- grid.innerHTML=`<article class="poster-card is-selected" data-card="${selected}"><div class="poster-label"><span class="index">0${selected+1}</span><strong>${esc(VARIANTS[selected].name)}</strong><button type="button" class="view-button" data-zoom="${selected}">Ampliar ↗</button></div><div class="poster-frame" role="button" tabindex="0" data-zoom="${selected}" aria-label="Ampliar diseño ${esc(VARIANTS[selected].name)}" id="frame-${selected}"></div><p class="poster-detail">${esc(VARIANTS[selected].description)}</p><div class="poster-actions"><button class="btn" type="button" data-export="${selected}" ${p.issues.length?'disabled':''}>${icon('download',13)}Descargar PNG</button><button class="btn icon-only" type="button" data-zoom="${selected}" aria-label="Ampliar ${esc(VARIANTS[selected].name)}">${icon('zoom',13)}</button></div><div class="canvas-size"><span>1080 × ${p.plan.h} px</span><span class="quality">${p.issues.length?'Revisar contenido':'Formato fijo'}</span></div></article>`;
+ grid.innerHTML=`<article class="poster-card is-selected" data-card="${selected}"><div class="poster-label"><span class="index">0${selected+1}</span><strong>${esc(VARIANTS[selected].name)}</strong><button type="button" class="view-button" data-zoom="${selected}">Ampliar ↗</button></div><div class="poster-frame" role="button" tabindex="0" data-zoom="${selected}" aria-label="Ampliar diseño ${esc(VARIANTS[selected].name)}" id="frame-${selected}"></div><p class="poster-detail">${esc(VARIANTS[selected].description)}</p><div class="poster-actions"><button class="btn" type="button" data-export="${selected}" ${p.issues.length?'disabled':''}>${icon('download',13)}Descargar PNG</button><button class="btn icon-only" type="button" data-zoom="${selected}" aria-label="Ampliar ${esc(VARIANTS[selected].name)}">${icon('zoom',13)}</button></div><div class="canvas-size"><span>${p.plan.w} × ${p.plan.h} px</span><span class="quality">${p.issues.length?'Revisar contenido':'Formato fijo'}</span></div></article>`;
  $('#frame-'+selected).append(p.canvas);}
 function renderOverview(){const grid=$('#overview-grid');if(!grid)return;
  // Nuevo: miniaturas copiadas para no reutilizar el canvas de la vista grande.
  $$('canvas',grid).forEach(canvas=>{canvas.width=0;canvas.height=0;});
- grid.innerHTML=compiled.map((p,i)=>{const label=`${VARIANTS[i].name}, 1080 × ${p.plan.h} píxeles`;return `<button type="button" class="overview-card" data-overview="${i}" aria-pressed="${i===selected}" aria-label="${esc(label)}"><span class="overview-thumb" id="overview-thumb-${i}" aria-hidden="true"></span><span class="overview-label">${esc(VARIANTS[i].name)}</span><span class="overview-dims">1080 × ${p.plan.h} px</span></button>`;}).join('');
- compiled.forEach((p,i)=>{const scale=Math.min(1,216/WIDTH),thumb=document.createElement('canvas');thumb.width=Math.max(1,Math.round(WIDTH*scale));thumb.height=Math.max(1,Math.round(p.plan.h*scale));thumb.setAttribute('aria-hidden','true');thumb.getContext('2d').drawImage(p.canvas,0,0,thumb.width,thumb.height);$('#overview-thumb-'+i).append(thumb);});}
+ grid.innerHTML=compiled.map((p,i)=>{const label=`${VARIANTS[i].name}, ${p.plan.w} × ${p.plan.h} píxeles`;return `<button type="button" class="overview-card" data-overview="${i}" aria-pressed="${i===selected}" aria-label="${esc(label)}"><span class="overview-thumb" id="overview-thumb-${i}" aria-hidden="true"></span><span class="overview-label">${esc(VARIANTS[i].name)}</span><span class="overview-dims">${p.plan.w} × ${p.plan.h} px</span></button>`;}).join('');
+ compiled.forEach((p,i)=>{const scale=Math.min(1,216/p.plan.w),thumb=document.createElement('canvas');thumb.width=Math.max(1,Math.round(p.plan.w*scale));thumb.height=Math.max(1,Math.round(p.plan.h*scale));thumb.setAttribute('aria-hidden','true');thumb.getContext('2d').drawImage(p.canvas,0,0,thumb.width,thumb.height);$('#overview-thumb-'+i).append(thumb);});}
 function renderCards(){renderPreview();renderOverview();setBusy();}
 function updateStatus(){const n=state.speakers.length,m=state.moderators.length;$('#render-status').textContent=`${n} ${n===1?'expositor':'expositores'}${m?' · '+m+' '+(m===1?'moderador':'moderadores'):''}${state.example?' · ejemplo editable':''}`;$('#people-summary').textContent=`${n} ${n===1?'participante destacado':'participantes del evento'}${m?' + moderación':''}`;$('#composition-summary').textContent=n===1?'El retrato y la presentación ganan presencia.':n<=3?'Retratos amplios o perfiles en bandas.':'Retículas calculadas según texto y participantes.';$('#size-summary').textContent=`1080 × ${FORMATS[state.options.format]} px · proporción fija`;
  const messages=[];if(fontIssue)messages.push(fontIssue);compiled.forEach((p,i)=>{if(p.issues.length)messages.push(i>=3?`${VARIANTS[i].name}: el contenido no cabe. Abrevia el título o la bajada; también puedes desactivar miniaturas y QR, o usar 4:5 en la publicación.`:`${VARIANTS[i].name}: el texto no cabe con una tipografía legible. Abrevia las descripciones o elige Historia 9:16.`);});const box=$('#warnings');box.hidden=!messages.length;box.innerHTML=messages.map(esc).join('<br>');$('#example-status').textContent=state.example?'Ejemplo editable · nombres y datos ficticios':'Proyecto local · sin publicación automática';}
