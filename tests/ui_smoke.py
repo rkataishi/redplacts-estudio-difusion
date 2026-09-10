@@ -8,10 +8,12 @@ Guarda screenshot/page source solo al fallo en /tmp.
 """
 import base64
 import os
+import struct
 import sys
 import tempfile
 import time
 import traceback
+import zlib
 from pathlib import Path
 
 from selenium import webdriver
@@ -73,9 +75,32 @@ def real_click(driver, element):
     except Exception:
         driver.execute_script("arguments[0].click();", element)
 
+
+def _write_solid_png(path, width=2400, height=1600, rgb=(180, 180, 190)):
+    """Helper con struct/zlib que escribe PNG sólido 2400x1600 (sin Pillow)."""
+    # PNG chunk helper usando struct y zlib (requerido por spec)
+    def _chunk(chunk_type, data):
+        c = chunk_type + data
+        return struct.pack(">I", len(data)) + c + struct.pack(">I", zlib.crc32(c) & 0xffffffff)
+
+    sig = b"\x89PNG\r\n\x1a\n"
+    ihdr_data = struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)
+    ihdr = _chunk(b"IHDR", ihdr_data)
+    # raw: filtro 0 + RGB por pixel, sólido
+    # construir por filas para no crear una cadena gigante innecesaria en memoria intermedia
+    row = b"\x00" + bytes(rgb) * width
+    raw = row * height
+    compressed = zlib.compress(raw)
+    idat = _chunk(b"IDAT", compressed)
+    iend = _chunk(b"IEND", b"")
+    with open(path, "wb") as f:
+        f.write(sig + ihdr + idat + iend)
+
+
 def run():
     driver = _driver()
     tmp_png = None
+    tmp_large = None
     try:
         # 1) abrir y limpiar storage antes de prueba, recargar y esperar whenReady
         driver.get(BASE_URL)
@@ -131,12 +156,94 @@ def run():
         assert len(st["moderators"]) == 0, f"moderators inicial esperado 0, got {len(st['moderators'])}"
         print("✓ checkpoint 1/8: estado inicial ok (speakers=1 moderators=0)")
 
-        # 3) click real tab Participantes + #add-speaker y esperar speakers=2
+        # 3) abrir Participantes (base para regresión foto grande) + foto grande 2400x1600
         tab_people = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-people")))
         real_click(driver, tab_people)
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-people").get_attribute("hidden") is None or d.find_element(By.ID, "panel-people").is_displayed())
         # asegurar que tab quedo seleccionado
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true")
+        print("✓ checkpoint Participantes abierto")
+
+        # --- regresión foto grande 2400x1600 sin bloquear UI ---
+        # después de estado inicial y abrir Participantes: crear temp con struct/zlib,
+        # send_keys al primer input[data-photo], esperar hasta 30s photo.data,
+        # validar max(width,height)<=1100, duración<30s, editar nombre del mismo speaker y validar state
+        photo_input = WebDriverWait(driver, TIMEOUT).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, "input[data-photo]"))
+        )
+        # asegurar que es el de speakers-list (primer expositor)
+        try:
+            first_inputs = driver.find_elements(By.CSS_SELECTOR, "#speakers-list input[data-photo]")
+            if first_inputs:
+                photo_input = first_inputs[0]
+        except Exception:
+            pass
+        person_id = photo_input.get_attribute("data-photo")
+        assert person_id, "no se encontró data-photo en primer input de participante"
+        print(f"✓ checkpoint foto grande: input localizado para speaker {person_id}")
+        # crear PNG sólido 2400x1600 con helper struct/zlib
+        with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tf:
+            tmp_large = tf.name
+        _write_solid_png(tmp_large, 2400, 1600)
+        abs_large = os.path.abspath(tmp_large)
+        assert os.path.exists(abs_large) and os.path.getsize(abs_large) > 0, "PNG temporal grande no creado"
+        t0 = time.time()
+        photo_input.send_keys(abs_large)
+        # esperar hasta 30s photo.data para ese speaker
+        WebDriverWait(driver, 30).until(
+            lambda d: d.execute_script(
+                "const id=arguments[0]; const s=window.PLACTSStudio.getState(); const p=(s.speakers.find(x=>x.id===id)||s.moderators.find(x=>x.id===id)); return !!(p && p.photo && p.photo.data);",
+                person_id,
+            ),
+            message=f"timeout esperando photo.data para {person_id} tras upload grande",
+        )
+        elapsed = time.time() - t0
+        assert elapsed < 30, f"carga foto grande tardó {elapsed:.1f}s >=30s (bloqueo UI)"
+        st = get_state(driver)
+        person = next((p for p in (st["speakers"] + st["moderators"]) if p["id"] == person_id), None)
+        assert person is not None, f"speaker {person_id} no encontrado en state tras upload"
+        assert person.get("photo") is not None, f"photo null tras carga grande para {person_id}"
+        assert person["photo"].get("data", "").startswith("data:image"), f"photo.data no es data URL para {person_id}"
+        w = person["photo"].get("width")
+        h = person["photo"].get("height")
+        assert w and h, f"photo sin width/height: {person['photo']}"
+        assert max(w, h) <= 1100, f"foto grande no redimensionada: {w}x{h} max>1100 (esperado <=1100)"
+        print(f"✓ checkpoint foto grande ok: 2400x1600 → {w}x{h} en {elapsed:.1f}s (max<=1100, duración<30s)")
+        # editar nombre del mismo speaker y validar state (no bloqueado)
+        name_input = None
+        try:
+            name_input = driver.find_element(By.ID, f"name-{person_id}")
+        except Exception:
+            pass
+        if not name_input or not name_input.is_displayed():
+            # fallback selector dentro de data-person
+            name_input = WebDriverWait(driver, TIMEOUT).until(
+                EC.element_to_be_clickable((By.CSS_SELECTOR, f'[data-person="{person_id}"] input[data-person-field="name"]'))
+            )
+        WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable(name_input))
+        driver.execute_script("arguments[0].scrollIntoView({block:'center'});", name_input)
+        time.sleep(0.15)
+        name_input.click()
+        name_input.clear()
+        new_name = f"Foto Grande OK {person_id[:4]}"
+        name_input.send_keys(new_name)
+        # disparar input/change si es necesario
+        driver.execute_script("arguments[0].dispatchEvent(new Event('input',{bubbles:true})); arguments[0].dispatchEvent(new Event('change',{bubbles:true}));", name_input)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script(
+                "const id=arguments[0]; const n=arguments[1]; const s=window.PLACTSStudio.getState(); const p=s.speakers.find(x=>x.id===id)||s.moderators.find(x=>x.id===id); return p && p.name===n;",
+                person_id,
+                new_name,
+            ),
+            message=f"nombre no actualizado en state tras editar {person_id} a '{new_name}'",
+        )
+        st2 = get_state(driver)
+        person2 = next((p for p in (st2["speakers"] + st2["moderators"]) if p["id"] == person_id), None)
+        assert person2["name"] == new_name, f"nombre esperado '{new_name}' got '{person2['name']}'"
+        print(f"✓ checkpoint edición tras foto grande ok: nombre='{new_name}' state consistente, no bloqueado")
+
+        # 3b) #add-speaker y esperar speakers=2 (continúa flujo existente)
+        # ya estamos en Participantes, sólo agregar expositor
         add_speaker = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "add-speaker")))
         real_click(driver, add_speaker)
         wait_js(driver, "window.PLACTSStudio.getState().speakers.length===2", msg="tras #add-speaker speakers!=2")
@@ -253,6 +360,71 @@ def run():
         assert "Paso 3" in step_back or "3 de 4" in step_back, f"tras Anterior debe volver a Paso 3 de 4, got '{step_back}'"
         print("✓ checkpoint 7/8: navegación ok (Paso 3→4→3, Siguiente/Anterior)")
 
+        # 8b) editor ancho, referencias y preview único (antes de consola)
+        # .editor ancho >=400
+        editor_el = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".editor")))
+        editor_width = driver.execute_script("return arguments[0].getBoundingClientRect().width", editor_el)
+        assert editor_width >= 400, f".editor width esperado >=400, got {editor_width}"
+        print(f"✓ checkpoint editor ancho ok: .editor rect width={editor_width:.1f} >=400")
+
+        # exactamente 5 .ref-figure
+        ref_figs = driver.find_elements(By.CSS_SELECTOR, ".ref-figure")
+        assert len(ref_figs) == 5, f"esperado exactamente 5 .ref-figure, got {len(ref_figs)}"
+        # figcaptions contienen Imagen 1+Fondo y Imagen 2+Principal
+        captions = driver.find_elements(By.CSS_SELECTOR, ".ref-figure figcaption")
+        caption_texts = [c.text for c in captions]
+        assert len(captions) >= 2, f"esperado al menos 2 figcaptions en .ref-figure, got {len(captions)} textos={caption_texts}"
+        has_img1 = any("Imagen 1" in t and "Fondo" in t for t in caption_texts)
+        has_img2 = any("Imagen 2" in t and "Principal" in t for t in caption_texts)
+        assert has_img1, f"figcaption debe contener 'Imagen 1' + 'Fondo', got {caption_texts}"
+        assert has_img2, f"figcaption debe contener 'Imagen 2' + 'Principal', got {caption_texts}"
+        print(f"✓ checkpoint referencias ok: 5 .ref-figure, figcaptions contienen Imagen 1+Fondo e Imagen 2+Principal -> {caption_texts}")
+
+        # exactamente una .poster-card is_displayed
+        poster_cards = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
+        displayed_cards = [c for c in poster_cards if c.is_displayed()]
+        assert len(displayed_cards) == 1, f"esperado exactamente una .poster-card is_displayed, got {len(displayed_cards)} de {len(poster_cards)} total"
+        # exactamente 3 [data-variant-select] is_displayed
+        variant_btns = driver.find_elements(By.CSS_SELECTOR, "[data-variant-select]")
+        displayed_variants = [b for b in variant_btns if b.is_displayed()]
+        assert len(displayed_variants) == 3, f"esperado exactamente 3 [data-variant-select] is_displayed, got {len(displayed_variants)} de {len(variant_btns)} total (visibles: {[b.get_attribute('data-variant-select') for b in displayed_variants]})"
+        print(f"✓ checkpoint preview único ok: 1 .poster-card displayed ({displayed_cards[0].get_attribute('data-card')}), 3 [data-variant-select] displayed ({[b.get_attribute('data-variant-select') for b in displayed_variants]})")
+
+        # click en otro variant visible cambia .is-selected y mantiene 1 card displayed
+        # identificar variant actualmente seleccionado (aria-pressed true)
+        current_variant = None
+        for b in displayed_variants:
+            if b.get_attribute("aria-pressed") == "true":
+                current_variant = b
+                break
+        # fallback: si ninguno marcado, tomar primero como current
+        if current_variant is None:
+            current_variant = displayed_variants[0]
+        target_variant = next((b for b in displayed_variants if b != current_variant), None)
+        assert target_variant is not None, "no se encontró otro variant visible para click"
+        prev_selected = driver.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card")
+        prev_target_pressed = target_variant.get_attribute("aria-pressed")
+        real_click(driver, target_variant)
+        # esperar que .is-selected cambie al target
+        target_val = target_variant.get_attribute("data-variant-select")
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card") == target_val,
+            message=f".is-selected no cambió a {target_val} tras click en variant {target_val}, prev={prev_selected}"
+        )
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.execute_script("return document.querySelector('[data-variant-select][aria-pressed=\"true\"]')?.dataset.variantSelect") == target_val,
+            message=f"aria-pressed no cambió a variant {target_val} tras click"
+        )
+        # verificar mantiene 1 card displayed
+        poster_cards_after = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
+        displayed_after = [c for c in poster_cards_after if c.is_displayed()]
+        assert len(displayed_after) == 1, f"tras cambiar variant debe mantenerse 1 .poster-card displayed, got {len(displayed_after)}"
+        selected_after = driver.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card")
+        assert selected_after == target_val, f"tras click .is-selected esperado {target_val}, got {selected_after}"
+        is_selected_count = len(driver.find_elements(By.CSS_SELECTOR, ".poster-card.is-selected"))
+        assert is_selected_count == 1, f"debe haber exactamente 1 .is-selected tras click, got {is_selected_count}"
+        print(f"✓ checkpoint variant click ok: click variant {target_val} cambió .is-selected {prev_selected}->{selected_after}, mantiene 1 card displayed")
+
         # 9) capturar browser console severe final
         assert_no_severe_logs(driver)
         print("✓ checkpoint 8/8: consola limpia sin SEVERE")
@@ -277,12 +449,13 @@ def run():
         traceback.print_exc()
         raise AssertionError(f"UI smoke fallo: {e}") from e
     finally:
-        # cleanup tmp png
-        if tmp_png and os.path.exists(tmp_png):
-            try:
-                os.unlink(tmp_png)
-            except Exception:
-                pass
+        # cleanup tmp pngs (1x1 y grande 2400x1600) en finally
+        for _p in (tmp_png, tmp_large):
+            if _p and os.path.exists(_p):
+                try:
+                    os.unlink(_p)
+                except Exception:
+                    pass
         try:
             driver.quit()
         except Exception:
