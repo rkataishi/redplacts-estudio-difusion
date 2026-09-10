@@ -367,18 +367,46 @@ def run():
         assert editor_width >= 400, f".editor width esperado >=400, got {editor_width}"
         print(f"✓ checkpoint editor ancho ok: .editor rect width={editor_width:.1f} >=400")
 
-        # exactamente 5 .ref-figure
+        # referencias inline (figuras removidas → field-location / placement-inline)
         ref_figs = driver.find_elements(By.CSS_SELECTOR, ".ref-figure")
-        assert len(ref_figs) == 5, f"esperado exactamente 5 .ref-figure, got {len(ref_figs)}"
-        # figcaptions contienen Imagen 1+Fondo y Imagen 2+Principal
-        captions = driver.find_elements(By.CSS_SELECTOR, ".ref-figure figcaption")
-        caption_texts = [c.text for c in captions]
-        assert len(captions) >= 2, f"esperado al menos 2 figcaptions en .ref-figure, got {len(captions)} textos={caption_texts}"
-        has_img1 = any("Imagen 1" in t and "Fondo" in t for t in caption_texts)
-        has_img2 = any("Imagen 2" in t and "Principal" in t for t in caption_texts)
-        assert has_img1, f"figcaption debe contener 'Imagen 1' + 'Fondo', got {caption_texts}"
-        assert has_img2, f"figcaption debe contener 'Imagen 2' + 'Principal', got {caption_texts}"
-        print(f"✓ checkpoint referencias ok: 5 .ref-figure, figcaptions contienen Imagen 1+Fondo e Imagen 2+Principal -> {caption_texts}")
+        assert len(ref_figs) == 0, f"esperado 0 .ref-figure (figuras removidas), got {len(ref_figs)}"
+        field_locs = driver.find_elements(By.CSS_SELECTOR, ".field-location")
+        assert len(field_locs) >= 13, f"esperado al menos 13 .field-location, got {len(field_locs)}"
+        zone_tops = driver.find_elements(By.CSS_SELECTOR, ".field-location.zone-top")
+        assert len(zone_tops) == 4, f"esperado 4 .field-location.zone-top (Encabezado), got {len(zone_tops)}"
+        zone_middles = driver.find_elements(By.CSS_SELECTOR, ".field-location.zone-middle")
+        assert len(zone_middles) == 2, f"esperado 2 .field-location.zone-middle, got {len(zone_middles)}"
+        zone_bottoms = driver.find_elements(By.CSS_SELECTOR, ".field-location.zone-bottom")
+        assert len(zone_bottoms) == 7, f"esperado 7 .field-location.zone-bottom (Franja inferior), got {len(zone_bottoms)}"
+        bg_inline = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#asset-background .asset-upload-row .placement-inline")))
+        bg_text = bg_inline.text
+        assert "En las 6 piezas" in bg_text, f"background placement debe contener 'En las 6 piezas', got '{bg_text}'"
+        assert "Detrás del contenido" in bg_text, f"background placement debe contener 'Detrás del contenido', got '{bg_text}'"
+        hero_inline = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#asset-hero .asset-upload-row .placement-inline")))
+        hero_text = hero_inline.text
+        assert "Póster" in hero_text, f"hero placement debe contener 'Póster', got '{hero_text}'"
+        assert "lateral" in hero_text, f"hero placement debe contener 'lateral', got '{hero_text}'"
+        assert "Historia" in hero_text and "fondo" in hero_text, f"hero placement debe contener 'Historia · fondo', got '{hero_text}'"
+        assert "Publicación" in hero_text, f"hero placement debe contener 'Publicación', got '{hero_text}'"
+        # .photo-row .photo-placement tras abrir speaker
+        tab_people_inline = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-people")))
+        real_click(driver, tab_people_inline)
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-people").is_displayed())
+        first_detail = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, "#speakers-list details.person")))
+        if first_detail.get_attribute("open") is None:
+            summary_el = first_detail.find_element(By.CSS_SELECTOR, "summary")
+            real_click(driver, summary_el)
+            WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.CSS_SELECTOR, "#speakers-list details[open]") is not None)
+        photo_placement = WebDriverWait(driver, TIMEOUT).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".photo-row .photo-placement")))
+        assert photo_placement is not None, ".photo-row .photo-placement no encontrado tras abrir speaker"
+        photo_text = photo_placement.text
+        assert "Pósters" in photo_text and "cuerpo" in photo_text, f"photo placement debe contener 'Pósters · cuerpo', got '{photo_text}'"
+        assert "Redes" in photo_text and "miniaturas" in photo_text, f"photo placement debe contener 'Redes · miniaturas', got '{photo_text}'"
+        print(f"✓ checkpoint referencias inline ok: 0 .ref-figure, {len(field_locs)} .field-location (4 top / 2 middle / 7 bottom), placements bg/hero/photo ok")
+        # volver a Imagenes para preview único
+        tab_images_inline = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-images")))
+        real_click(driver, tab_images_inline)
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-images").is_displayed())
 
         # exactamente una .poster-card is_displayed
         poster_cards = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
