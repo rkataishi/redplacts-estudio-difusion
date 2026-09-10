@@ -154,6 +154,8 @@
  /** Footer: redplacts.org + social handles */
  async function drawFooter(ctx,p){
   var y=p.footerTop||p.h-87;
+  /* opaque white footer background for readability */
+  api.box(ctx,0,y,p.w,p.h-y,'rgba(255,255,255,0.94)',0);
   api.line(ctx,56,y,p.w-56,y,'#d4d9e5');
   api.drawText(ctx,api.textSpec('redplacts.org',56,y+18,218,23,700,api.C.ink,p.font),'website');
   var nx=293;
@@ -479,17 +481,19 @@
      :{x:0,y:Math.round(p.h*.68),w:p.w,h:Math.round(p.h*.25)};
    }
    /* differentiate Digital family hero placement */
-   if(p.v===6)p.hero={x:600,y:145,w:p.w-640,h:330};
-   else if(p.v===7)p.hero={x:0,y:0,w:p.w,h:560};
+   if(p.v===7)p.hero={x:0,y:0,w:p.w,h:560};
    else if(p.v===8)p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
     /* draw hero before title so text overlays the image */
     await drawHero(ctx,p);
     await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
-    /* translucent white title backing panel for Digital family */
-    if(p.v===6)api.box(ctx,40,120,540,330,'rgba(255,255,255,0.85)',12);
-    else if(p.v===7)api.box(ctx,40,120,650,330,'rgba(255,255,255,0.85)',12);
-    else if(p.v===8)api.box(ctx,40,470,700,420,'rgba(255,255,255,0.85)',12);
+    /* wide cohesive white title backing panel for Digital family */
+    if(p.v===7)api.box(ctx,40,110,p.w-80,340,'rgba(255,255,255,0.94)',18);
+    else if(p.v===8)api.box(ctx,40,450,p.w-80,430,'rgba(255,255,255,0.94)',18);
     drawTitleBlock(ctx,p);
+    /* white translucent panel for names readability */
+    if(p.namesY&&p.names&&p.names.h){
+     api.box(ctx,56,p.namesY-18,p.w-112,p.names.h+36,'rgba(255,255,255,0.94)',18);
+    }
    if(api.drawSocialNames){
      await api.drawSocialNames(ctx,p,audit);
     } else {
