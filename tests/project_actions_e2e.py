@@ -99,14 +99,17 @@ def _pre_files(pattern):
     return set(glob.glob(str(DOWNLOAD_DIR / pattern)))
 
 def _wait_new_file(pattern, before, label, timeout=10, min_size=50):
+    """Poll for new file matching pattern until timeout.
+    Ignore .crdownload temp files; keep polling while size < min_size."""
     deadline = time.time()+timeout
     while time.time()<deadline:
         new = set(glob.glob(str(DOWNLOAD_DIR / pattern))) - before
-        if new:
-            p = new.pop()
+        for p in new:
+            if p.lower().endswith(".crdownload"):
+                continue
             sz = os.path.getsize(p)
-            assert sz>min_size, f"{label}: archivo demasiado pequeño ({sz} bytes) {p}"
-            return p, sz
+            if sz >= min_size:
+                return p, sz
         time.sleep(0.5)
     raise AssertionError(f"{label}: no apareció archivo nuevo ({pattern}) en {timeout}s")
 

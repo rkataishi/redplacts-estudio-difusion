@@ -119,15 +119,17 @@ def _post_files(pattern, before):
 
 
 def _wait_new_file(pattern, before, label, timeout=8, min_size=100):
-    """Poll for new file matching pattern until timeout."""
+    """Poll for new file matching pattern until timeout.
+    Ignore .crdownload temp files; keep polling while size < min_size."""
     deadline = time.time() + timeout
     while time.time() < deadline:
         new = _post_files(pattern, before)
-        if new:
-            p = new.pop()
+        for p in new:
+            if p.lower().endswith(".crdownload"):
+                continue
             sz = os.path.getsize(p)
-            assert sz > min_size, f"{label}: archivo demasiado pequeño ({sz} bytes)"
-            return p, sz
+            if sz >= min_size:
+                return p, sz
         time.sleep(0.5)
     raise AssertionError(f"{label}: no apareció archivo nuevo ({pattern}) en {timeout}s")
 
