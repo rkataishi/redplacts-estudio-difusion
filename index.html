@@ -82,6 +82,19 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
 @media(max-width:710px){.asset-upload-row{grid-template-columns:1fr;gap:10px}.placement-inline{order:-1}.placement-previews{grid-template-columns:repeat(3,1fr)}.placement-item .placement-mini{width:48px;height:62px}}
 
 </style>
+<style>
+/* Iteración 2: poster completo + controles silenciosos — override final */
+.poster-frame{display:flex !important;align-items:center !important;justify-content:center !important;min-height:280px !important}
+.poster-frame canvas{width:auto !important;max-width:100% !important;max-height:calc(100vh - 300px) !important;object-fit:contain !important}
+.stage{min-height:420px !important}
+.field-location{background:transparent !important;border:0 !important;padding:0 !important;color:#596077 !important;font-size:11px !important}
+.form-note{color:#596077 !important;font-size:12px !important;line-height:1.65 !important}
+.field-help{color:#596077 !important;font-size:11.5px !important}
+.form-note .social-note,.field small{color:#596077 !important;font-size:11.5px !important}
+.step{min-height:44px !important}
+.form-scroll{padding-bottom:24px !important}
+#toast,.toast{top:105px !important;bottom:auto !important;right:24px !important;left:auto !important;transform:none !important;max-width:320px !important}
+</style>
 </head>
 <body>
 <header class="topbar">
@@ -141,6 +154,7 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
      <div class="form-note"><strong>Redes de la red · siempre presentes</strong><div id="fixed-networks" class="network-list"></div><p class="social-note">Web y cuentas institucionales fijas en todas las versiones.</p></div>
     </section>
    </div>
+    <div class="notice error" id="errors" role="alert" hidden></div>
     <div class="editor-foot"><div class="step-paging"><button type="button" id="previous-step">← Anterior</button><span id="step-count">Paso 1 de 4</span><button type="button" id="next-step">Siguiente →</button></div><button type="submit" class="btn primary full" id="compile-button"><span data-icon="layers"></span>Generar piezas</button><div class="compile-note">Tres pósters + tres versiones breves para redes.</div></div>
   </form>
  </aside>
@@ -148,9 +162,9 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
   <!-- Nuevo: grupos independientes; los formatos sociales no cambian el formato de los pósters. -->
   <div class="collection-nav" role="group" aria-label="Destino del diseño"><button type="button" data-collection="posters" aria-pressed="false"><b>Pósters</b><span>3 composiciones completas</span></button><button type="button" data-collection="social" aria-pressed="true"><b>Estados e Instagram</b><span>3 versiones breves</span></button></div>
    <div class="social-settings" id="social-settings"><p><strong>El tema primero.</strong> Todos los nombres, sin biografías. Las fotos son opcionales y pequeñas; las originales se conservan.</p><div class="social-setting-row"><label class="toggle"><input type="checkbox" id="social-photos" data-option="socialPhotos">Miniaturas de participantes</label><label class="toggle"><input type="checkbox" id="social-qr" data-option="socialQR">Incluir QR en piezas para redes</label><label class="social-format-label" for="feed-format">Publicación</label><select id="feed-format" class="control-select" data-option="feedFormat"><option value="portrait">Instagram · 4:5</option><option value="square">Instagram · 1:1</option></select></div></div>
-  <div class="stage-top"><div><h2 id="collection-title">Estados e Instagram</h2><p id="render-status" role="status">Preparando las composiciones</p></div><div class="stage-controls"><label class="sr-only" for="poster-format">Formato del flyer</label><select class="control-select" id="poster-format" data-option="format"><option value="portrait">Publicación · 4:5</option><option value="square">Cuadrado · 1:1</option><option value="story">Historia · 9:16</option></select><button class="btn primary" id="export-all"><span data-icon="download"></span>Exportar los 3</button><button class="btn small" id="copy-caption" type="button">Texto para compartir</button></div></div>
+  <div class="stage-top"><div><h2 id="collection-title">Estados e Instagram</h2><p id="render-status" role="status">Preparando las composiciones</p></div><div class="stage-controls"><label class="sr-only" for="poster-format">Formato del flyer</label><select class="control-select" id="poster-format" data-option="format"><option value="portrait">Publicación · 4:5</option><option value="square">Cuadrado · 1:1</option><option value="story">Historia · 9:16</option></select><button class="btn lavender" id="export-all"><span data-icon="download"></span>Exportar los 3</button><button class="btn small" id="copy-caption" type="button">Texto para compartir</button></div></div>
   <div class="stage-toolbar"><label class="toggle"><input type="checkbox" id="auto-preview" checked>Vista previa al editar</label><div class="preview-settings"><select class="control-select" id="export-scale" data-option="scale" aria-label="Resolución de descarga"><option value="1">1080 px</option><option value="2" selected>2160 px</option></select><div class="segmented" aria-label="Presentación de las propuestas"><button id="view-compare" aria-pressed="true">Comparar</button><button id="view-focus" aria-pressed="false">Ampliar</button></div></div></div>
-  <div class="notice error" id="errors" role="alert" hidden></div><div class="notice warning" id="warnings" role="status" hidden></div>
+  <div class="notice warning" id="warnings" role="status" hidden></div>
   <div class="variant-tabs" id="variant-tabs"><button class="btn small" data-variant-select="0" aria-pressed="true">Institucional</button><button class="btn small" data-variant-select="1" aria-pressed="false">Panorámica</button><button class="btn small" data-variant-select="2" aria-pressed="false">Editorial</button><button class="btn small" data-variant-select="3" aria-pressed="false">Estado</button><button class="btn small" data-variant-select="4" aria-pressed="false">Historia</button><button class="btn small" data-variant-select="5" aria-pressed="false">Publicación</button></div>
   <div class="poster-grid" id="poster-grid"><p class="loading-shell">Cargando identidad y preparando la primera vista…</p></div>
   <div class="stage-status" id="export-status" role="status"></div>
