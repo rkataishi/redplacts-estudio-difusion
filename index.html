@@ -1882,7 +1882,7 @@ function sidebarLayout(s,font,height){const w=210,p=dateParts(s),blocks=[];let y
  return {blocks,end:y,hero:s.images.hero&&heroH>=100?{x:50,y:y+9,w:210,h:heroH}:null,qr,qrSize,qrY:limit-qrSize,overflow:remaining<0||(Boolean(s.images.hero)&&heroH<100)};
 }
 function computePlan(s,v,font=loadedFont){
- if(v>=3){const socialState=clone(s);let legacyV;if(v===3||v===6){socialState.options.feedFormat='portrait';legacyV=5;}else if(v===4||v===7){socialState.options.feedFormat='square';legacyV=5;}else{legacyV=4;}return {...computeSocialPlan(socialState,legacyV,font),v,legacyV,w:VARIANTS[v].width,h:VARIANTS[v].height};}
+ if(v>=3){const socialState=clone(s);let legacyV;if(v===3||v===7){socialState.options.feedFormat='square';legacyV=5;}else if(v===4||v===6){socialState.options.feedFormat='portrait';legacyV=5;}else{legacyV=4;}return {...computeSocialPlan(socialState,legacyV,font),v,legacyV,w:VARIANTS[v].width,h:VARIANTS[v].height};}
  if(v===2)return {...computeEditorialPlan(s,font),v,legacyV:v,w:VARIANTS[v].width,h:VARIANTS[v].height};
  const h=FORMATS[s.options.format],m=56,width=WIDTH-2*m,footerTop=h-87;let last=null;
  for(const compact of [1,.95,.90,.85,.80,.75]){
