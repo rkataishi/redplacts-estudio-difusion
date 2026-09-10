@@ -194,16 +194,19 @@
   /* Hero occupies centre band when present */
   p.hero={x:MX, y:260, w:contentW, h:260};
 
-  /* People: 2-column fixed portrait grid, centred vertically */
-  var cols=2, gap=30;
-  var colW=Math.round((contentW-gap*(cols-1))/cols);
-  var photoSide=Math.round(colW*.42);          /* portrait square */
-  var textW=colW-photoSide-18;
-  var rowH=photoSide+30;
-  var startY=550;                               /* below hero */
-  var items=[];
+  /* People: bounded compact portrait grid — cols by count, fixed photo caps */
   var sp=p.s.speakers||[];
-  for(var i=0;i<sp.length;i++){
+  var n=sp.length;
+  var cols=n<=1?1:n===2?2:3;
+  var gap=30;
+  var photoSide=cols===1?180:cols===2?120:84;
+  var rowH=125;                                /* hard cap */
+  var startY=550;
+
+  var colW=Math.round((contentW-gap*(cols-1))/cols);
+  var textW=colW-photoSide-18;
+  var items=[];
+  for(var i=0;i<n;i++){
    var col=i%cols, row=Math.floor(i/cols);
    var ix=col*(colW+gap);
    var iy=row*(rowH+18);
@@ -225,18 +228,18 @@
   };
   p.peopleX=MX; p.peopleY=startY;
 
-  /* Moderators: single row below speakers */
-  var modStartY=startY+Math.ceil(sp.length/cols)*(rowH+18)+30;
+  /* Moderators: start capped at 900, fixed photo 56 */
   var mods=p.s.moderators||[];
+  var modStartY=Math.min(900, startY+Math.ceil(n/cols)*(rowH+18)+30);
+  var modPhoto=56;
   var modItems=[];
-  var modColW=Math.round((contentW-gap*Math.max(mods.length-1,0))/Math.max(mods.length,1));
+  var modColW=mods.length?Math.round((contentW-gap*Math.max(mods.length-1,0))/mods.length):0;
   for(var j=0;j<mods.length;j++){
-   var mPhoto=Math.round(modColW*.38);
-   var mTextW=modColW-mPhoto-16;
+   var mTextW=modColW-modPhoto-16;
    var mNt=api.wrapLines(mods[j].name||'',mTextW,24,700,p.font);
    var mDt=api.wrapLines(mods[j].description||'',mTextW,20,400,p.font);
    modItems.push({
-    x:j*(modColW+gap), photo:mPhoto,
+    x:j*(modColW+gap), photo:modPhoto,
     w:modColW, person:mods[j],
     nt:{size:24,h:mNt.length*24*1.13,lines:mNt},
     dt:{size:20,h:mDt.length*20*1.24,lines:mDt}
@@ -248,18 +251,10 @@
   };
   p.modsX=MX; p.modsY=modStartY;
 
-  /* Meeting band: pinned near bottom, above footer */
-  var mbH=130;
-  p.metaY=H-260;
-  p.meeting={
-   width:contentW, h:mbH,
-   date:{size:31},
-   time:{size:28},
-   zone:{size:18},
-   platform:{size:21},
-   link:{size:19},
-   location:{size:18}
-  };
+  /* Meeting band: y1010 or H-260 (whichever is smaller), h220, preserve content */
+  var mbH=220;
+  p.metaY=Math.min(1010,H-260);
+  p.meeting={...p.meeting, width:contentW, h:mbH};
   p.footerTop=H-87;
  }
 
