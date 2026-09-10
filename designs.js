@@ -482,12 +482,16 @@
    await drawHero(ctx,p);
    drawTitleBlock(ctx,p);
    if(api.drawSocialNames){
-    await api.drawSocialNames(ctx,p,audit);
-   } else {
-    await drawPeopleGrid(ctx,p);
-    await drawModerators(ctx,p);
-   }
-   drawMeetingBand(ctx,p);
+     await api.drawSocialNames(ctx,p,audit);
+    } else {
+     await drawPeopleGrid(ctx,p);
+     await drawModerators(ctx,p);
+    }
+    if(api.drawSocialMeeting){
+     api.drawSocialMeeting(ctx,p,audit);
+    } else {
+     drawMeetingBand(ctx,p);
+    }
   }
 
   /* 4. Footer — always present */
