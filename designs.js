@@ -34,18 +34,21 @@
   api.box(ctx,0,0,w,h,'#f4f5f9');
   /* wave decoration */
   await api.coverImage(ctx,{src:api.WAVE_ASSET},Math.round(w*.38),0,Math.round(w*.65),Math.round(h*.78),{x:55,y:46,zoom:1},0,.55);
-  /* user background image */
+  /* user background image — full bleed, at least .55 opacity */
   if(p.s.images.background){
-   var opacity=Math.max(.28,(p.s.options.bgOpacity||32)/100);
+   var opacity=Math.max(.55,(p.s.options.bgOpacity||55)/100);
    await api.coverImage(ctx,p.s.images.background,0,0,w,h,null,0,opacity);
   }
-  /* top-left translucent veil for header readability */
-  var vg=ctx.createLinearGradient(0,0,0,Math.round(h*.48));
-  vg.addColorStop(0,'#f4f5f9dd');vg.addColorStop(1,'#f4f5f900');
-  ctx.fillStyle=vg;ctx.fillRect(0,0,w,Math.round(h*.48));
+  /* global white veil reduced to .18 so image reads through everywhere */
+  ctx.fillStyle='rgba(255,255,255,.18)';
+  ctx.fillRect(0,0,w,h);
+  /* header veil kept separately semitransparent for readability */
+  var hg=ctx.createLinearGradient(0,0,0,130);
+  hg.addColorStop(0,'rgba(255,255,255,.72)');hg.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=hg;ctx.fillRect(0,0,w,130);
   /* bottom veil so footer stands out */
   var vg2=ctx.createLinearGradient(0,h-260,0,h);
-  vg2.addColorStop(0,'#f4f5f900');vg2.addColorStop(1,'#f4f5f9');
+  vg2.addColorStop(0,'rgba(255,255,255,0)');vg2.addColorStop(1,'rgba(255,255,255,.85)');
   ctx.fillStyle=vg2;ctx.fillRect(0,h-260,w,260);
  }
 
