@@ -117,9 +117,9 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
   .poster-grid{min-height:0;overflow:hidden}
   .poster-card{height:100%;min-height:0}
   .poster-card.is-selected{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;overflow:hidden!important}
-  .poster-card.is-selected canvas{width:auto;max-width:100%;height:auto;max-height:100%;object-fit:contain}
+  .poster-card.is-selected canvas{width:auto;max-width:100%;height:auto;max-height:calc(100% - 0px);object-fit:contain}
   .poster-actions{position:static!important;min-height:40px;display:flex!important}
-  .poster-frame{min-height:0;height:100%;overflow:hidden}
+  .poster-frame{min-height:0;height:100%;overflow:hidden;padding:8px!important;box-sizing:border-box!important}
   .overview{height:145px;max-height:145px;overflow:hidden;padding:10px 14px}
   .overview-grid{grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
   .overview-card{min-width:0}
