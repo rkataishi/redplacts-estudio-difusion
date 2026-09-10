@@ -476,21 +476,32 @@
     await drawModerators(ctx,p);
     drawMeetingBand(ctx,p);
    } else {
-   /* social v>=3: assign hero rect if image present but rect missing */
-   if(p.s.images.hero&&!p.hero){
-    p.hero=p.story
-     ?{x:0,y:0,w:p.w,h:Math.round(p.h*.52)}
-     :{x:0,y:Math.round(p.h*.68),w:p.w,h:Math.round(p.h*.25)};
-   }
-   /* differentiate Digital family hero placement */
-   if(p.v===7)p.hero={x:0,y:0,w:p.w,h:560};
-   else if(p.v===8)p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
-    /* draw hero before title so text overlays the image */
-    await drawHero(ctx,p);
-    await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
-    /* wide cohesive white title backing panel for Digital family */
-    if(p.v===7)api.box(ctx,40,110,p.w-80,340,'rgba(255,255,255,0.94)',18);
-    else if(p.v===8)api.box(ctx,40,450,p.w-80,430,'rgba(255,255,255,0.94)',18);
+    /* social v>=3: hero differentiated from background — Sol spec */
+    if(p.s.images.hero){
+     if(p.v===3) p.hero={x:p.w-424,y:145,w:368,h:260};
+     else if(p.v===4) p.hero={x:p.w-424,y:145,w:368,h:300};
+     else if(p.v===6) p.hero={x:p.w-424,y:145,w:368,h:300};
+     else if(p.v===5) p.hero={x:56,y:720,w:p.w-112,h:500};
+     else if(p.v===7) p.hero={x:0,y:0,w:p.w,h:560};
+     else if(p.v===8) p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
+     else if(!p.hero){
+      p.hero=p.story
+       ?{x:0,y:0,w:p.w,h:Math.round(p.h*.52)}
+       :{x:0,y:Math.round(p.h*.68),w:p.w,h:Math.round(p.h*.25)};
+     }
+    } else {
+     /* no hero image: keep Digital family full-bleed placeholders if needed */
+     if(p.v===7) p.hero={x:0,y:0,w:p.w,h:560};
+     else if(p.v===8) p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
+    }
+    if(p.intro&&(p.v===3||p.v===4||p.v===6)) p.intro.w=500;
+     /* draw hero before title so text overlays the image */
+     await drawHero(ctx,p);
+     await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
+     /* white title backing panel — generic branch */
+     if(p.v===3||p.v===4||p.v===6) api.box(ctx,40,120,540,330,'rgba(255,255,255,0.94)',18);
+     else if(p.v===7)api.box(ctx,40,110,p.w-80,340,'rgba(255,255,255,0.94)',18);
+     else if(p.v===8)api.box(ctx,40,450,p.w-80,430,'rgba(255,255,255,0.94)',18);
     drawTitleBlock(ctx,p);
     /* white translucent panel for names readability */
     if(p.namesY&&p.names&&p.names.h){
