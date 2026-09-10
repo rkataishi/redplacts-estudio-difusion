@@ -7,7 +7,7 @@ E2E Contenido + Fecha/acceso y navegación.
 - Tabs click + keyboard ArrowRight/Left/Home/End; previous/next + disabled; step-count
 - Fecha,time,endTime,timezone,platform,url,urlLabel,location,showQR,socialQR
 - Generar valid -> errors vacío; provoca endTime inválido y URL inválida -> errors; restaura
-- auto-preview toggle off/on
+- preview siempre activo (auto-preview ausente, canvas cambia solo)
 - screenshot /tmp/ui-e2e/10-content-meeting.png; console no severe; prints; py_compile ok
 """
 import os
@@ -424,32 +424,53 @@ def run():
         wait_state(driver, "window.PLACTSStudio.validationErrors().length===0", msg="validationErrors no vacío tras restaurar endTime y URL")
         print("✓ restaurado endTime y URL válidos -> errors vacío de nuevo")
 
-        # --- auto-preview toggle off/on ---
-        auto_chk = driver.find_element(By.ID, "auto-preview")
-        assert auto_chk.is_displayed(), "auto-preview no visible"
-        # off
-        js_set_value(driver, "#auto-preview", False)
-        wait_state(driver, "document.getElementById('auto-preview').checked===false", msg="auto-preview no quedó off")
-        # cambiar título con auto-preview off -> debería quedar pendiente render
-        js_set_value(driver, "#event-title", "Título con auto-preview OFF")
-        wait_state(driver, "window.PLACTSStudio.getState().event.title==='Título con auto-preview OFF'", msg="title off no reflejado")
-        time.sleep(0.5)
-        # verificar que hay cambios pendientes (clase o status): renderedRevision !== revision => el JS muestra "Hay cambios pendientes"
-        # check via JS: renderedRevision vs revision no expuesto, usar texto render-status
-        # Si autoPreview false, markChanged pone "Hay cambios pendientes"
-        status_text = driver.execute_script("return document.getElementById('render-status').textContent")
-        # puede ser "Hay cambios pendientes" o aún componiendo, pero no debe auto-compilar instantáneo
-        print(f"  auto-preview OFF -> render-status: '{status_text}'")
-        # on
-        js_set_value(driver, "#auto-preview", True)
-        wait_state(driver, "document.getElementById('auto-preview').checked===true", msg="auto-preview no quedó on")
-        # tras activar, si hay cambios pendientes debe compilar automático; esperar a que render-status ya no sea pendiente y canvas exista
-        WebDriverWait(driver, 15).until(lambda d: d.execute_script("return !!document.querySelector('.poster-card canvas') && document.querySelector('.poster-card canvas').width>0"))
-        # restaurar título para consistencia final
+        # --- preview siempre activo (auto-preview eliminado) ---
+        # assert #auto-preview ya no existe en el DOM
+        assert not driver.execute_script("return !!document.getElementById('auto-preview')"), "#auto-preview should not exist in DOM"
+        print("✓ #auto-preview ausente en DOM (eliminado)")
+
+        # capturar fingerprint actual del canvas seleccionado
+        fp1 = driver.execute_script("""
+            var c = document.querySelector('.poster-card canvas');
+            if (!c) return null;
+            return c.toDataURL('image/png').substring(0, 120);
+        """)
+        assert fp1, "canvas no encontrado antes de cambiar título"
+        print(f"  canvas fingerprint inicial: {fp1[:60]}...")
+
+        # cambiar título -> preview debe regenerarse automáticamente sin click en Generate
+        js_set_value(driver, "#event-title", "Título auto-preview check")
+        wait_state(driver, "window.PLACTSStudio.getState().event.title==='Título auto-preview check'", msg="title no reflejado")
+        # esperar hasta que el fingerprint del canvas cambie
+        WebDriverWait(driver, 15).until(lambda d: d.execute_script(
+            "var c = document.querySelector('.poster-card canvas');"
+            "if (!c) return false;"
+            "var fp = c.toDataURL('image/png').substring(0, 120);"
+            f"return fp !== '{fp1}';"
+        ))
+        fp2 = driver.execute_script("""
+            var c = document.querySelector('.poster-card canvas');
+            return c.toDataURL('image/png').substring(0, 120);
+        """)
+        assert fp2 != fp1, f"canvas no cambió tras modificar título: {fp2}"
+        print(f"  canvas cambió automáticamente tras título -> {fp2[:60]}...")
+
+        # restaurar título y verificar que canvas cambia de nuevo
         js_set_value(driver, "#event-title", "Título E2E Contenido Final")
-        wait_state(driver, "window.PLACTSStudio.getState().event.title==='Título E2E Contenido Final'", msg="title final no reflejado")
-        WebDriverWait(driver, 15).until(lambda d: d.execute_script("return document.querySelector('.poster-card canvas') && document.querySelector('.poster-card canvas').width>0"))
-        print("✓ auto-preview toggle off/on ejercitado (OFF deja pendiente, ON recompila)")
+        wait_state(driver, "window.PLACTSStudio.getState().event.title==='Título E2E Contenido Final'", msg="title restore no reflejado")
+        WebDriverWait(driver, 15).until(lambda d: d.execute_script(
+            "var c = document.querySelector('.poster-card canvas');"
+            "if (!c) return false;"
+            "var fp = c.toDataURL('image/png').substring(0, 120);"
+            f"return fp !== '{fp2}';"
+        ))
+        fp3 = driver.execute_script("""
+            var c = document.querySelector('.poster-card canvas');
+            return c.toDataURL('image/png').substring(0, 120);
+        """)
+        assert fp3 != fp2, f"canvas no cambió tras restaurar título: {fp3}"
+        print(f"  canvas cambió automáticamente tras restaurar título -> {fp3[:60]}...")
+        print("✓ preview siempre activo verificado (sin #auto-preview, canvas se regenera solo)")
 
         # --- screenshot ---
         SCREENSHOT.parent.mkdir(parents=True, exist_ok=True)
