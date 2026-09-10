@@ -3,10 +3,9 @@
 E2E: botones de descarga / exportación.
 - Fresh proyecto válido → Generar canvas
 - save-project JSON (click y Ctrl/Cmd+S)
-- individual PNG (data-export button)
+- individual PNG (data-export button) × 9
 - zoom-download PNG (dialog)
-- export-all ZIP en posters (9 PNGs + proyecto JSON)
-- export-all ZIP en social (9 PNGs + proyecto JSON + texto TXT)
+- export-all ZIP único (9 PNG + JSON + LEEME + texto-para-acompanar)
 - caption download TXT
 - Screenshot 32-downloads.png
 - py_compile
@@ -243,15 +242,6 @@ def run():
         )
         print("✓ Generar → canvas visible")
 
-        # Ensure posters collection active
-        btn_posters = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-collection="posters"]'))
-        )
-        real_click(driver, btn_posters)
-        wait_state("document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
-        print("✓ collection posters activada")
-
         # ============================================================
         # 1. SAVE-PROJECT JSON (click)
         # ============================================================
@@ -471,62 +461,32 @@ def run():
         print("✓ zoom cerrado")
 
         # ============================================================
-        # 5. EXPORT-ALL ZIP en POSTERS
+        # 5. EXPORT-ALL ZIP único
         # ============================================================
-        real_click(driver, btn_posters)
-        wait_state("document.querySelector('[data-collection=\"posters\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
-
         before_zip = _pre_files("*.zip")
         export_all = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.ID, "export-all"))
         )
         real_click(driver, export_all)
-        zip_path, zip_sz = _wait_new_file("*.zip", before_zip, "export-all posters ZIP", timeout=12, min_size=5000)
+        zip_path, zip_sz = _wait_new_file("*.zip", before_zip, "export-all ZIP", timeout=12, min_size=5000)
         assert zip_path.lower().endswith(".zip"), f"export-all: extensión no es .zip: {zip_path}"
         with zipfile.ZipFile(zip_path, "r") as zf:
             names = zf.namelist()
             png_count = sum(1 for n in names if n.lower().endswith(".png"))
             json_count = sum(1 for n in names if n.lower().endswith(".json"))
-            assert png_count == 9, f"ZIP posters: esperado 9 PNGs, got {png_count} in {names}"
-            assert json_count >= 1, f"ZIP posters: esperado ≥1 JSON, got {json_count} in {names}"
+            leeme_count = sum(1 for n in names if "leeme" in n.lower())
+            texto_count = sum(1 for n in names if "texto-para-acompanar" in n.lower() or ("texto" in n.lower() and "acompanar" in n.lower()))
+            assert png_count == 9, f"ZIP: esperado 9 PNGs, got {png_count} in {names}"
+            assert json_count >= 1, f"ZIP: esperado ≥1 JSON, got {json_count} in {names}"
+            assert leeme_count >= 1, f"ZIP: esperado LEEME, got {names}"
+            assert texto_count >= 1, f"ZIP: esperado texto-para-acompanar, got {names}"
             for n in names:
                 info = zf.getinfo(n)
                 assert info.file_size > 0, f"ZIP entry vacía: {n}"
-        print(f"✓ export-all posters ZIP ok: {Path(zip_path).name} ({zip_sz} bytes, {len(names)} entries: {png_count} PNG + {json_count} JSON)")
+        print(f"✓ export-all ZIP ok: {Path(zip_path).name} ({zip_sz} bytes, {len(names)} entries: {png_count} PNG + {json_count} JSON + LEEME + texto-para-acompanar)")
 
         # ============================================================
-        # 6. EXPORT-ALL ZIP en SOCIAL
-        # ============================================================
-        btn_social = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-collection="social"]'))
-        )
-        real_click(driver, btn_social)
-        wait_state("document.querySelector('[data-collection=\"social\"]').getAttribute('aria-pressed')==='true'")
-        time.sleep(0.5)
-
-        before_zip2 = _pre_files("*.zip")
-        export_all2 = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.ID, "export-all"))
-        )
-        real_click(driver, export_all2)
-        zip_path2, zip_sz2 = _wait_new_file("*.zip", before_zip2, "export-all social ZIP", timeout=12, min_size=5000)
-        assert zip_path2.lower().endswith(".zip"), f"export-all social: extensión no es .zip: {zip_path2}"
-        with zipfile.ZipFile(zip_path2, "r") as zf2:
-            names2 = zf2.namelist()
-            png_count2 = sum(1 for n in names2 if n.lower().endswith(".png"))
-            json_count2 = sum(1 for n in names2 if n.lower().endswith(".json"))
-            txt_count2 = sum(1 for n in names2 if n.lower().endswith(".txt"))
-            assert png_count2 == 9, f"ZIP social: esperado 9 PNGs, got {png_count2} in {names2}"
-            assert json_count2 >= 1, f"ZIP social: esperado ≥1 JSON, got {json_count2} in {names2}"
-            assert txt_count2 >= 1, f"ZIP social: esperado ≥1 TXT, got {txt_count2} in {names2}"
-            for n in names2:
-                info2 = zf2.getinfo(n)
-                assert info2.file_size > 0, f"ZIP social entry vacía: {n}"
-        print(f"✓ export-all social ZIP ok: {Path(zip_path2).name} ({zip_sz2} bytes, {len(names2)} entries: {png_count2} PNG + {json_count2} JSON + {txt_count2} TXT)")
-
-        # ============================================================
-        # 7. CAPTION DOWNLOAD TXT
+        # 6. CAPTION DOWNLOAD TXT
         # ============================================================
         caption_btn = WebDriverWait(driver, TIMEOUT).until(
             EC.element_to_be_clickable((By.ID, "copy-caption"))
@@ -559,7 +519,7 @@ def run():
         print("✓ caption dialog cerrado")
 
         # ============================================================
-        # 8. SCREENSHOT
+        # 7. SCREENSHOT
         # ============================================================
         SCREENSHOT.parent.mkdir(parents=True, exist_ok=True)
         driver.save_screenshot(str(SCREENSHOT))
@@ -567,7 +527,7 @@ def run():
         print(f"✓ screenshot {SCREENSHOT} ({SCREENSHOT.stat().st_size} bytes)")
 
         # ============================================================
-        # 9. CONSOLE NO SEVERE
+        # 8. CONSOLE NO SEVERE
         # ============================================================
         assert_no_severe_logs(driver)
         print("✓ consola sin SEVERE")
