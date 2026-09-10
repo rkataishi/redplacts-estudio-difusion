@@ -115,16 +115,17 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
   .variant-tabs .btn{font-size:10px;padding:6px 10px}
   .poster-grid{min-height:0;overflow:hidden}
   .poster-card{height:100%;min-height:0}
-  .poster-card.is-selected{min-height:0}
+  .poster-card.is-selected{display:grid!important;grid-template-rows:auto minmax(0,1fr) auto!important;overflow:hidden!important}
   .poster-card.is-selected canvas{width:auto;max-width:100%;height:auto;max-height:100%;object-fit:contain}
-  .poster-frame{min-height:0;height:100%}
+  .poster-actions{position:static!important;min-height:40px;display:flex!important}
+  .poster-frame{min-height:0;height:100%;overflow:hidden}
   .overview{height:145px;max-height:145px;overflow:hidden;padding:10px 14px}
   .overview-grid{grid-template-columns:repeat(9,1fr);gap:6px}
   .overview-thumb{height:90px;max-height:90px;aspect-ratio:auto;width:100%}
   .overview-thumb canvas{width:100%;height:100%;object-fit:contain}
   #social-settings{display:none}
   #poster-format{display:none}
-  .view-button{display:none!important}
+  .poster-card .view-button{display:none!important}
   #toast,.toast{top:56px!important}
 }
 /* Mobile <900: restore normal page scroll and stack */
