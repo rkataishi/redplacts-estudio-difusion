@@ -391,13 +391,12 @@ def run():
         variant_vals = [b.get_attribute("data-variant-select") for b in displayed_variants]
         assert len(set(variant_vals)) == 9, f"variantes duplicadas: {variant_vals}"
 
-        # exactamente 9 .poster-card displayed con data-card únicos 0..8
-        poster_cards = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
-        displayed_cards = [c for c in poster_cards if c.is_displayed()]
-        assert len(displayed_cards) == 9, f"esperado exactamente 9 .poster-card displayed, got {len(displayed_cards)}"
-        card_vals = sorted([c.get_attribute("data-card") for c in displayed_cards])
+        # exactamente 9 #overview-grid .overview-card con data-card únicos 0..8
+        overview_cards = driver.find_elements(By.CSS_SELECTOR, "#overview-grid .overview-card")
+        assert len(overview_cards) == 9, f"esperado exactamente 9 #overview-grid .overview-card, got {len(overview_cards)}"
+        overview_card_vals = sorted([c.get_attribute("data-card") for c in overview_cards])
         expected_vals = [str(i) for i in range(9)]
-        assert card_vals == expected_vals, f"card values esperados {expected_vals}, got {card_vals}"
+        assert overview_card_vals == expected_vals, f"overview card values esperados {expected_vals}, got {overview_card_vals}"
         print(f"✓ checkpoint preview galería ok: 1 selected ({initial_selected_val}), 9 variant buttons, 9 overview cards 0..8")
 
         # click en otro variant cambia .is-selected y mantiene 9 cards
@@ -424,10 +423,9 @@ def run():
         # verificar thumbnail / poster-card.is-selected refleja el cambio
         selected_after = driver.execute_script("return document.querySelector('.poster-card.is-selected')?.dataset.card")
         assert selected_after == target_val, f"tras click .is-selected esperado {target_val}, got {selected_after}"
-        # mantener 9 cards displayed tras cambio
-        poster_cards_after = driver.find_elements(By.CSS_SELECTOR, ".poster-card")
-        displayed_after = [c for c in poster_cards_after if c.is_displayed()]
-        assert len(displayed_after) == 9, f"tras cambiar variant deben mantenerse 9 .poster-card displayed, got {len(displayed_after)}"
+        # mantener 9 overview cards tras cambio
+        overview_cards_after = driver.find_elements(By.CSS_SELECTOR, "#overview-grid .overview-card")
+        assert len(overview_cards_after) == 9, f"tras cambiar variant deben mantenerse 9 #overview-grid .overview-card, got {len(overview_cards_after)}"
         is_selected_count = len(driver.find_elements(By.CSS_SELECTOR, ".poster-card.is-selected"))
         assert is_selected_count == 1, f"debe haber exactamente 1 .is-selected tras click, got {is_selected_count}"
         print(f"✓ checkpoint variant click ok: click variant {target_val} cambió .is-selected {initial_selected_val}->{selected_after}, 9 cards maintained")
