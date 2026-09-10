@@ -102,6 +102,7 @@ except ImportError:
                 f.write(sig + ihdr + idat + iend)
 
 import shutil
+import tempfile
 import py_compile
 
 TIMEOUT = 15
@@ -136,6 +137,7 @@ def _wait_new_file(pattern, before, label, timeout=8, min_size=100):
 
 def run():
     driver = None
+    tmp_files = []
     start_all = time.time()
     try:
         driver = _driver()
@@ -232,6 +234,107 @@ def run():
         )
         wait_state("window.PLACTSStudio.getState().speakers[0].name==='Expositor E2E'", msg="expositor E2E no reflejado en state")
         print("✓ expositor E2E seteado")
+
+        # --- create 4 solid PNGs for image uploads ---
+        import tempfile
+        _tmp_dir = tempfile.mkdtemp(prefix="e2e_imgs_")
+        _colors = {
+            "background": (220, 30, 30),   # red
+            "hero": (30, 180, 30),         # green
+            "speaker": (30, 30, 220),      # blue
+            "moderator": (180, 30, 180),   # magenta
+        }
+        _img_paths = {}
+        for _label, _rgb in _colors.items():
+            _p = os.path.join(_tmp_dir, f"{_label}.png")
+            _write_solid_png(_p, width=800, height=600, rgb=_rgb)
+            tmp_files.append(_p)
+            _img_paths[_label] = _p
+        print(f"✓ 4 solid PNGs created in {_tmp_dir}")
+
+        # --- upload background image ---
+        bg_input = driver.find_element(By.ID, "image-background")
+        bg_input.send_keys(_img_paths["background"])
+        wait_state(
+            "window.PLACTSStudio.getState().images && !!window.PLACTSStudio.getState().images.background",
+            msg="images.background not set after upload",
+        )
+        print("✓ image-background uploaded")
+
+        # --- upload hero image ---
+        hero_input = driver.find_element(By.ID, "image-hero")
+        hero_input.send_keys(_img_paths["hero"])
+        wait_state(
+            "window.PLACTSStudio.getState().images && !!window.PLACTSStudio.getState().images.hero",
+            msg="images.hero not set after upload",
+        )
+        print("✓ image-hero uploaded")
+
+        # --- upload speaker photo ---
+        speaker_id = driver.execute_script("return window.PLACTSStudio.getState().speakers[0].id")
+        speaker_input = driver.find_element(By.CSS_SELECTOR, f'input[data-photo="{speaker_id}"]')
+        speaker_input.send_keys(_img_paths["speaker"])
+        wait_state(
+            "window.PLACTSStudio.getState().speakers[0] && !!window.PLACTSStudio.getState().speakers[0].photo",
+            msg="speakers[0].photo not set after upload",
+        )
+        print("✓ speaker photo uploaded")
+
+        # --- switch to People tab before adding moderator (visible user action) ---
+        tab_people = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "tab-people"))
+        )
+        real_click(driver, tab_people)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.find_element(By.ID, "panel-people").is_displayed(),
+            message="panel-people not displayed after tab click",
+        )
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true",
+            message="tab-people aria-selected not true after click",
+        )
+        print("✓ tab Participantes abierto antes de add-moderator")
+
+        # --- add moderator and upload moderator photo ---
+        add_mod_btn = WebDriverWait(driver, TIMEOUT).until(
+            EC.element_to_be_clickable((By.ID, "add-moderator"))
+        )
+        real_click(driver, add_mod_btn)
+        wait_state(
+            "window.PLACTSStudio.getState().moderators && window.PLACTSStudio.getState().moderators.length >= 1",
+            msg="moderator not added after click",
+        )
+        print("✓ add-moderator clicked")
+
+        # set moderator name (clear/send_keys on real input, not JS .value)
+        mod_id = driver.execute_script("return window.PLACTSStudio.getState().moderators[0].id")
+        try:
+            mod_name_input = WebDriverWait(driver, TIMEOUT).until(
+                EC.presence_of_element_located((By.ID, f"name-{mod_id}"))
+            )
+        except Exception:
+            mod_name_input = WebDriverWait(driver, TIMEOUT).until(
+                EC.presence_of_element_located(
+                    (By.CSS_SELECTOR, '[data-person="moderators"] [data-person-field="name"]')
+                )
+            )
+        mod_name_input.clear()
+        mod_name_input.send_keys("Moderador E2E")
+        wait_state(
+            "window.PLACTSStudio.getState().moderators[0].name==='Moderador E2E'",
+            msg="moderator name not reflected in state",
+        )
+        print("✓ moderator name set")
+
+        # upload moderator photo
+        mod_id = driver.execute_script("return window.PLACTSStudio.getState().moderators[0].id")
+        mod_photo_input = driver.find_element(By.CSS_SELECTOR, f'input[data-photo="{mod_id}"]')
+        mod_photo_input.send_keys(_img_paths["moderator"])
+        wait_state(
+            "window.PLACTSStudio.getState().moderators[0] && !!window.PLACTSStudio.getState().moderators[0].photo",
+            msg="moderators[0].photo not set after upload",
+        )
+        print("✓ moderator photo uploaded")
 
         # validación sin errores antes de Generar
         wait_state("window.PLACTSStudio.validationErrors(window.PLACTSStudio.getState()).length===0", msg="validationErrors no es 0 antes de Generar")
@@ -381,6 +484,35 @@ def run():
             assert _cw == plan["width"], f"output-{_i}: canvas width {_cw} != plan width {plan['width']}"
             assert _ch == plan["height"], f"output-{_i}: canvas height {_ch} != plan height {plan['height']}"
             print(f"✓ output-{_i}: canvas {_cw}×{_ch} matches plan {plan['width']}×{plan['height']}")
+
+            # --- pixel-sampling: verify uploaded images rendered into canvas ---
+            _pixel_counts = driver.execute_script("""
+                const c = document.querySelector('.poster-card.is-selected canvas');
+                if (!c) return null;
+                const ctx = c.getContext('2d');
+                if (!ctx) return null;
+                const imgData = ctx.getImageData(0, 0, c.width, c.height);
+                const d = imgData.data;
+                const step = 16 * 4;          // sample every 16th pixel (4 bytes/px)
+                let red = 0, green = 0, blue = 0, magenta = 0;
+                for (let i = 0; i < d.length; i += step) {
+                    const r = d[i], g = d[i+1], b = d[i+2];
+                    if (r > 150 && g < 100 && b < 100) red++;
+                    if (g > 150 && r < 100 && b < 100) green++;
+                    if (b > 150 && r < 100 && g < 100) blue++;
+                    if (r > 150 && b > 120 && g < 130) magenta++;
+                }
+                return {red, green, blue, magenta};
+            """)
+            assert _pixel_counts is not None, f"output-{_i}: getImageData returned null"
+            print(f"  pixel counts output-{_i}: {_pixel_counts}")
+            for _color, _label in [("red", "background"), ("green", "hero"),
+                                    ("blue", "speaker"), ("magenta", "moderator")]:
+                assert _pixel_counts[_color] > 5, (
+                    f"output-{_i}: {_label} ({_color}) count={_pixel_counts[_color]} ≤ 5 — "
+                    f"image not visible in canvas"
+                )
+            print(f"  ✓ output-{_i}: all 4 images verified in canvas")
 
             # click individual data-export and await PNG download
             before_png = _pre_files("*.png")
@@ -576,6 +708,16 @@ def run():
             print(f"no se pudo guardar screenshot fallo: {se}", file=sys.stderr)
         raise AssertionError(f"downloads_e2e fallo: {e}") from e
     finally:
+        try:
+            for _f in tmp_files:
+                try:
+                    os.remove(_f)
+                except Exception:
+                    pass
+            if tmp_files:
+                os.rmdir(os.path.dirname(tmp_files[0])) if os.path.isdir(os.path.dirname(tmp_files[0])) else None
+        except Exception:
+            pass
         try:
             if driver:
                 driver.quit()
