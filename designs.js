@@ -478,9 +478,17 @@
      ?{x:0,y:0,w:p.w,h:Math.round(p.h*.52)}
      :{x:0,y:Math.round(p.h*.68),w:p.w,h:Math.round(p.h*.25)};
    }
+   /* differentiate Digital family hero placement */
+   if(p.v===6)p.hero={x:600,y:145,w:p.w-640,h:330};
+   else if(p.v===7)p.hero={x:0,y:0,w:p.w,h:560};
+   else if(p.v===8)p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
     /* draw hero before title so text overlays the image */
     await drawHero(ctx,p);
     await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
+    /* translucent white title backing panel for Digital family */
+    if(p.v===6)api.box(ctx,40,120,540,330,'rgba(255,255,255,0.85)',12);
+    else if(p.v===7)api.box(ctx,40,120,650,330,'rgba(255,255,255,0.85)',12);
+    else if(p.v===8)api.box(ctx,40,470,700,420,'rgba(255,255,255,0.85)',12);
     drawTitleBlock(ctx,p);
    if(api.drawSocialNames){
      await api.drawSocialNames(ctx,p,audit);
