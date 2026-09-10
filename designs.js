@@ -144,7 +144,7 @@
   ry+=m.link.h+8;
   if(m.location&&m.location.h)api.drawText(ctx,api.textSpec(m.location.text||'',rx,ry,m.rightX?w-m.rightX:w*.50,m.location.size||18,400,api.C.muted,font),'m-location');
   /* QR */
-  if(m.qr)api.drawQR(ctx,m.qr,api.W-56-m.qrSize,y+16,m.qrSize);
+  if(m.qr)api.drawQR(ctx,m.qr,p.w-56-m.qrSize,y+16,m.qrSize);
  }
 
  /** Footer: redplacts.org + social handles */
@@ -339,6 +339,94 @@
  }
 
  /* ------------------------------------------------------------------ */
+ /*  v2 — Editorial portrait 1080×1350: full-width title, wide hero,    */
+ /*       rectangular profile grid and separated moderation             */
+ /* ------------------------------------------------------------------ */
+
+ function applyV2Layout(p){
+  var W=p.w, H=p.h, MX=56;
+  var contentW=W-MX*2;
+  var footerTop=H-87;
+
+  /* Full-width title, fitted so the hero keeps its fixed band at y=380 */
+  var titleTop=150, titleSpace=222;
+  var intro=null, titleFits=false;
+  for(var ts=54; ts>=36; ts-=2){
+   var t=api.textSpec(p.s.event.title||'Título del evento',MX,titleTop,contentW,ts,700,api.C.ink,p.font,'left',1.06);
+   var s=api.textSpec(p.s.event.subtitle||'',MX,0,contentW,Math.max(22,Math.round(ts*.5)),400,api.C.muted,p.font,'left',1.2);
+   var r=api.textSpec(p.s.event.reinforcement||'',MX,0,contentW,Math.max(18,Math.round(ts*.4)),400,api.C.muted,p.font,'left',1.24);
+   var introH=t.h+(s.h?14+s.h:0)+(r.h?15+r.h:0);
+   intro={x:MX,y:titleTop,w:contentW,title:t,sub:s,reinforcement:r};
+   if(introH<=titleSpace){titleFits=true;break;}
+  }
+  p.intro=intro;
+
+  /* Wide hero banner across the page */
+  p.hero={x:MX,y:380,w:contentW,h:300};
+
+  /* People: rectangular profiles in a grid that starts below the hero */
+  var sp=p.s.speakers||[];
+  var n=sp.length;
+  var cols=n<=1?1:n===2?2:3;
+  var gap=24, rowGap=14;
+  var colW=Math.round((contentW-gap*(cols-1))/cols);
+
+  /* Moderators: separate compact band above the meeting strip */
+  var mods=p.s.moderators||[];
+  var modGap=24;
+  var modColW=mods.length?Math.round((contentW-modGap*(mods.length-1))/mods.length):0;
+  var modPhoto=56, modNameSize=22;
+  var modItems=[], modBlockH=0;
+  for(var j=0;j<mods.length;j++){
+   var mtw=modColW-modPhoto-16;
+   var mnt=api.textSpec(mods[j].name||'Nombre de moderación',0,0,mtw,modNameSize,700,api.C.ink,p.font,'left',1.12);
+   var mdt=api.textSpec(mods[j].description||'',0,0,mtw,17,400,api.C.muted,p.font,'left',1.24);
+   modBlockH=Math.max(modBlockH,Math.max(modPhoto,mnt.h+(mdt.h?7+mdt.h:0)));
+   modItems.push({x:j*(modColW+modGap),photo:modPhoto,w:modColW,person:mods[j],nt:{size:modNameSize,h:mnt.h,lines:mnt.lines},dt:{size:17,h:mdt.h,lines:mdt.lines}});
+  }
+  var modsH=mods.length?34+modBlockH:0;
+
+  /* Meeting band pinned above the footer */
+  var meeting=p.meeting||{h:120};
+  var metaY=footerTop-22-meeting.h;
+  p.meeting=meeting;
+  p.metaY=metaY;
+  p.footerTop=footerTop;
+
+  var modsY=mods.length?metaY-24-modsH:metaY-24;
+  p.mods={items:modItems,label:mods.length===1?'MODERA':'MODERAN'};
+  p.modsX=MX; p.modsY=modsY;
+
+  /* Profile grid: fit rectangular photos inside the free band */
+  var peopleStart=724;
+  var peopleEnd=mods.length?modsY-22:metaY-24;
+  var peopleSpace=peopleEnd-peopleStart;
+  var rows=Math.max(1,Math.ceil(n/cols));
+  var maxRowH=(peopleSpace-(rows-1)*rowGap)/rows;
+  var desiredPhoto=cols===1?200:cols===2?176:125;
+  var photoH=Math.max(56,Math.round(Math.min(desiredPhoto,maxRowH)));
+  var textW=colW-photoH-17;
+  var nameSize=cols===1?34:cols===2?26:22;
+  var descSize=cols===1?21:cols===2?18:15;
+  var profiles=[], rowH=photoH;
+  for(var i=0;i<n;i++){
+   var nt=api.textSpec(sp[i].name||'Nombre del participante',0,0,textW,nameSize,700,api.C.ink,p.font,'left',1.13);
+   var dt=api.textSpec(sp[i].description||'',0,0,textW,descSize,400,api.C.muted,p.font,'left',1.24);
+   var textH=nt.h+(dt.h?9+dt.h:0);
+   rowH=Math.max(rowH,textH);
+   profiles.push({person:sp[i],col:i%cols,row:Math.floor(i/cols),nt:nt,dt:dt,textH:textH});
+  }
+  var items=profiles.map(function(it){
+   return {x:it.col*(colW+gap),y:it.row*(rowH+rowGap),w:colW,h:rowH,person:it.person,photo:photoH,shape:'rect',vertical:false,textH:it.textH,nt:{size:nameSize,h:it.nt.h,lines:it.nt.lines},dt:{size:descSize,h:it.dt.h,lines:it.dt.lines}};
+  });
+  var peopleH=rows*rowH+(rows-1)*rowGap;
+  p.people={items:items,columns:cols,columnW:colW,rowH:rowH,rows:rows};
+  p.peopleX=MX; p.peopleY=peopleStart;
+
+  p.valid=titleFits&&peopleH<=peopleSpace&&maxRowH>=56;
+ }
+
+ /* ------------------------------------------------------------------ */
  /*  Main draw entry point                                              */
  /* ------------------------------------------------------------------ */
 
@@ -354,7 +442,19 @@
   await drawHeader(ctx,p);
 
   /* 3. Content: fallback or full layout */
-  if(!p.valid){
+  if(p.v===2){
+   /* v2 editorial portrait: full-width title, wide hero, profile grid */
+   applyV2Layout(p);
+   if(p.valid){
+    drawTitleBlock(ctx,p);
+    await drawHero(ctx,p);
+    await drawPeopleGrid(ctx,p);
+    await drawModerators(ctx,p);
+    drawMeetingBand(ctx,p);
+   } else {
+    await drawFallback(ctx,p);
+   }
+   } else if(!p.valid){
    await drawFallback(ctx,p);
    } else if(p.v===0){
     /* v0 institutional layout: fixed portrait zones */
