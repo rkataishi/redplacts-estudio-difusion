@@ -184,21 +184,23 @@
  /*  v0 — Institutional layout with fixed portrait zones                */
  /* ------------------------------------------------------------------ */
 
+ function posterIntro(p,x,y,w,titleSize){
+  var title=api.textSpec(p.s.event.title||'Título del evento',x,y,w,titleSize,700,api.C.ink,p.font,'left',1.06);
+  var sub=api.textSpec(p.s.event.subtitle||'',x,0,w,Math.round(titleSize*.5),400,api.C.muted,p.font,'left',1.2);
+  var reinforcement=api.textSpec(p.s.event.reinforcement||'',x,0,w,Math.round(titleSize*.4),400,api.C.muted,p.font,'left',1.24);
+  return {x:x,y:y,w:w,title:title,sub:sub,reinforcement:reinforcement,h:title.h+(sub.h?14+sub.h:0)+(reinforcement.h?15+reinforcement.h:0)};
+ }
+
  function applyV0Layout(p){
   /* Fixed dimensions for institutional poster (1080×1350 class) */
   var W=p.w, H=p.h, MX=56;
   var contentW=W-MX*2;
 
   /* Intro block: title + subtitle + reinforcement */
-  p.intro={
-   x:MX, y:155, w:contentW,
-   title:{size:52},
-   sub:{size:26},
-   reinforcement:{size:21}
-  };
+  p.intro=posterIntro(p,MX,155,contentW,52);
 
   /* Hero occupies centre band when present */
-  p.hero={x:MX, y:260, w:contentW, h:260};
+  p.hero={x:MX,y:p.intro.y+p.intro.h+24,w:contentW,h:260};
 
   /* People: bounded compact portrait grid — cols by count, fixed photo caps */
   var sp=p.s.speakers||[];
@@ -207,7 +209,7 @@
   var gap=30;
   var photoSide=cols===1?180:cols===2?120:84;
   var rowH=125;                                /* hard cap */
-  var startY=550;
+  var startY=p.hero.y+p.hero.h+42;
 
   var colW=Math.round((contentW-gap*(cols-1))/cols);
   var textW=colW-photoSide-18;
@@ -273,15 +275,10 @@
   var W=1350, H=1080, MX=56;
 
   /* Title block: left column x56..620, y150 */
-  p.intro={
-   x:MX, y:150, w:564,
-   title:{size:52},
-   sub:{size:26},
-   reinforcement:{size:21}
-  };
+  p.intro=posterIntro(p,MX,150,564,52);
 
   /* Hero image: right column x690 y145, 604×380 */
-  p.hero={x:690, y:145, w:604, h:380};
+  p.hero={x:690,y:150,w:604,h:Math.max(300,p.intro.h)};
 
   /* Speakers lower strip: x56 y560, w900 */
   var sp=p.s.speakers||[];
@@ -490,24 +487,20 @@
     drawMeetingBand(ctx,p);
    } else {
     /* social v>=3: hero differentiated from background — Sol spec */
-    if(p.s.images.hero){
-     if(p.v===3) p.hero={x:p.w-424,y:145,w:368,h:260};
-     else if(p.v===4) p.hero={x:p.w-424,y:145,w:368,h:470};
-     else if(p.v===6) p.hero={x:p.w-424,y:145,w:368,h:470};
-     else if(p.v===5) p.hero={x:56,y:820,w:p.w-112,h:360};
-     else if(p.v===7) p.hero={x:0,y:0,w:p.w,h:560};
-     else if(p.v===8) p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
-     else if(!p.hero){
-      p.hero=p.story
-       ?{x:0,y:0,w:p.w,h:Math.round(p.h*.52)}
-       :{x:0,y:Math.round(p.h*.68),w:p.w,h:Math.round(p.h*.25)};
-     }
-    } else {
-     /* no hero image: keep Digital family full-bleed placeholders if needed */
-     if(p.v===7) p.hero={x:0,y:0,w:p.w,h:560};
-     else if(p.v===8) p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
+    if(p.intro&&(p.v===3||p.v===4||p.v===6)){
+     var splitTop=145,splitBottom=Math.min(p.namesY||p.meetingY||p.h-300,p.meetingY||p.h-300)-36,splitH=Math.max(260,splitBottom-splitTop);
+     p.intro.x=56;p.intro.w=452;
+     p.hero=p.s.images.hero?{x:548,y:splitTop,w:476,h:splitH}:null;
+    }else if(p.v===5){
+     var heroTop=p.intro.y+p.intro.h+34,heroBottom=(p.namesY||p.meetingY)-36;
+     p.hero=p.s.images.hero?{x:56,y:heroTop,w:p.w-112,h:Math.max(260,heroBottom-heroTop)}:null;
+    }else if(p.v===7){
+     p.intro.x=56;p.intro.y=150;p.intro.w=p.w-112;
+     p.hero=p.s.images.hero?{x:40,y:390,w:p.w-80,h:190}:null;
+    }else if(p.v===8){
+     p.hero=p.s.images.hero?{x:0,y:130,w:p.w,h:660}:null;
+     p.intro.x=56;p.intro.y=830;p.intro.w=p.w-112;
     }
-    if(p.intro&&(p.v===3||p.v===4||p.v===6)) p.intro.w=500;
      /* recompute title size so it fits panel: max 64px, max 3 lines */
      if(p.intro&&(p.v===3||p.v===4||p.v===6)){
       var _max=64,_min=32,_cap=3;
@@ -528,6 +521,13 @@
       p.intro.title.size=88;p.intro.title.h=_ln8.length*88*1.06;p.intro.title.lines=_ln8;
       p.intro.h=p.intro.title.h+(p.intro.sub.h?23+p.intro.sub.h:0)+(p.intro.reinforcement.h?16+p.intro.reinforcement.h:0);
      }
+     if(p.v===7){
+      for(var _ts7=50;_ts7>=34;_ts7-=2){var _ln7=api.wrapLines((p.s.options.socialTitle||'').trim()||p.s.event.title||'Título del evento',p.intro.w,_ts7,700,p.font);if(_ln7.length<=3)break;}
+      p.intro.title.size=_ts7;p.intro.title.h=_ln7.length*_ts7*1.06;p.intro.title.lines=_ln7;
+      var _sub7=api.wrapLines((p.s.options.socialSubtitle||'').trim()||p.s.event.subtitle||'',p.intro.w,22,400,p.font);
+      p.intro.sub.size=22;p.intro.sub.h=_sub7.length*22*1.2;p.intro.sub.lines=_sub7;
+      p.intro.h=p.intro.title.h+(p.intro.sub.h?14+p.intro.sub.h:0);
+     }
      /* v5: hero at y820, title must end before hero — max 76px, max 3 lines */
      if(p.v===5&&p.intro){
       var _max5=76,_min5=32,_cap5=3;
@@ -540,10 +540,9 @@
      await drawHero(ctx,p);
      await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
       /* white title backing panel — generic branch */
-      if(p.v===3||p.v===4||p.v===6) api.box(ctx,p.intro.x-32,p.intro.y-30,p.intro.w+64,p.intro.h+60,'rgba(255,255,255,0.94)',18);
+      if(p.v===3||p.v===4||p.v===6) api.box(ctx,p.intro.x-16,splitTop,p.intro.w+32,splitH,'rgba(255,255,255,0.94)',18);
       else if(p.v===5)api.box(ctx,40,470,p.w-80,300,'rgba(255,255,255,0.94)',18);
-      else if(p.v===7)api.box(ctx,40,110,p.w-80,340,'rgba(255,255,255,0.94)',18);
-      else if(p.v===8)api.box(ctx,p.intro.x-32,p.intro.y-30,p.intro.w+64,p.intro.h+60,'rgba(255,255,255,0.94)',18);
+      else if(p.v===7||p.v===8)api.box(ctx,p.intro.x-16,p.intro.y-20,p.intro.w+32,p.intro.h+40,'rgba(255,255,255,0.94)',18);
      drawTitleBlock(ctx,p);
     /* white translucent panel for names readability */
      if(p.namesY&&p.names&&p.names.h){

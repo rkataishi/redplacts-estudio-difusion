@@ -667,15 +667,9 @@ def run():
         # ============================================================
         # 6. CAPTION DOWNLOAD TXT
         # ============================================================
-        caption_btn = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.ID, "copy-caption"))
-        )
-        real_click(driver, caption_btn)
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: d.execute_script("return document.getElementById('caption-dialog').open"),
-            message="caption-dialog no abrió",
-        )
-        print("✓ caption dialog abierto")
+        driver.execute_script("document.getElementById('tab-share').click()")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-share").is_displayed())
+        print("✓ bloque 05 Texto abierto")
 
         before_txt = _pre_files("*.txt")
         dl_txt = WebDriverWait(driver, TIMEOUT).until(
@@ -685,17 +679,6 @@ def run():
         txt_path, txt_sz = _wait_new_file("*.txt", before_txt, "caption download TXT", min_size=10)
         assert txt_path.lower().endswith(".txt"), f"caption TXT: extensión incorrecta: {txt_path}"
         print(f"✓ caption download TXT ok: {Path(txt_path).name} ({txt_sz} bytes)")
-
-        # close caption dialog
-        close_caption = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#caption-dialog [data-close='caption-dialog']"))
-        )
-        real_click(driver, close_caption)
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: not d.execute_script("return document.getElementById('caption-dialog').open"),
-            message="caption-dialog no se cerró",
-        )
-        print("✓ caption dialog cerrado")
 
         # ============================================================
         # 6.5 GEOMETRY GATE: preview completo, galería sin scroll
@@ -743,6 +726,8 @@ def run():
         assert cv["bottom"] <= vh - 4, (
             f"geometry: canvas bottom {cv['bottom']} > vh-4 {vh - 4} — gallery overflows viewport"
         )
+        assert cv["bottom"] <= geo["ogR"]["top"], "geometry: canvas overlaps overview"
+        assert cv["bottom"] - cv["top"] >= 340, f"geometry: preview demasiado bajo ({cv['bottom'] - cv['top']:.0f}px)"
         print("  ✓ canvas inside viewport (4px bottom margin)")
 
         # exactly 9 cards, each inside overview grid and viewport

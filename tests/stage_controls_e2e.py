@@ -356,17 +356,11 @@ def run():
         print("✓ zoom dialog cerrado")
 
         # ============================================================
-        # 9. CAPTION DIALOG: open, copy, close
+        # 9. TEXTO PARA COMPARTIR: bloque 05
         # ============================================================
-        caption_btn = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.ID, "copy-caption"))
-        )
-        real_click(driver, caption_btn)
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: d.execute_script("return document.getElementById('caption-dialog').open"),
-            message="caption-dialog no abrió",
-        )
-        print("✓ caption dialog abierto")
+        real_click(driver, WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "tab-share"))))
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-share").is_displayed())
+        print("✓ bloque 05 Texto abierto")
         caption_text = driver.execute_script("return document.getElementById('caption-text').value")
         assert len(caption_text) > 10, f"caption-text vacío o muy corto: '{caption_text[:50]}'"
         print(f"  caption-text len={len(caption_text)}")
@@ -384,15 +378,6 @@ def run():
         assert dl_btn.is_displayed(), "download-caption button not visible"
         print("✓ download-caption button present")
 
-        close_caption = WebDriverWait(driver, TIMEOUT).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, "#caption-dialog [data-close='caption-dialog']"))
-        )
-        real_click(driver, close_caption)
-        WebDriverWait(driver, TIMEOUT).until(
-            lambda d: not d.execute_script("return document.getElementById('caption-dialog').open"),
-            message="caption-dialog no se cerró",
-        )
-        print("✓ caption dialog cerrado")
 
         # ============================================================
         # 10. SCREENSHOT

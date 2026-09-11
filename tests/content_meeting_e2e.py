@@ -263,22 +263,22 @@ def run():
         driver.find_element(By.ID, "tab-people").send_keys(Keys.HOME)
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected") == "true")
         print("✓ keyboard Home -> Contenido ok")
-        # End -> Fecha y acceso
+        # End -> Texto para compartir
         driver.execute_script("document.getElementById('tab-content').focus()")
         driver.find_element(By.ID, "tab-content").send_keys(Keys.END)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-meeting").is_displayed())
-        print("✓ keyboard End -> Fecha y acceso ok")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-share").get_attribute("aria-selected") == "true")
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-share").is_displayed())
+        print("✓ keyboard End -> Texto para compartir ok")
         # volver a Contenido via Home para siguiente sección
-        driver.execute_script("document.getElementById('tab-meeting').focus()")
-        driver.find_element(By.ID, "tab-meeting").send_keys(Keys.HOME)
+        driver.execute_script("document.getElementById('tab-share').focus()")
+        driver.find_element(By.ID, "tab-share").send_keys(Keys.HOME)
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-content").get_attribute("aria-selected") == "true")
         print("✓ keyboard navegación completa (ArrowRight/Left/Home/End)")
 
         # --- previous/next y disabled ---
         # en Paso 1
         step_count = driver.find_element(By.ID, "step-count").text
-        assert "Paso 1" in step_count or "1 de 4" in step_count, f"step-count esperado Paso 1, got {step_count}"
+        assert "1 de 5" in step_count, f"step-count esperado Paso 1 de 5, got {step_count}"
         prev_btn = driver.find_element(By.ID, "previous-step")
         next_btn = driver.find_element(By.ID, "next-step")
         assert prev_btn.get_attribute("disabled") is not None or not prev_btn.is_enabled(), "previous debería estar disabled en paso 0"
@@ -301,12 +301,19 @@ def run():
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
         step4 = driver.find_element(By.ID, "step-count").text
         assert "Paso 4" in step4
-        assert driver.find_element(By.ID, "next-step").get_attribute("disabled") is not None or not driver.find_element(By.ID, "next-step").is_enabled(), "next debe estar disabled en último paso"
-        print(f"✓ next 3->4 ok y next disabled ({step4})")
-        # previous -> paso 3
+        assert driver.find_element(By.ID, "next-step").is_enabled(), "next debe estar habilitado en paso 4"
+        real_click(driver, driver.find_element(By.ID, "next-step"))
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-share").get_attribute("aria-selected") == "true")
+        step5 = driver.find_element(By.ID, "step-count").text
+        assert "Paso 5" in step5 and not driver.find_element(By.ID, "next-step").is_enabled()
+        assert len(driver.find_element(By.ID, "caption-text").get_attribute("value")) > 10
+        print(f"✓ next 3->4->5 ok y next disabled ({step5})")
+        # previous -> paso 4
         prev_btn = driver.find_element(By.ID, "previous-step")
-        assert prev_btn.is_enabled(), "previous debe estar habilitado en paso 3"
+        assert prev_btn.is_enabled(), "previous debe estar habilitado en paso 5"
         real_click(driver, prev_btn)
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
+        real_click(driver, driver.find_element(By.ID, "previous-step"))
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected") == "true")
         assert "Paso 3" in driver.find_element(By.ID, "step-count").text
         print("✓ previous 4->3 ok")

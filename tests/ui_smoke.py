@@ -249,6 +249,10 @@ def run():
         wait_js(driver, "window.PLACTSStudio.getState().speakers.length===2", msg="tras #add-speaker speakers!=2")
         st = get_state(driver)
         assert len(st["speakers"]) == 2, f"tras agregar expositor esperado 2, got {len(st['speakers'])}"
+        people_geo = driver.execute_script("""const e=document.querySelector('.editor'),f=document.getElementById('form-scroll'),c=[...document.querySelectorAll('#speakers-list .person')].at(-1),foot=document.querySelector('.editor-foot'),er=e.getBoundingClientRect(),fr=f.getBoundingClientRect(),cr=c.getBoundingClientRect(),br=foot.getBoundingClientRect();return {editorScroll:e.scrollTop,formTop:fr.top,cardTop:cr.top,editorBottom:er.bottom,footBottom:br.bottom};""")
+        assert people_geo["editorScroll"] == 0, f"el contenedor del editor no debe desplazarse: {people_geo}"
+        assert abs(people_geo["cardTop"] - people_geo["formTop"]) <= 2, f"el expositor nuevo debe llegar al tope del bloque: {people_geo}"
+        assert abs(people_geo["editorBottom"] - people_geo["footBottom"]) <= 2, f"Generar piezas debe permanecer al pie: {people_geo}"
         print("✓ checkpoint 2/8: add speaker ok (speakers=2)")
 
         # 4) click #add-moderator y esperar moderators=1; eliminar ese moderador y volver 0
@@ -340,25 +344,27 @@ def run():
         print("✓ checkpoint 6/8: upload+CTA ok (Reemplazar imagen de fondo visible en .upload-copy .btn)")
 
         # 8) probar Siguiente/Anterior
-        # actualmente en Imagenes (paso 3 de 4). Siguiente debe ir a Fecha y acceso
+        # actualmente en Imágenes (paso 3 de 5). Siguiente recorre Fecha y Texto
         next_btn = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "next-step")))
         prev_btn = WebDriverWait(driver, TIMEOUT).until(EC.element_to_be_clickable((By.ID, "previous-step")))
         # capturar step-count antes
         step_count_el = driver.find_element(By.ID, "step-count")
-        assert "Paso 3" in step_count_el.text or "3 de 4" in step_count_el.text, f"en Imagenes step-count debe ser Paso 3 de 4, got '{step_count_el.text}'"
+        assert "3 de 5" in step_count_el.text, f"en Imágenes step-count debe ser Paso 3 de 5, got '{step_count_el.text}'"
         real_click(driver, next_btn)
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-meeting").is_displayed())
         step_count_after = driver.find_element(By.ID, "step-count").text
-        assert "Paso 4" in step_count_after or "4 de 4" in step_count_after, f"tras Siguiente debe ser Paso 4 de 4, got '{step_count_after}'"
+        assert "4 de 5" in step_count_after, f"tras Siguiente debe ser Paso 4 de 5, got '{step_count_after}'"
+        real_click(driver, driver.find_element(By.ID, "next-step"))
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-share").is_displayed())
+        assert "5 de 5" in driver.find_element(By.ID, "step-count").text
         assert driver.find_element(By.ID, "next-step").get_attribute("disabled") is not None or not driver.find_element(By.ID, "next-step").is_enabled(), "en ultimo paso Siguiente debe estar disabled"
-        # Anterior vuelve a Imagenes
+        # Anterior vuelve a Fecha y acceso
         real_click(driver, prev_btn)
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-images").get_attribute("aria-selected") == "true")
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "panel-images").is_displayed())
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-meeting").get_attribute("aria-selected") == "true")
         step_back = driver.find_element(By.ID, "step-count").text
-        assert "Paso 3" in step_back or "3 de 4" in step_back, f"tras Anterior debe volver a Paso 3 de 4, got '{step_back}'"
-        print("✓ checkpoint 7/8: navegación ok (Paso 3→4→3, Siguiente/Anterior)")
+        assert "4 de 5" in step_back, f"tras Anterior debe volver a Paso 4 de 5, got '{step_back}'"
+        print("✓ checkpoint 7/8: navegación ok (Paso 3→4→5→4, Siguiente/Anterior)")
 
         # 8b) editor ancho, referencias y preview único (antes de consola)
         # .editor ancho >=400
