@@ -97,7 +97,7 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
 .overview-label{font-size:10px;font-weight:700;color:var(--ink);margin-top:6px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .overview-dims{font-size:9px;color:var(--muted);line-height:1.2}
 @media(max-width:1210px){.overview-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:710px){.overview-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:710px){.overview-grid{grid-template-columns:repeat(2,1fr)}.overview-label,.overview-dims{display:block}#identity-button .desktop-only,#about-button .desktop-only{display:inline}}
 .stage-toolbar{justify-content:flex-end}
 </style>
 <style>
@@ -1618,7 +1618,7 @@ function socialNames(s,width,font,story){
  const names=textSpec(s.speakers.map(p=>p.name||'Nombre del participante').join(' · '),0,0,tw,size,400,C.ink,font,'left',1.28);
  const mods=textSpec(s.moderators.length?`${s.moderators.length===1?'Modera':'Moderan'} · ${s.moderators.map(p=>p.name||'Nombre de moderación').join(' · ')}`:'',0,0,tw,story?25:22,400,C.muted,font,'left',1.26);
  const photos=s.options.socialPhotos?[...s.speakers,...s.moderators]:[];
- const photoH=photos.length?68:0;
+ const photoH=photos.length?(story?80:72):0;
  const contentH=photoH+label.h+9+names.h+(mods.h?16+mods.h:0);
  return {label,names,mods,photos,photoH,h:Math.max(contentH,qrSize),qr,qrSize,width};
 }
@@ -1647,7 +1647,7 @@ function socialIntro(s,width,font,maxSize,minSize,space,story){
  return result;
 }
 function computeSocialPlan(s,v,font){
- const story=v!==5,h=story?1920:FORMATS[s.options.feedFormat||'portrait'],m=72,width=WIDTH-2*m,top=story?144:52,bottom=story?180:52;
+ const story=v!==5,h=story?1920:FORMATS[s.options.feedFormat||'portrait'],m=72,width=WIDTH-2*m,top=story?144:52,bottom=story?110:52;
  const footerTop=h-bottom-94,names=socialNames(s,width,font,story),namesY=footerTop-32-names.h;
  const meeting=socialMeeting(s,width,font,story),meetingY=namesY-(story?50:34)-meeting.h;
  const titleTop=v===3?top+200:v===4?top+368:top+134;
@@ -1667,7 +1667,7 @@ function computeSocialPlan(s,v,font){
 }
 async function drawSocialNames(ctx,p,audit){
  const c=p.names,x=72;let y=p.namesY;
- if(c.photos.length){let px=x;for(const person of c.photos){await drawAvatar(ctx,person,px,y,52,p.font,'circle');px+=64;}y+=c.photoH;}
+ if(c.photos.length){const size=p.story?64:56;let px=x;for(const person of c.photos){await drawAvatar(ctx,person,px,y,size,p.font,'circle');px+=size+12;}y+=c.photoH;}
  drawText(ctx,moveText(c.label,x,y),audit,'social-people-label');y+=c.label.h+9;
  drawText(ctx,moveText(c.names,x,y),audit,'social-speakers');y+=c.names.h;
  if(c.mods.h)drawText(ctx,moveText(c.mods,x,y+16),audit,'social-moderators');
@@ -1682,7 +1682,9 @@ function drawSocialMeeting(ctx,p,audit){
  drawText(ctx,moveText(m.z,x,ty),audit,'meeting-zone');
  let ry=y;const rx=x+m.rightX;
  drawText(ctx,moveText(m.platform,rx,ry),audit,'meeting-platform');ry+=m.platform.h+12;
- drawText(ctx,moveText(m.link,rx,ry),audit,'meeting-link');ry+=m.link.h;
+ if(safeURL(p.s.event.url)){box(ctx,rx-10,ry-6,m.width-m.rightX+20,m.link.h+12,C.ink,10);drawText(ctx,{...moveText(m.link,rx,ry),color:C.paper,weight:700},audit,'meeting-link');}
+ else drawText(ctx,moveText(m.link,rx,ry),audit,'meeting-link');
+ ry+=m.link.h;
  if(m.location.h)drawText(ctx,moveText(m.location,rx,ry+12),audit,'meeting-location');
 }
 async function drawSocialFooter(ctx,p,audit){

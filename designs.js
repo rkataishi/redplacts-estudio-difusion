@@ -74,10 +74,12 @@
   if(!p.intro)return;
   var i=p.intro;
   var y=i.y||155;
+  var title=p.v>=3&&p.s.options.socialTitle.trim()?p.s.options.socialTitle:p.s.event.title;
+  var subtitle=p.v>=3&&p.s.options.socialSubtitle.trim()?p.s.options.socialSubtitle:p.s.event.subtitle;
   /* title */
-  api.drawText(ctx,api.textSpec(p.s.event.title||'Título del evento',i.x||56,y,i.w||(p.w-112),i.title.size||54,700,api.C.ink,p.font,i.title.align||'left',1.06),'title');
+  api.drawText(ctx,api.textSpec(title||'Título del evento',i.x||56,y,i.w||(p.w-112),i.title.size||54,700,api.C.ink,p.font,i.title.align||'left',1.06),'title');
   y+=i.title.h;
-  if(p.intro.sub&&p.intro.sub.h){y+=14;api.drawText(ctx,api.textSpec(p.s.event.subtitle||'',i.x||56,y,i.w||(p.w-112),i.sub.size||27,400,api.C.muted,p.font,i.sub.align||'left',1.2),'subtitle');y+=p.intro.sub.h;}
+  if(p.intro.sub&&p.intro.sub.h){y+=14;api.drawText(ctx,api.textSpec(subtitle||'',i.x||56,y,i.w||(p.w-112),i.sub.size||27,400,api.C.muted,p.font,i.sub.align||'left',1.2),'subtitle');y+=p.intro.sub.h;}
   if(p.intro.reinforcement&&p.intro.reinforcement.h){y+=15;api.drawText(ctx,api.textSpec(p.s.event.reinforcement||'',i.x||56,y,i.w||(p.w-112),i.reinforcement.size||22,400,api.C.muted,p.font,i.reinforcement.align||'left',1.24),'reinforcement');}
  }
 
@@ -144,7 +146,9 @@
   var ry=y+16,rx=x+m.rightX;
   api.drawText(ctx,api.textSpec(m.platform.text||'',rx,ry,m.rightX?w-m.rightX:w*.50,m.platform.size||21,700,api.C.ink,font),'m-platform');
   ry+=m.platform.h+8;
-  api.drawText(ctx,api.textSpec(m.link.text||'',rx,ry,m.rightX?w-m.rightX:w*.50,m.link.size||19,400,api.C.muted,font),'m-link');
+  var linkW=m.rightX?w-m.rightX:w*.50;
+  if(/^https?:\/\//i.test((p.s.event.url||'').trim())&&m.link.text){api.box(ctx,rx-10,ry-5,linkW+20,m.link.h+10,'#142536',12);api.drawText(ctx,api.textSpec(m.link.text,rx,ry,linkW,m.link.size||19,700,'#fff',font),'m-link');}
+  else api.drawText(ctx,api.textSpec(m.link.text||'',rx,ry,linkW,m.link.size||19,400,api.C.muted,font),'m-link');
   ry+=m.link.h+8;
   if(m.location&&m.location.h)api.drawText(ctx,api.textSpec(m.location.text||'',rx,ry,m.rightX?w-m.rightX:w*.50,m.location.size||18,400,api.C.muted,font),'m-location');
   /* QR */
@@ -220,6 +224,7 @@
     x:ix, y:iy, w:colW, h:rowH,
     person:sp[i], photo:photoSide,
     shape:'rect', vertical:false,
+    textH:ntH+(dtH?9+dtH:0),
     nt:{size:28,h:ntH,lines:nt},
     dt:{size:20,h:dtH,lines:dt}
    });
@@ -298,6 +303,7 @@
     x:ix, y:iy, w:colW, h:rowH,
     person:sp[i], photo:photoSide,
     shape:'rect', vertical:false,
+    textH:nt.length*24*1.13+(dt.length?9+dt.length*17*1.24:0),
     nt:{size:24,h:nt.length*24*1.13,lines:nt},
     dt:{size:17,h:dt.length*17*1.24,lines:dt}
    });
@@ -327,7 +333,7 @@
 
   /* Meeting band: bottom — merge layout sizing into incoming meeting */
    var mH=(p.meeting&&p.meeting.h)||115;
-   p.metaY=Math.min(H-200,H-mH-8);
+   p.metaY=H-75-mH-16;
    p.meeting={
     ...p.meeting,
     width:W-MX*2, h:mH,
@@ -449,8 +455,11 @@
    /* v2 editorial portrait: full-width title, wide hero, profile grid */
    applyV2Layout(p);
    if(p.valid){
+    api.box(ctx,38,130,p.w-76,225,'rgba(255,255,255,0.86)',12);
     drawTitleBlock(ctx,p);
     await drawHero(ctx,p);
+    var v2PeoplePanelY=Math.min(p.peopleY,p.modsY)-43;
+    api.box(ctx,38,v2PeoplePanelY,p.w-76,p.metaY-v2PeoplePanelY-25,'rgba(255,255,255,0.86)',12);
     await drawPeopleGrid(ctx,p);
     await drawModerators(ctx,p);
     drawMeetingBand(ctx,p);
@@ -464,6 +473,8 @@
     applyV0Layout(p);
     drawTitleBlock(ctx,p);
     await drawHero(ctx,p);
+    var v0PeoplePanelY=Math.max(Math.min(p.peopleY,p.modsY)-43,p.hero?p.hero.y+p.hero.h:0);
+    api.box(ctx,38,v0PeoplePanelY,p.w-76,p.metaY-v0PeoplePanelY-25,'rgba(255,255,255,0.86)',12);
     await drawPeopleGrid(ctx,p);
     await drawModerators(ctx,p);
     drawMeetingBand(ctx,p);
@@ -472,6 +483,8 @@
     applyV1Layout(p);
     drawTitleBlock(ctx,p);
     await drawHero(ctx,p);
+    var v1PeoplePanelY=Math.max(Math.min(p.peopleY,p.modsY)-25,p.hero?p.hero.y+p.hero.h:0);
+    api.box(ctx,38,v1PeoplePanelY,p.w-76,p.metaY-v1PeoplePanelY-25,'rgba(255,255,255,0.86)',12);
     await drawPeopleGrid(ctx,p);
     await drawModerators(ctx,p);
     drawMeetingBand(ctx,p);
@@ -479,8 +492,8 @@
     /* social v>=3: hero differentiated from background — Sol spec */
     if(p.s.images.hero){
      if(p.v===3) p.hero={x:p.w-424,y:145,w:368,h:260};
-     else if(p.v===4) p.hero={x:p.w-424,y:145,w:368,h:300};
-     else if(p.v===6) p.hero={x:p.w-424,y:145,w:368,h:300};
+     else if(p.v===4) p.hero={x:p.w-424,y:145,w:368,h:470};
+     else if(p.v===6) p.hero={x:p.w-424,y:145,w:368,h:470};
      else if(p.v===5) p.hero={x:56,y:820,w:p.w-112,h:360};
      else if(p.v===7) p.hero={x:0,y:0,w:p.w,h:560};
      else if(p.v===8) p.hero={x:0,y:0,w:p.w,h:Math.round(p.h*.62)};
@@ -499,9 +512,21 @@
      if(p.intro&&(p.v===3||p.v===4||p.v===6)){
       var _max=64,_min=32,_cap=3;
       for(var _ts2=_max;_ts2>=_min;_ts2-=2){
-       var _ln=api.wrapLines(p.s.event.title||'Título del evento',p.intro.w,_ts2,700,p.font);
-       if(_ln.length<=_cap){p.intro.title.size=_ts2;p.intro.title.h=_ln.length*_ts2*1.06;p.intro.title.lines=_ln;break;}
+       var _ln=api.wrapLines((p.s.options.socialTitle||'').trim()||p.s.event.title||'Título del evento',p.intro.w,_ts2,700,p.font);
+       if(_ln.length<=_cap)break;
       }
+      _ts2=Math.max(_min,_ts2);
+      p.intro.title.size=_ts2;p.intro.title.h=_ln.length*_ts2*1.06;p.intro.title.lines=_ln;
+      var _subLines=api.wrapLines((p.s.options.socialSubtitle||'').trim()||p.s.event.subtitle||'',p.intro.w,p.intro.sub.size,400,p.font);
+      var _reinforcementLines=api.wrapLines(p.s.options.socialReinforcement?p.s.event.reinforcement:'',p.intro.w,p.intro.reinforcement.size,400,p.font);
+      p.intro.sub.h=_subLines.length*p.intro.sub.size*1.2;
+      p.intro.reinforcement.h=_reinforcementLines.length*p.intro.reinforcement.size*1.24;
+      p.intro.h=p.intro.title.h+(p.intro.sub.h?14+p.intro.sub.h:0)+(p.intro.reinforcement.h?15+p.intro.reinforcement.h:0);
+     }
+     if(p.v===8&&p.intro.title.size>88){
+      var _ln8=api.wrapLines((p.s.options.socialTitle||'').trim()||p.s.event.title||'Título del evento',p.intro.w,88,700,p.font);
+      p.intro.title.size=88;p.intro.title.h=_ln8.length*88*1.06;p.intro.title.lines=_ln8;
+      p.intro.h=p.intro.title.h+(p.intro.sub.h?23+p.intro.sub.h:0)+(p.intro.reinforcement.h?16+p.intro.reinforcement.h:0);
      }
      /* v5: hero at y820, title must end before hero — max 76px, max 3 lines */
      if(p.v===5&&p.intro){
@@ -515,10 +540,10 @@
      await drawHero(ctx,p);
      await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
       /* white title backing panel — generic branch */
-      if(p.v===3||p.v===4||p.v===6) api.box(ctx,40,120,540,330,'rgba(255,255,255,0.94)',18);
+      if(p.v===3||p.v===4||p.v===6) api.box(ctx,p.intro.x-32,p.intro.y-30,p.intro.w+64,p.intro.h+60,'rgba(255,255,255,0.94)',18);
       else if(p.v===5)api.box(ctx,40,470,p.w-80,300,'rgba(255,255,255,0.94)',18);
       else if(p.v===7)api.box(ctx,40,110,p.w-80,340,'rgba(255,255,255,0.94)',18);
-      else if(p.v===8)api.box(ctx,40,450,p.w-80,430,'rgba(255,255,255,0.94)',18);
+      else if(p.v===8)api.box(ctx,p.intro.x-32,p.intro.y-30,p.intro.w+64,p.intro.h+60,'rgba(255,255,255,0.94)',18);
      drawTitleBlock(ctx,p);
     /* white translucent panel for names readability */
      if(p.namesY&&p.names&&p.names.h){

@@ -430,6 +430,33 @@ def run():
         assert is_selected_count == 1, f"debe haber exactamente 1 .is-selected tras click, got {is_selected_count}"
         print(f"✓ checkpoint variant click ok: click variant {target_val} cambió .is-selected {initial_selected_val}->{selected_after}, 9 cards maintained")
 
+        driver.execute_cdp_cmd("Emulation.setDeviceMetricsOverride", {
+            "width": 390, "height": 844, "deviceScaleFactor": 1, "mobile": True,
+        })
+        for button_id in ("identity-button", "about-button"):
+            button = driver.find_element(By.ID, button_id)
+            assert button.is_displayed() and button.text.strip(), f"#{button_id} debe ser visible a 390 px"
+        mobile_cards = driver.find_elements(By.CSS_SELECTOR, "#overview-grid .overview-card")
+        assert all(driver.execute_script(
+            "const l=arguments[0].querySelector('.overview-label').getBoundingClientRect();"
+            "const d=arguments[0].querySelector('.overview-dims').getBoundingClientRect();"
+            "return d.top >= l.bottom;", card
+        ) for card in mobile_cards), "label y dimensiones deben ocupar líneas separadas a 390 px"
+        assert driver.execute_script("return document.documentElement.scrollWidth <= innerWidth"), "overflow horizontal móvil"
+        print("✓ checkpoint móvil ok: Identidad/Ayuda visibles y metadatos separados a 390 px")
+
+        long_title = "Inteligencia artificial, soberanía tecnológica y políticas públicas para un desarrollo federal sostenible e inclusivo en toda la Argentina"
+        social_plans = driver.execute_async_script(
+            "const done=arguments[arguments.length-1],s=window.PLACTSStudio.getState();"
+            "s.options.socialTitle=arguments[0];"
+            "window.PLACTSStudio.replace(s).then(()=>done(window.PLACTSStudio.getPlans())).catch(e=>done({error:String(e)}));",
+            long_title,
+        )
+        assert isinstance(social_plans, list), f"no se recompilaron variantes con título social largo: {social_plans}"
+        assert all(social_plans[i]["valid"] and not social_plans[i]["issues"] for i in (3, 4, 6, 8)), \
+            "el título social largo debe conservar composiciones válidas y sin overflow"
+        print("✓ checkpoint título social largo ok: variantes 3, 4, 6 y 8 válidas")
+
         # 9) capturar browser console severe final
         assert_no_severe_logs(driver)
         print("✓ checkpoint 8/8: consola limpia sin SEVERE")
