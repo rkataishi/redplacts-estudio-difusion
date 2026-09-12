@@ -6,12 +6,12 @@ Estado: AUDITORÍA COMPLETA, PENDIENTE DE GRADUACIÓN
 
 ## Resumen
 
-Se completó el recorrido funcional y visual de los cinco bloques, los diálogos, los estados de carga y recorte, las nueve piezas y las exportaciones. La suite final terminó 9/9 en código 0, sin errores graves de consola. Se corrigieron los defectos reproducidos de preview, opacidad, densidad de personas, fallback y composición de hero; no se modificaron los materiales no versionados del usuario.
+Se completó el recorrido funcional y visual de los cinco bloques, los diálogos, los estados de carga y recorte, las nueve piezas y las exportaciones. Una segunda pasada con Browser Use recorrió pantallas, scrolls, densidad máxima, textos, imágenes, diálogos y móvil. La suite final terminó 9/9 en código 0, sin errores graves de consola. Se corrigieron los defectos reproducidos de preview, opacidad, densidad de personas, fallback, composición de hero y moderación panorámica; no se modificaron los materiales no versionados del usuario.
 
 ## Entorno
 
 - SHA inicial: `4fa2bbc`
-- Navegador: Chrome mediante el Selenium ya incluido en el proyecto
+- Navegador: Chrome mediante Selenium y Browser Use 0.1.13 sobre un perfil aislado
 - Sistema: macOS
 - Servidor: `python3 -m http.server 8000 --bind 127.0.0.1`
 - Viewports: 1920×1080, 1440×900, 1280×757, 768×1024, 390×844
@@ -32,6 +32,7 @@ Se completó el recorrido funcional y visual de los cinco bloques, los diálogos
 | 10 | Responsive y accesibilidad básica | VERIFICADA | `.audit/screenshots/phase10/`, `.audit/screenshots/final/` |
 | 11 | Limpieza probada | VERIFICADA | `.audit/audit_01_decisions.tsv` |
 | 12 | Validación final | VERIFICADA | suite final 9/9, `.audit/screenshots/final/` |
+| 13 | Revalidación con Browser Use | VERIFICADA | `.audit/browser-use-2026-09-12/`, `tests/people_controls_e2e.py` |
 
 ## Hallazgos
 
@@ -87,13 +88,22 @@ Se completó el recorrido funcional y visual de los cinco bloques, los diálogos
 - Evidencia: proyecto C con seis expositores en las nueve salidas.
 - Resultado: 01 compacta nombres y retratos; 03 conserva un aviso explícito sin solapar logo ni mensaje; las otras ocho piezas mantienen personas, moderación y footer dentro del canvas.
 
+### A01-009 · Moderadores superpuestos en Poster panorámica
+
+- Estado: resuelto y verificado.
+- Severidad: alta, visual y de exportación.
+- Evidencia previa: `.audit/browser-use-2026-09-12/23-variant-02-expanded.png`.
+- Causa: el layout calculaba `item.y` para cada moderador, pero el renderer usaba una coordenada vertical fija.
+- Resultado: el primer bloque termina en `603` y el segundo comienza en `728`; el rótulo usa los 314 px reales de su columna; la pieza no informa issues y vuelve a poder descargarse.
+- Evidencia posterior: `.audit/browser-use-2026-09-12/28-variant-02-expanded-final.png` y `.audit/browser-use-2026-09-12/30-mobile-main-390x844-final.png`.
+
 ## Limpieza
 
 Se eliminaron cinco familias CSS sin referencias en HTML, JavaScript ni pruebas: `collection-nav`, `stage-toolbar`, `segmented`, `page-intro` y `local-state`. El análisis estructural confirmó que las 15 funciones de `designs.js`, incluido el fallback legado, siguen siendo alcanzables; se conservaron.
 
 ## Cierre
 
-- Suite funcional: 9/9 scripts en código 0.
+- Suite funcional posterior al último cambio: 9/9 scripts en código 0.
 - Exportación: 9 PNG individuales, ZIP con 12 entradas, proyecto JSON y texto TXT verificados.
 - Geometría: cinco viewports, móvil horizontal 844×390 y equivalentes físicos de zoom 80%, 125% y 200%.
 - Consola: sin errores `SEVERE` durante los recorridos.

@@ -70,6 +70,7 @@ No incluye rediseñar la identidad, agregar features, migrar de tecnología, int
 10. [Fase 10: responsive y accesibilidad](audit_01_app_exhaustiva_fase10_responsive_accesibilidad.md). Depende de fases 2 a 9.
 11. [Fase 11: limpieza](audit_01_app_exhaustiva_fase11_limpieza.md). Depende de evidencia de fases anteriores.
 12. [Fase 12: validación final](audit_01_app_exhaustiva_fase12_validacion_final.md). Depende de todas las anteriores.
+13. [Fase 13: revalidación con Browser Use](audit_01_app_exhaustiva_fase13_browser_use.md). Reabre el producto terminado en un navegador aislado, recorre cada pantalla y corrige solamente regresiones reproducidas.
 
 ## Método de ejecución
 
@@ -151,4 +152,5 @@ La línea base registra tiempos de carga, dimensiones y duración de la suite. E
 - [x] Fase 10.
 - [x] Fase 11.
 - [x] Fase 12.
+- [x] Fase 13.
 - [ ] Aprobación de graduación.

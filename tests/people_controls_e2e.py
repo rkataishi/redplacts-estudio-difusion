@@ -320,6 +320,23 @@ def run():
         assert len(get_state(driver)["moderators"])==2
         print("✓ moderators 2/2 alcanzado y #add-moderator disabled")
 
+        # La panorámica apila la moderación: cada bloque debe usar su banda calculada.
+        mod_ids = [p["id"] for p in get_state(driver)["moderators"]]
+        for i, mid in enumerate(mod_ids, 1):
+            js_set_value(driver, f"#name-{mid}", f"Moderación de prueba {i} con nombre extendido")
+            js_set_value(driver, f"#description-{mid}", f"Descripción visible de la moderación {i} para comprobar que ambos bloques mantienen su espacio.")
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: len(d.execute_script("return window.PLACTSStudio.getPlans().find(p=>p.variant==='poster-panoramica')?.audit.filter(x=>x.label.startsWith('mod-name-'))||[]")) == 2,
+            message="la panorámica no compiló dos bloques de moderación",
+        )
+        mod_audit = driver.execute_script("return window.PLACTSStudio.getPlans().find(p=>p.variant==='poster-panoramica').audit.filter(x=>x.label.startsWith('mod-'))")
+        panorama_issues = driver.execute_script("return window.PLACTSStudio.getPlans().find(p=>p.variant==='poster-panoramica').issues")
+        first_bottom = max(x["y"] + x["h"] for x in mod_audit if x["label"] in ("mod-name-0", "mod-desc-0"))
+        second_top = next(x["y"] for x in mod_audit if x["label"] == "mod-name-1")
+        assert second_top > first_bottom, f"moderadores superpuestos en panorámica: first_bottom={first_bottom}, second_top={second_top}"
+        assert not panorama_issues, f"la moderación válida bloqueó la panorámica: {panorama_issues}"
+        print(f"✓ panorama moderators separated: first_bottom={first_bottom:.1f}, second_top={second_top:.1f}")
+
         # eliminar hasta 0 (moderadores no tienen guard de mínimo, sí se puede llegar a 0)
         st_mod = get_state(driver)
         for mid in [p["id"] for p in st_mod["moderators"]]:

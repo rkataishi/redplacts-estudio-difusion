@@ -117,15 +117,16 @@
  }
 
  /** Moderators row */
- async function drawModerators(ctx,p){
+ async function drawModerators(ctx,p,audit){
   if(!p.mods||!p.mods.items||!p.mods.items.length)return;
-  var ml=p.mods,px=p.modsX||56,py=p.modsY||700,font=p.font,w=p.w-112;
-  api.drawText(ctx,api.textSpec(ml.label||'MODERA',px,py,w,17,700,api.C.muted,font),'mod-label');
+  var ml=p.mods,px=p.modsX||56,py=p.modsY||700,font=p.font,w=p.w-px-56;
+  api.drawText(ctx,api.textSpec(ml.label||'MODERA',px,py,w,17,700,api.C.muted,font),'mod-label',audit);
   for(var i=0;i<ml.items.length;i++){
    var it=ml.items[i];
-   await api.drawAvatar(ctx,it.person,px+it.x,py+34,it.photo,font,'circle');
-   api.drawText(ctx,api.textSpec(it.person.name||'Nombre',px+it.x+it.photo+16,py+34,it.w-it.photo-16,it.nt.size||24,700,api.C.ink,font),'mod-name-'+i);
-   if(it.dt&&it.dt.h)api.drawText(ctx,api.textSpec(it.person.description||'',px+it.x+it.photo+16,py+34+it.nt.h+7,it.w-it.photo-16,it.dt.size||20,400,api.C.muted,font),'mod-desc-'+i);
+   var iy=py+(it.y||0)+34;
+   await api.drawAvatar(ctx,it.person,px+it.x,iy,it.photo,font,'circle');
+   api.drawText(ctx,api.textSpec(it.person.name||'Nombre',px+it.x+it.photo+16,iy,it.w-it.photo-16,it.nt.size||24,700,api.C.ink,font),'mod-name-'+i,audit);
+   if(it.dt&&it.dt.h)api.drawText(ctx,api.textSpec(it.person.description||'',px+it.x+it.photo+16,iy+it.nt.h+7,it.w-it.photo-16,it.dt.size||20,400,api.C.muted,font),'mod-desc-'+i,audit);
   }
  }
 
@@ -463,7 +464,7 @@
     var v2PeoplePanelY=Math.min(p.peopleY,p.modsY)-43;
     api.box(ctx,38,v2PeoplePanelY,p.w-76,p.metaY-v2PeoplePanelY-25,'rgba(255,255,255,0.86)',12);
     await drawPeopleGrid(ctx,p);
-    await drawModerators(ctx,p);
+    await drawModerators(ctx,p,audit);
     drawMeetingBand(ctx,p);
    } else {
     await drawFallback(ctx,p);
@@ -479,7 +480,7 @@
     var v0PeoplePanelY=Math.max(Math.min(p.peopleY,p.modsY)-43,p.hero?p.hero.y+p.hero.h:0);
     api.box(ctx,38,v0PeoplePanelY,p.w-76,p.metaY-v0PeoplePanelY-25,'rgba(255,255,255,0.86)',12);
     await drawPeopleGrid(ctx,p);
-    await drawModerators(ctx,p);
+    await drawModerators(ctx,p,audit);
     drawMeetingBand(ctx,p);
    } else if(p.v===1){
     /* v1 true landscape 1350×1080 */
@@ -490,7 +491,7 @@
     var v1PeoplePanelY=Math.max(Math.min(p.peopleY,p.modsY)-25,p.hero?p.hero.y+p.hero.h:0);
     api.box(ctx,38,v1PeoplePanelY,p.w-76,p.metaY-v1PeoplePanelY-25,'rgba(255,255,255,0.86)',12);
     await drawPeopleGrid(ctx,p);
-    await drawModerators(ctx,p);
+    await drawModerators(ctx,p,audit);
     drawMeetingBand(ctx,p);
   } else {
     /* social v>=3: hero differentiated from background — Sol spec */
@@ -569,7 +570,7 @@
      await api.drawSocialNames(ctx,p,audit);
     } else {
      await drawPeopleGrid(ctx,p);
-     await drawModerators(ctx,p);
+     await drawModerators(ctx,p,audit);
     }
     if(api.drawSocialMeeting){
      api.drawSocialMeeting(ctx,p,audit);
