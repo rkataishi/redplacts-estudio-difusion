@@ -139,7 +139,7 @@ La línea base registra tiempos de carga, dimensiones y duración de la suite. E
 
 - [x] Alcance y mapa aprobados por el usuario.
 - [x] Commit local del plan.
-- [ ] Fase 1.
+- [x] Fase 1.
 - [ ] Fase 2.
 - [ ] Fase 3.
 - [ ] Fase 4.

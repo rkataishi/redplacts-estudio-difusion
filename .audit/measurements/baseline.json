@@ -1,0 +1,1838 @@
+[
+  {
+    "canvas": {
+      "bottom": 883,
+      "height": 671.3125,
+      "left": 988.96875,
+      "right": 1526.015625,
+      "top": 211.6875,
+      "width": 537.046875
+    },
+    "compileButton": {
+      "bottom": 1012,
+      "height": 43.59375,
+      "left": 137,
+      "right": 659,
+      "top": 968.40625,
+      "width": 522
+    },
+    "document": {
+      "scrollHeight": 1080,
+      "scrollWidth": 1920
+    },
+    "editor": {
+      "bottom": 1048,
+      "height": 966,
+      "left": 118,
+      "right": 678,
+      "top": 82,
+      "width": 560
+    },
+    "editorFoot": {
+      "bottom": 1047,
+      "height": 128.59375,
+      "left": 119,
+      "right": 677,
+      "top": 918.40625,
+      "width": 558
+    },
+    "formScroll": {
+      "clientHeight": 698,
+      "rect": {
+        "bottom": 918.40625,
+        "height": 697.8125,
+        "left": 119,
+        "right": 677,
+        "top": 220.59375,
+        "width": 558
+      },
+      "scrollHeight": 744,
+      "scrollTop": 0
+    },
+    "label": "empty-1920x1080",
+    "overview": {
+      "bottom": 1048,
+      "height": 112,
+      "left": 713,
+      "right": 1802,
+      "top": 936,
+      "width": 1089
+    },
+    "overviewGrid": {
+      "bottom": 1069,
+      "height": 94,
+      "left": 728,
+      "right": 1787,
+      "top": 975,
+      "width": 1059
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 713,
+      "right": 812.15625,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1576.1875,
+      "right": 1660.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 1,
+    "stage": {
+      "bottom": 1048,
+      "height": 966,
+      "left": 713,
+      "right": 1802,
+      "top": 82,
+      "width": 1089
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 713,
+      "right": 1802,
+      "top": 90,
+      "width": 1089
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 1080,
+      "width": 1920
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 703,
+      "height": 491.3125,
+      "left": 811.0625,
+      "right": 1204.109375,
+      "top": 211.6875,
+      "width": 393.046875
+    },
+    "compileButton": {
+      "bottom": 832,
+      "height": 43.59375,
+      "left": 57,
+      "right": 566.1875,
+      "top": 788.40625,
+      "width": 509.1875
+    },
+    "document": {
+      "scrollHeight": 900,
+      "scrollWidth": 1440
+    },
+    "editor": {
+      "bottom": 868,
+      "height": 786,
+      "left": 38,
+      "right": 585.1875,
+      "top": 82,
+      "width": 547.1875
+    },
+    "editorFoot": {
+      "bottom": 867,
+      "height": 128.59375,
+      "left": 39,
+      "right": 584.1875,
+      "top": 738.40625,
+      "width": 545.1875
+    },
+    "formScroll": {
+      "clientHeight": 518,
+      "rect": {
+        "bottom": 738.40625,
+        "height": 517.8125,
+        "left": 39,
+        "right": 584.1875,
+        "top": 220.59375,
+        "width": 545.1875
+      },
+      "scrollHeight": 743,
+      "scrollTop": 0
+    },
+    "label": "empty-1440x900",
+    "overview": {
+      "bottom": 868,
+      "height": 112,
+      "left": 613.1875,
+      "right": 1402,
+      "top": 756,
+      "width": 788.8125
+    },
+    "overviewGrid": {
+      "bottom": 889,
+      "height": 94,
+      "left": 628.1875,
+      "right": 1387,
+      "top": 795,
+      "width": 758.8125
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 613.1875,
+      "right": 712.34375,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1176.1875,
+      "right": 1260.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 1,
+    "stage": {
+      "bottom": 868,
+      "height": 786,
+      "left": 613.1875,
+      "right": 1402,
+      "top": 82,
+      "width": 788.8125
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 613.1875,
+      "right": 1402,
+      "top": 90,
+      "width": 788.8125
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 348.3125,
+      "left": 757.875,
+      "right": 1036.515625,
+      "top": 211.6875,
+      "width": 278.640625
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 743,
+      "scrollTop": 0
+    },
+    "label": "empty-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 1,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 2131.140625,
+      "height": 723.984375,
+      "left": 94.40625,
+      "right": 673.59375,
+      "top": 1407.15625,
+      "width": 579.1875
+    },
+    "compileButton": {
+      "bottom": 1034.78125,
+      "height": 43.59375,
+      "left": 44,
+      "right": 724,
+      "top": 991.1875,
+      "width": 680
+    },
+    "document": {
+      "scrollHeight": 3649,
+      "scrollWidth": 768
+    },
+    "editor": {
+      "bottom": 1070.78125,
+      "height": 933.78125,
+      "left": 25,
+      "right": 743,
+      "top": 137,
+      "width": 718
+    },
+    "editorFoot": {
+      "bottom": 1069.78125,
+      "height": 128.59375,
+      "left": 26,
+      "right": 742,
+      "top": 941.1875,
+      "width": 716
+    },
+    "formScroll": {
+      "clientHeight": 666,
+      "rect": {
+        "bottom": 941.1875,
+        "height": 665.59375,
+        "left": 26,
+        "right": 742,
+        "top": 275.59375,
+        "width": 716
+      },
+      "scrollHeight": 721,
+      "scrollTop": 0
+    },
+    "label": "empty-768x1024",
+    "overview": {
+      "bottom": 3348.765625,
+      "height": 1077.625,
+      "left": 25,
+      "right": 743,
+      "top": 2271.140625,
+      "width": 718
+    },
+    "overviewGrid": {
+      "bottom": 3333.765625,
+      "height": 1017.625,
+      "left": 40,
+      "right": 728,
+      "top": 2316.140625,
+      "width": 688
+    },
+    "previewTitle": {
+      "bottom": 1234.15625,
+      "height": 24.6875,
+      "left": 25,
+      "right": 124.15625,
+      "top": 1209.46875,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 1305.15625,
+      "height": 37,
+      "left": 156,
+      "right": 240,
+      "top": 1268.15625,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 1,
+    "stage": {
+      "bottom": 3577.765625,
+      "height": 2484.984375,
+      "left": 25,
+      "right": 743,
+      "top": 1092.78125,
+      "width": 718
+    },
+    "stageTop": {
+      "bottom": 1306.15625,
+      "height": 96.6875,
+      "left": 25,
+      "right": 743,
+      "top": 1209.46875,
+      "width": 718
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 1875.03125,
+      "height": 405,
+      "left": 33,
+      "right": 357,
+      "top": 1470.03125,
+      "width": 324
+    },
+    "compileButton": {
+      "bottom": 935.375,
+      "height": 43.59375,
+      "left": 41,
+      "right": 349,
+      "top": 891.78125,
+      "width": 308
+    },
+    "document": {
+      "scrollHeight": 3751,
+      "scrollWidth": 390
+    },
+    "editor": {
+      "bottom": 970.375,
+      "height": 830.078125,
+      "left": 20,
+      "right": 370,
+      "top": 140.296875,
+      "width": 350
+    },
+    "editorFoot": {
+      "bottom": 969.375,
+      "height": 127.59375,
+      "left": 21,
+      "right": 369,
+      "top": 841.78125,
+      "width": 348
+    },
+    "formScroll": {
+      "clientHeight": 549,
+      "rect": {
+        "bottom": 841.78125,
+        "height": 548.59375,
+        "left": 21,
+        "right": 369,
+        "top": 293.1875,
+        "width": 348
+      },
+      "scrollHeight": 804,
+      "scrollTop": 0
+    },
+    "label": "empty-390x844",
+    "overview": {
+      "bottom": 3367.671875,
+      "height": 1344.046875,
+      "left": 20,
+      "right": 370,
+      "top": 2023.625,
+      "width": 350
+    },
+    "overviewGrid": {
+      "bottom": 3352.671875,
+      "height": 1284.046875,
+      "left": 35,
+      "right": 355,
+      "top": 2068.625,
+      "width": 320
+    },
+    "previewTitle": {
+      "bottom": 1202.4375,
+      "height": 24.6875,
+      "left": 20,
+      "right": 119.15625,
+      "top": 1177.75,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 1272.4375,
+      "height": 37,
+      "left": 152,
+      "right": 236,
+      "top": 1235.4375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 1,
+    "stage": {
+      "bottom": 3661.671875,
+      "height": 2669.296875,
+      "left": 20,
+      "right": 370,
+      "top": 992.375,
+      "width": 350
+    },
+    "stageTop": {
+      "bottom": 1319.4375,
+      "height": 141.6875,
+      "left": 20,
+      "right": 370,
+      "top": 1177.75,
+      "width": 350
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 883,
+      "height": 671.3125,
+      "left": 988.96875,
+      "right": 1526.015625,
+      "top": 211.6875,
+      "width": 537.046875
+    },
+    "compileButton": {
+      "bottom": 1012,
+      "height": 43.59375,
+      "left": 137,
+      "right": 659,
+      "top": 968.40625,
+      "width": 522
+    },
+    "document": {
+      "scrollHeight": 1080,
+      "scrollWidth": 1920
+    },
+    "editor": {
+      "bottom": 1048,
+      "height": 966,
+      "left": 118,
+      "right": 678,
+      "top": 82,
+      "width": 560
+    },
+    "editorFoot": {
+      "bottom": 1047,
+      "height": 128.59375,
+      "left": 119,
+      "right": 677,
+      "top": 918.40625,
+      "width": 558
+    },
+    "formScroll": {
+      "clientHeight": 698,
+      "rect": {
+        "bottom": 918.40625,
+        "height": 697.8125,
+        "left": 119,
+        "right": 677,
+        "top": 220.59375,
+        "width": 558
+      },
+      "scrollHeight": 744,
+      "scrollTop": 0
+    },
+    "label": "demo-1920x1080",
+    "overview": {
+      "bottom": 1048,
+      "height": 112,
+      "left": 713,
+      "right": 1802,
+      "top": 936,
+      "width": 1089
+    },
+    "overviewGrid": {
+      "bottom": 1069,
+      "height": 94,
+      "left": 728,
+      "right": 1787,
+      "top": 975,
+      "width": 1059
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 713,
+      "right": 812.15625,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1576.1875,
+      "right": 1660.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 1048,
+      "height": 966,
+      "left": 713,
+      "right": 1802,
+      "top": 82,
+      "width": 1089
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 713,
+      "right": 1802,
+      "top": 90,
+      "width": 1089
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 1080,
+      "width": 1920
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 703,
+      "height": 491.3125,
+      "left": 811.0625,
+      "right": 1204.109375,
+      "top": 211.6875,
+      "width": 393.046875
+    },
+    "compileButton": {
+      "bottom": 832,
+      "height": 43.59375,
+      "left": 57,
+      "right": 566.1875,
+      "top": 788.40625,
+      "width": 509.1875
+    },
+    "document": {
+      "scrollHeight": 900,
+      "scrollWidth": 1440
+    },
+    "editor": {
+      "bottom": 868,
+      "height": 786,
+      "left": 38,
+      "right": 585.1875,
+      "top": 82,
+      "width": 547.1875
+    },
+    "editorFoot": {
+      "bottom": 867,
+      "height": 128.59375,
+      "left": 39,
+      "right": 584.1875,
+      "top": 738.40625,
+      "width": 545.1875
+    },
+    "formScroll": {
+      "clientHeight": 518,
+      "rect": {
+        "bottom": 738.40625,
+        "height": 517.8125,
+        "left": 39,
+        "right": 584.1875,
+        "top": 220.59375,
+        "width": 545.1875
+      },
+      "scrollHeight": 743,
+      "scrollTop": 0
+    },
+    "label": "demo-1440x900",
+    "overview": {
+      "bottom": 868,
+      "height": 112,
+      "left": 613.1875,
+      "right": 1402,
+      "top": 756,
+      "width": 788.8125
+    },
+    "overviewGrid": {
+      "bottom": 889,
+      "height": 94,
+      "left": 628.1875,
+      "right": 1387,
+      "top": 795,
+      "width": 758.8125
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 613.1875,
+      "right": 712.34375,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1176.1875,
+      "right": 1260.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 868,
+      "height": 786,
+      "left": 613.1875,
+      "right": 1402,
+      "top": 82,
+      "width": 788.8125
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 613.1875,
+      "right": 1402,
+      "top": 90,
+      "width": 788.8125
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 900,
+      "width": 1440
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 348.3125,
+      "left": 757.875,
+      "right": 1036.515625,
+      "top": 211.6875,
+      "width": 278.640625
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 743,
+      "scrollTop": 0
+    },
+    "label": "demo-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 2131.140625,
+      "height": 723.984375,
+      "left": 94.40625,
+      "right": 673.59375,
+      "top": 1407.15625,
+      "width": 579.1875
+    },
+    "compileButton": {
+      "bottom": 1034.78125,
+      "height": 43.59375,
+      "left": 44,
+      "right": 724,
+      "top": 991.1875,
+      "width": 680
+    },
+    "document": {
+      "scrollHeight": 3649,
+      "scrollWidth": 768
+    },
+    "editor": {
+      "bottom": 1070.78125,
+      "height": 933.78125,
+      "left": 25,
+      "right": 743,
+      "top": 137,
+      "width": 718
+    },
+    "editorFoot": {
+      "bottom": 1069.78125,
+      "height": 128.59375,
+      "left": 26,
+      "right": 742,
+      "top": 941.1875,
+      "width": 716
+    },
+    "formScroll": {
+      "clientHeight": 666,
+      "rect": {
+        "bottom": 941.1875,
+        "height": 665.59375,
+        "left": 26,
+        "right": 742,
+        "top": 275.59375,
+        "width": 716
+      },
+      "scrollHeight": 721,
+      "scrollTop": 0
+    },
+    "label": "demo-768x1024",
+    "overview": {
+      "bottom": 3348.765625,
+      "height": 1077.625,
+      "left": 25,
+      "right": 743,
+      "top": 2271.140625,
+      "width": 718
+    },
+    "overviewGrid": {
+      "bottom": 3333.765625,
+      "height": 1017.625,
+      "left": 40,
+      "right": 728,
+      "top": 2316.140625,
+      "width": 688
+    },
+    "previewTitle": {
+      "bottom": 1234.15625,
+      "height": 24.6875,
+      "left": 25,
+      "right": 124.15625,
+      "top": 1209.46875,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 1305.15625,
+      "height": 37,
+      "left": 156,
+      "right": 240,
+      "top": 1268.15625,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 3577.765625,
+      "height": 2484.984375,
+      "left": 25,
+      "right": 743,
+      "top": 1092.78125,
+      "width": 718
+    },
+    "stageTop": {
+      "bottom": 1306.15625,
+      "height": 96.6875,
+      "left": 25,
+      "right": 743,
+      "top": 1209.46875,
+      "width": 718
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 1024,
+      "width": 768
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 1875.03125,
+      "height": 405,
+      "left": 33,
+      "right": 357,
+      "top": 1470.03125,
+      "width": 324
+    },
+    "compileButton": {
+      "bottom": 935.375,
+      "height": 43.59375,
+      "left": 41,
+      "right": 349,
+      "top": 891.78125,
+      "width": 308
+    },
+    "document": {
+      "scrollHeight": 3751,
+      "scrollWidth": 390
+    },
+    "editor": {
+      "bottom": 970.375,
+      "height": 830.078125,
+      "left": 20,
+      "right": 370,
+      "top": 140.296875,
+      "width": 350
+    },
+    "editorFoot": {
+      "bottom": 969.375,
+      "height": 127.59375,
+      "left": 21,
+      "right": 369,
+      "top": 841.78125,
+      "width": 348
+    },
+    "formScroll": {
+      "clientHeight": 549,
+      "rect": {
+        "bottom": 841.78125,
+        "height": 548.59375,
+        "left": 21,
+        "right": 369,
+        "top": 293.1875,
+        "width": 348
+      },
+      "scrollHeight": 804,
+      "scrollTop": 0
+    },
+    "label": "demo-390x844",
+    "overview": {
+      "bottom": 3367.671875,
+      "height": 1344.046875,
+      "left": 20,
+      "right": 370,
+      "top": 2023.625,
+      "width": 350
+    },
+    "overviewGrid": {
+      "bottom": 3352.671875,
+      "height": 1284.046875,
+      "left": 35,
+      "right": 355,
+      "top": 2068.625,
+      "width": 320
+    },
+    "previewTitle": {
+      "bottom": 1202.4375,
+      "height": 24.6875,
+      "left": 20,
+      "right": 119.15625,
+      "top": 1177.75,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 1272.4375,
+      "height": 37,
+      "left": 152,
+      "right": 236,
+      "top": 1235.4375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 3661.671875,
+      "height": 2669.296875,
+      "left": 20,
+      "right": 370,
+      "top": 992.375,
+      "width": 350
+    },
+    "stageTop": {
+      "bottom": 1319.4375,
+      "height": 141.6875,
+      "left": 20,
+      "right": 370,
+      "top": 1177.75,
+      "width": 350
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 844,
+      "width": 390
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 348.3125,
+      "left": 757.875,
+      "right": 1036.515625,
+      "top": 211.6875,
+      "width": 278.640625
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 743,
+      "scrollTop": 0
+    },
+    "label": "section-content-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-content",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 348.3125,
+      "left": 757.875,
+      "right": 1036.515625,
+      "top": 211.6875,
+      "width": 278.640625
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 655,
+      "scrollTop": 0
+    },
+    "label": "section-people-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-people",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 348.3125,
+      "left": 757.875,
+      "right": 1036.515625,
+      "top": 211.6875,
+      "width": 278.640625
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 601,
+      "scrollTop": 0
+    },
+    "label": "section-images-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-images",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 348.3125,
+      "left": 757.875,
+      "right": 1036.515625,
+      "top": 211.6875,
+      "width": 278.640625
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 887,
+      "scrollTop": 0
+    },
+    "label": "section-meeting-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-meeting",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 348.3125,
+      "left": 757.875,
+      "right": 1036.515625,
+      "top": 211.6875,
+      "width": 278.640625
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 484,
+      "scrollTop": 0
+    },
+    "label": "section-share-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-share",
+    "selectedVariant": "0",
+    "speakerCount": 2,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 286.171875,
+      "left": 782.71875,
+      "right": 1011.65625,
+      "top": 273.828125,
+      "width": 228.9375
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 2184,
+      "scrollTop": 0
+    },
+    "label": "people-max-top-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-people",
+    "selectedVariant": "0",
+    "speakerCount": 6,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  },
+  {
+    "canvas": {
+      "bottom": 560,
+      "height": 286.171875,
+      "left": 782.71875,
+      "right": 1011.65625,
+      "top": 273.828125,
+      "width": 228.9375
+    },
+    "compileButton": {
+      "bottom": 689,
+      "height": 43.59375,
+      "left": 57,
+      "right": 505.390625,
+      "top": 645.40625,
+      "width": 448.390625
+    },
+    "document": {
+      "scrollHeight": 757,
+      "scrollWidth": 1280
+    },
+    "editor": {
+      "bottom": 725,
+      "height": 643,
+      "left": 38,
+      "right": 524.390625,
+      "top": 82,
+      "width": 486.390625
+    },
+    "editorFoot": {
+      "bottom": 724,
+      "height": 128.59375,
+      "left": 39,
+      "right": 523.390625,
+      "top": 595.40625,
+      "width": 484.390625
+    },
+    "formScroll": {
+      "clientHeight": 375,
+      "rect": {
+        "bottom": 595.40625,
+        "height": 374.8125,
+        "left": 39,
+        "right": 523.390625,
+        "top": 220.59375,
+        "width": 484.390625
+      },
+      "scrollHeight": 2184,
+      "scrollTop": 1809
+    },
+    "label": "people-max-bottom-1280x757",
+    "overview": {
+      "bottom": 725,
+      "height": 112,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 613,
+      "width": 689.609375
+    },
+    "overviewGrid": {
+      "bottom": 746,
+      "height": 94,
+      "left": 567.390625,
+      "right": 1227,
+      "top": 652,
+      "width": 659.609375
+    },
+    "previewTitle": {
+      "bottom": 114.6875,
+      "height": 24.6875,
+      "left": 552.390625,
+      "right": 651.546875,
+      "top": 90,
+      "width": 99.15625
+    },
+    "resolution": {
+      "bottom": 131.34375,
+      "height": 37,
+      "left": 1016.1875,
+      "right": 1100.1875,
+      "top": 94.34375,
+      "width": 84
+    },
+    "selectedTab": "tab-people",
+    "selectedVariant": "0",
+    "speakerCount": 6,
+    "stage": {
+      "bottom": 725,
+      "height": 643,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 82,
+      "width": 689.609375
+    },
+    "stageTop": {
+      "bottom": 135.6875,
+      "height": 45.6875,
+      "left": 552.390625,
+      "right": 1242,
+      "top": 90,
+      "width": 689.609375
+    },
+    "viewport": {
+      "dpr": 1,
+      "height": 757,
+      "width": 1280
+    }
+  }
+]

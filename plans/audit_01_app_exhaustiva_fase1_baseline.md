@@ -1,6 +1,6 @@
 # Fase 1: línea base reproducible
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -33,3 +33,12 @@ Esperado: HTTP 200; inventario exacto de aprobados/fallidos; capturas abiertas e
 ## Gate
 
 No comenzar correcciones hasta distinguir fallos reproducidos de observaciones estéticas no demostradas.
+
+## Resultado
+
+- Suite actual: nueve recorridos en código 0.
+- Evidencia: 17 capturas del editor y 9 PNG con imágenes reales, todos abiertos e inspeccionados.
+- Scroll con seis expositores: extremos `0/1809` alcanzables y CTA estable.
+- Defecto reproducido: preview de 348 px de alto a 1280×757 y 53 px reservados antes de la vista general.
+- Defectos reproducidos en piezas: 06, 08 y 09 con distribución vertical desequilibrada; 04, 05 y 07 sin diferenciación suficiente; fondo excesivamente dominante.
+- Limitación: CUA no ofreció navegador integrado ni Chrome administrado; se usó el Chrome/Selenium ya incluido por el proyecto.

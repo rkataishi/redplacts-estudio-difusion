@@ -1,2 +1,8 @@
 timestamp	phase	unit	hypothesis	decision	why	evidence	result
 2026-09-12T00:00:00-03:00	0	plan	El objetivo requiere un mapa exhaustivo antes de editar	Crear plan maestro y doce fases	El usuario aprobó explícitamente continuar	plans/audit_01_app_exhaustiva.md	VERIFIED
+2026-09-12T12:55:42-03:00	1	browser	La auditoría visual necesita una superficie actual	Usar Chrome headless mediante el Selenium existente	CUA devolvió Browser is not available para iab y chrome	capturas en .audit/baseline	VERIFIED
+2026-09-12T12:55:42-03:00	1	suite	La versión inicial puede tener fallos funcionales cubiertos	Conservar los resultados como línea base	Los nueve scripts versionados terminaron en código 0	salida de ejecución actual	VERIFIED
+2026-09-12T12:55:42-03:00	1	people-scroll	El alta máxima rompe el rango de scroll o mueve el CTA	No corregir sin reproducción	scrollTop 0 y 1809; máximo 1809; CTA 645..689	.audit/measurements/baseline.json	NOT VERIFIED
+2026-09-12T12:55:42-03:00	1	preview	La vista previa desperdicia altura útil	Reducir márgenes y altura auxiliar desktop	canvas 348 px; gap a overview 53 px en 1280x757	.audit/baseline/demo-1280x757.png	VERIFIED
+2026-09-12T12:55:42-03:00	1	social-layouts	Las piezas 04-09 tienen hero y espacios desequilibrados	Corregir rectángulos en el renderer activo	9 PNG reales abiertos e inspeccionados	.audit/baseline/posters/	VERIFIED
+2026-09-12T12:55:42-03:00	1	legacy-harness	El harness no versionado sigue vigente	No modificarlo ni usar su fallo como fallo de producto	9 PNG válidos; timeout posterior en #copy-caption	.tmp-ux-review/real-audit/real_audit.py	VERIFIED
