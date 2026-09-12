@@ -524,7 +524,7 @@ def run():
                 let red = 0, green = 0, blue = 0, magenta = 0;
                 for (let i = 0; i < d.length; i += step) {
                     const r = d[i], g = d[i+1], b = d[i+2];
-                    if (r > 150 && g < 100 && b < 100) red++;
+                    if (r > 150 && r > g * 1.5 && r > b * 1.5) red++;
                     if (g > 150 && r < 100 && b < 100) green++;
                     if (b > 150 && r < 100 && g < 100) blue++;
                     if (r > 150 && b > 120 && g < 130) magenta++;

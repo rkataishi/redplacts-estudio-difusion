@@ -34,9 +34,9 @@
   api.box(ctx,0,0,w,h,'#f4f5f9');
   /* wave decoration */
   await api.coverImage(ctx,{src:api.WAVE_ASSET},Math.round(w*.38),0,Math.round(w*.65),Math.round(h*.78),{x:55,y:46,zoom:1},0,.55);
-  /* user background image — full bleed, at least .85 opacity */
+  /* user background image — full bleed, honoring the 0–60% UI control */
   if(p.s.images.background){
-   var opacity=Math.max(.85,(p.s.options.bgOpacity||85)/100);
+   var opacity=Math.max(0,Math.min(.6,(p.s.options.bgOpacity??32)/100));
    await api.coverImage(ctx,p.s.images.background,0,0,w,h,null,0,opacity);
   }
   /* global white veil reduced to .08 so image reads through everywhere */
@@ -175,7 +175,7 @@
  /** Fallback for when p.valid === false — still show header + background */
  async function drawFallback(ctx,p){
   api.box(ctx,0,0,p.w,p.h,'#f4f5f9');
-  await api.containImage(ctx,api.BRAND_ASSETS['logo-color'],Math.round(p.w/2-108),Math.round(p.h/2-180),216,165);
+  await api.containImage(ctx,api.BRAND_ASSETS['logo-color'],Math.round(p.w/2-72),Math.round(p.h*.16),144,110);
   api.drawText(ctx,api.textSpec('Este contenido necesita\nmás espacio.',Math.round(p.w*.1),Math.round(p.h*.38),Math.round(p.w*.8),56,700,api.C.ink,p.font,'center'),'fallback-title');
   api.drawText(ctx,api.textSpec('Abrevia los textos o elige un formato más alto. No se estira el lienzo ni se recorta contenido.',Math.round(p.w*.12),Math.round(p.h*.54),Math.round(p.w*.76),28,400,api.C.muted,p.font,'center',1.4),'fallback-hint');
  }
@@ -206,10 +206,13 @@
   var sp=p.s.speakers||[];
   var n=sp.length;
   var cols=n<=1?1:n===2?2:3;
+  var dense=n>3;
   var gap=30;
-  var photoSide=cols===1?180:cols===2?120:84;
-  var rowH=125;                                /* hard cap */
-  var startY=p.hero.y+p.hero.h+42;
+  var photoSide=dense?68:cols===1?180:cols===2?120:84;
+  var rowH=dense?92:125;
+  var rowGap=dense?12:18;
+  if(dense)p.hero.h=220;
+  var startY=p.hero.y+p.hero.h+(dense?30:42);
 
   var colW=Math.round((contentW-gap*(cols-1))/cols);
   var textW=colW-photoSide-18;
@@ -218,17 +221,19 @@
    var col=i%cols, row=Math.floor(i/cols);
    var ix=col*(colW+gap);
    var iy=row*(rowH+18);
-   var nt=api.wrapLines(sp[i].name||'',textW,28,700,p.font);
-   var dt=api.wrapLines(sp[i].description||'',textW,20,400,p.font);
-   var ntH=nt.length*28*1.13;
-   var dtH=dt.length*20*1.24;
+   var nameSize=dense?24:28;
+   var descSize=dense?0:20;
+   var nt=api.wrapLines(sp[i].name||'',textW,nameSize,700,p.font);
+   var dt=descSize?api.wrapLines(sp[i].description||'',textW,descSize,400,p.font):[];
+   var ntH=nt.length*nameSize*1.13;
+   var dtH=dt.length*descSize*1.24;
    items.push({
     x:ix, y:iy, w:colW, h:rowH,
     person:sp[i], photo:photoSide,
     shape:'rect', vertical:false,
     textH:ntH+(dtH?9+dtH:0),
-    nt:{size:28,h:ntH,lines:nt},
-    dt:{size:20,h:dtH,lines:dt}
+    nt:{size:nameSize,h:ntH,lines:nt},
+    dt:{size:descSize,h:dtH,lines:dt}
    });
   }
   p.people={
@@ -239,7 +244,7 @@
 
   /* Moderators: start capped at 900, fixed photo 56 */
   var mods=p.s.moderators||[];
-  var modStartY=Math.min(900, startY+Math.ceil(n/cols)*(rowH+18)+30);
+  var modStartY=Math.min(900, startY+Math.ceil(n/cols)*(rowH+rowGap)+(dense?20:30));
   var modPhoto=56;
   var modItems=[];
   var modColW=mods.length?Math.round((contentW-gap*Math.max(mods.length-1,0))/mods.length):0;
@@ -468,6 +473,7 @@
    } else if(p.v===0){
     /* v0 institutional layout: fixed portrait zones */
     applyV0Layout(p);
+    api.box(ctx,38,130,p.w-76,p.hero.y-142,'rgba(255,255,255,0.86)',12);
     drawTitleBlock(ctx,p);
     await drawHero(ctx,p);
     var v0PeoplePanelY=Math.max(Math.min(p.peopleY,p.modsY)-43,p.hero?p.hero.y+p.hero.h:0);
@@ -478,6 +484,7 @@
    } else if(p.v===1){
     /* v1 true landscape 1350×1080 */
     applyV1Layout(p);
+    api.box(ctx,38,130,610,p.hero.h+40,'rgba(255,255,255,0.86)',12);
     drawTitleBlock(ctx,p);
     await drawHero(ctx,p);
     var v1PeoplePanelY=Math.max(Math.min(p.peopleY,p.modsY)-25,p.hero?p.hero.y+p.hero.h:0);
@@ -485,21 +492,22 @@
     await drawPeopleGrid(ctx,p);
     await drawModerators(ctx,p);
     drawMeetingBand(ctx,p);
-   } else {
+  } else {
     /* social v>=3: hero differentiated from background — Sol spec */
+    var hasHero=!!p.s.images.hero;
     if(p.intro&&(p.v===3||p.v===4||p.v===6)){
      var splitTop=145,splitBottom=Math.min(p.namesY||p.meetingY||p.h-300,p.meetingY||p.h-300)-36,splitH=Math.max(260,splitBottom-splitTop);
-     p.intro.x=56;p.intro.w=452;
-     p.hero=p.s.images.hero?{x:548,y:splitTop,w:476,h:splitH}:null;
+     p.intro.x=56;p.intro.w=hasHero?452:p.w-112;
+     p.hero=hasHero?{x:548,y:splitTop,w:476,h:splitH}:null;
     }else if(p.v===5){
-     var heroTop=p.intro.y+p.intro.h+34,heroBottom=(p.namesY||p.meetingY)-36;
-     p.hero=p.s.images.hero?{x:56,y:heroTop,w:p.w-112,h:Math.max(260,heroBottom-heroTop)}:null;
+     p.intro.x=56;p.intro.y=180;p.intro.w=p.w-112;
+     p.hero=null;
     }else if(p.v===7){
-     p.intro.x=56;p.intro.y=150;p.intro.w=p.w-112;
-     p.hero=p.s.images.hero?{x:40,y:390,w:p.w-80,h:190}:null;
+     p.intro.x=56;p.intro.y=155;p.intro.w=p.w-112;
+     p.hero=null;
     }else if(p.v===8){
-     p.hero=p.s.images.hero?{x:0,y:130,w:p.w,h:660}:null;
-     p.intro.x=56;p.intro.y=830;p.intro.w=p.w-112;
+     p.hero=p.s.images.hero?{x:0,y:130,w:p.w,h:700}:null;
+     p.intro.x=56;p.intro.y=720;p.intro.w=p.w-112;
     }
      /* recompute title size so it fits panel: max 64px, max 3 lines */
      if(p.intro&&(p.v===3||p.v===4||p.v===6)){
@@ -515,6 +523,7 @@
       p.intro.sub.h=_subLines.length*p.intro.sub.size*1.2;
       p.intro.reinforcement.h=_reinforcementLines.length*p.intro.reinforcement.size*1.24;
       p.intro.h=p.intro.title.h+(p.intro.sub.h?14+p.intro.sub.h:0)+(p.intro.reinforcement.h?15+p.intro.reinforcement.h:0);
+      p.intro.y=splitTop+Math.max(0,(splitH-p.intro.h)/2);
      }
      if(p.v===8&&p.intro.title.size>88){
       var _ln8=api.wrapLines((p.s.options.socialTitle||'').trim()||p.s.event.title||'Título del evento',p.intro.w,88,700,p.font);
@@ -527,21 +536,29 @@
       var _sub7=api.wrapLines((p.s.options.socialSubtitle||'').trim()||p.s.event.subtitle||'',p.intro.w,22,400,p.font);
       p.intro.sub.size=22;p.intro.sub.h=_sub7.length*22*1.2;p.intro.sub.lines=_sub7;
       p.intro.h=p.intro.title.h+(p.intro.sub.h?14+p.intro.sub.h:0);
+      var _heroTop7=p.intro.y+p.intro.h+24,_heroBottom7=(p.meetingY||p.namesY)-32;
+      p.hero=p.s.images.hero?{x:40,y:_heroTop7,w:p.w-80,h:Math.max(190,_heroBottom7-_heroTop7)}:null;
      }
-     /* v5: hero at y820, title must end before hero — max 76px, max 3 lines */
+     /* v5: title first, then let the hero use the remaining vertical band. */
      if(p.v===5&&p.intro){
       var _max5=76,_min5=32,_cap5=3;
       for(var _ts5=_max5;_ts5>=_min5;_ts5-=2){
        var _ln5=api.wrapLines(p.s.event.title||'Título del evento',p.intro.w||p.w-112,_ts5,700,p.font);
        if(_ln5.length<=_cap5){p.intro.title.size=_ts5;p.intro.title.h=_ln5.length*_ts5*1.06;p.intro.title.lines=_ln5;break;}
       }
+      p.intro.h=p.intro.title.h+(p.intro.sub.h?23+p.intro.sub.h:0)+(p.intro.reinforcement.h?16+p.intro.reinforcement.h:0);
+     var _heroTop5=p.intro.y+p.intro.h+28,_heroBottom5=(p.meetingY||p.namesY)-36;
+     p.hero=hasHero?{x:56,y:_heroTop5,w:p.w-112,h:Math.max(260,_heroBottom5-_heroTop5)}:null;
      }
+     var emptyTop=145,emptyBottom=(p.meetingY||p.namesY||p.h-300)-36,emptyH=Math.max(260,emptyBottom-emptyTop);
+     if(!hasHero&&p.intro&&p.v>=5)p.intro.y=emptyTop+Math.max(0,(emptyH-p.intro.h)/2);
      /* draw hero before title so text overlays the image */
      await drawHero(ctx,p);
      await drawHeader(ctx,p); /* redraw so header/logo sit above hero */
       /* white title backing panel — generic branch */
       if(p.v===3||p.v===4||p.v===6) api.box(ctx,p.intro.x-16,splitTop,p.intro.w+32,splitH,'rgba(255,255,255,0.94)',18);
-      else if(p.v===5)api.box(ctx,40,470,p.w-80,300,'rgba(255,255,255,0.94)',18);
+      else if(!hasHero&&p.v>=5)api.box(ctx,40,emptyTop,p.w-80,emptyH,'rgba(255,255,255,0.94)',18);
+      else if(p.v===5)api.box(ctx,p.intro.x-16,p.intro.y-20,p.intro.w+32,p.intro.h+40,'rgba(255,255,255,0.94)',18);
       else if(p.v===7||p.v===8)api.box(ctx,p.intro.x-16,p.intro.y-20,p.intro.w+32,p.intro.h+40,'rgba(255,255,255,0.94)',18);
      drawTitleBlock(ctx,p);
     /* white translucent panel for names readability */

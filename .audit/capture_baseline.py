@@ -2,6 +2,7 @@
 """Captura reproducible de la geometría inicial de la auditoría 01."""
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -16,8 +17,9 @@ sys.path.insert(0, str(ROOT))
 from tests.ui_smoke import BASE_URL, TIMEOUT, _driver, assert_no_severe_logs, real_click
 
 
-OUTPUT = ROOT / ".audit" / "baseline"
-MEASUREMENTS = ROOT / ".audit" / "measurements" / "baseline.json"
+CAPTURE_SET = os.environ.get("PLACTS_CAPTURE_SET", "baseline")
+OUTPUT = ROOT / ".audit" / CAPTURE_SET
+MEASUREMENTS = ROOT / ".audit" / "measurements" / f"{CAPTURE_SET}.json"
 VIEWPORTS = [(1920, 1080), (1440, 900), (1280, 757), (768, 1024), (390, 844)]
 TABS = ["content", "people", "images", "meeting", "share"]
 
@@ -78,7 +80,17 @@ def screenshot(driver, name, measurements):
     path = OUTPUT / f"{name}.png"
     driver.save_screenshot(str(path))
     assert path.exists() and path.stat().st_size > 0
-    measurements.append(geometry(driver, name))
+    data = geometry(driver, name)
+    assert data["document"]["scrollWidth"] <= data["viewport"]["width"] + 1, data
+    if data["viewport"]["width"] >= 900:
+        assert abs(data["previewTitle"]["top"] - data["resolution"]["top"]) <= 8, data
+        assert data["canvas"]["bottom"] <= data["viewport"]["height"] + 1, data
+        assert data["overviewGrid"]["bottom"] <= data["viewport"]["height"] + 1, data
+        assert data["editorFoot"]["bottom"] <= data["viewport"]["height"] + 1, data
+    if name == "people-max-bottom-1280x757":
+        scroll = data["formScroll"]
+        assert scroll["scrollTop"] == scroll["scrollHeight"] - scroll["clientHeight"], data
+    measurements.append(data)
 
 
 def set_viewport(driver, width, height):
