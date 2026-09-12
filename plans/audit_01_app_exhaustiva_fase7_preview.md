@@ -1,6 +1,6 @@
 # Fase 7: preview, toolbar, zoom y thumbnails
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -30,3 +30,10 @@ python3 tests/image_canvas_e2e.py
 ```
 
 Esperado: totalidad del poster visible a escala de ajuste y herramientas estables. Falla: corte vertical, toolbar en dos niveles sin necesidad, salto de thumbnails o resolución desalineada.
+
+## Resultado
+
+- A 1280×757 el canvas creció de 348 a 398 px; a 1920×1080 alcanza 721 px.
+- `Vista previa` y resolución difieren 4,34 px en vertical y permanecen en una fila.
+- Se eliminó el mínimo desktop que ocultaba el poster a 1024×606 y el máximo móvil que lo reducía a 72×90 en 844×390.
+- Canvas, acciones, tira de nueve thumbnails y vista general permanecen visibles o usan scroll explícito.

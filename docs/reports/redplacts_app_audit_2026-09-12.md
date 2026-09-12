@@ -2,16 +2,16 @@
 
 Fecha: 2026-09-12
 Plan: `plans/audit_01_app_exhaustiva.md`
-Estado: EN EJECUCIÓN
+Estado: AUDITORÍA COMPLETA, PENDIENTE DE GRADUACIÓN
 
 ## Resumen
 
-Pendiente de la línea base actual. Este informe se completa durante el recorrido; no se reutilizan capturas de ejecuciones anteriores como evidencia visual.
+Se completó el recorrido funcional y visual de los cinco bloques, los diálogos, los estados de carga y recorte, las nueve piezas y las exportaciones. La suite final terminó 9/9 en código 0, sin errores graves de consola. Se corrigieron los defectos reproducidos de preview, opacidad, densidad de personas, fallback y composición de hero; no se modificaron los materiales no versionados del usuario.
 
 ## Entorno
 
 - SHA inicial: `4fa2bbc`
-- Navegador y versión: pendiente
+- Navegador: Chrome mediante el Selenium ya incluido en el proyecto
 - Sistema: macOS
 - Servidor: `python3 -m http.server 8000 --bind 127.0.0.1`
 - Viewports: 1920×1080, 1440×900, 1280×757, 768×1024, 390×844
@@ -21,46 +21,46 @@ Pendiente de la línea base actual. Este informe se completa durante el recorrid
 | Paso | Descripción | Salud | Evidencia completa |
 | --- | --- | --- | --- |
 | 1 | Línea base | CON HALLAZGOS | `.audit/baseline/`, `.audit/measurements/baseline.json` |
-| 2 | Editor, navegación, menús y scroll | PENDIENTE | `.audit/screenshots/phase02/` |
-| 3 | Contenido | PENDIENTE | `.audit/screenshots/phase03/` |
-| 4 | Personas | PENDIENTE | `.audit/screenshots/phase04/` |
-| 5 | Imágenes | PENDIENTE | `.audit/screenshots/phase05/` |
-| 6 | Bloques 04 y 05 | PENDIENTE | `.audit/screenshots/phase06/` |
-| 7 | Preview | PENDIENTE | `.audit/screenshots/phase07/` |
-| 8 | Nueve piezas | PENDIENTE | `.audit/screenshots/phase08/` |
-| 9 | Proyectos, diálogos y exportación | PENDIENTE | `.audit/exports/` |
-| 10 | Responsive y accesibilidad básica | PENDIENTE | `.audit/screenshots/phase10/` |
-| 11 | Limpieza probada | PENDIENTE | `.audit/audit_01_decisions.tsv` |
-| 12 | Validación final | PENDIENTE | `.audit/screenshots/final/` |
+| 2 | Editor, navegación, menús y scroll | VERIFICADA | `tests/ui_smoke.py`, `tests/stage_controls_e2e.py` |
+| 3 | Contenido | VERIFICADA | `tests/content_meeting_e2e.py`, `tests/image_canvas_e2e.py` |
+| 4 | Personas | VERIFICADA | `tests/people_controls_e2e.py`, `.audit/screenshots/phase08/max-output-*.png` |
+| 5 | Imágenes | VERIFICADA | `tests/asset_controls_e2e.py`, `tests/downloads_e2e.py` |
+| 6 | Bloques 04 y 05 | VERIFICADA | `tests/stage_controls_e2e.py`, `tests/downloads_e2e.py` |
+| 7 | Preview | VERIFICADA | `.audit/screenshots/phase07/`, `.audit/measurements/screenshots/final.json` |
+| 8 | Nueve piezas | VERIFICADA | `.audit/baseline/posters/`, `.audit/screenshots/phase08/` |
+| 9 | Proyectos, diálogos y exportación | VERIFICADA | `tests/project_actions_e2e.py`, `tests/dialogs_e2e.py`, `tests/downloads_e2e.py` |
+| 10 | Responsive y accesibilidad básica | VERIFICADA | `.audit/screenshots/phase10/`, `.audit/screenshots/final/` |
+| 11 | Limpieza probada | VERIFICADA | `.audit/audit_01_decisions.tsv` |
+| 12 | Validación final | VERIFICADA | suite final 9/9, `.audit/screenshots/final/` |
 
 ## Hallazgos
 
 ### A01-001 · Preview demasiado pequeño en escritorio bajo
 
-- Estado: reproducido.
+- Estado: resuelto y verificado.
 - Severidad: alta, visual.
 - Evidencia: a 1280×757 el canvas visible mide 348 px de alto y deja 53 px antes de la vista general.
-- Fuente probable: alturas y márgenes del bloque desktop en `index.html`.
+- Resultado: 398 px a 1280×757 y 721 px a 1920×1080; canvas y vista general permanecen dentro del viewport.
 
 ### A01-002 · Fondo ignora la intensidad elegida
 
-- Estado: reproducido visualmente y confirmado en fuente.
+- Estado: resuelto y verificado.
 - Severidad: alta, visual.
 - Evidencia: `drawBackground` fuerza un mínimo de 85% aunque el control expone 0–60% y el ejemplo usa 32%.
-- Efecto: fondo dominante, contraste pobre y duplicación visual alrededor del hero.
+- Resultado: el renderer respeta el rango real 0–60%; las exportaciones detectan el fondo al 55% sin exigir rojo puro.
 
 ### A01-003 · Piezas sociales desequilibradas
 
-- Estado: reproducido con imágenes y retratos reales.
+- Estado: resuelto y verificado.
 - Severidad: alta, visual.
 - Evidencia: `.audit/baseline/posters/output-3.png` a `output-8.png`.
-- Detalle: 06 deja un vacío superior dominante; 08 separa título y hero; 09 sobredimensiona el hero; 04/05/07 repiten casi la misma estructura.
+- Resultado: 04/05/07 alinean título y hero; 06/08/09 redistribuyen título, hero y paneles; las variantes sin hero centran el contenido y la densidad máxima no solapa personas.
 
 ### A01-004 · Metadatos de formatos sociales incorrectos
 
-- Estado: confirmado en fuente.
+- Estado: resuelto y verificado.
 - Severidad: media, comprensión.
-- Evidencia: nombres/descripciones 04–09 anuncian proporciones distintas de sus dimensiones efectivas.
+- Resultado: nombres, descripciones y dimensiones efectivas coinciden en la UI y en las nueve exportaciones.
 
 ### A01-005 · Scroll de expositores informado previamente
 
@@ -73,6 +73,32 @@ Pendiente de la línea base actual. Este informe se completa durante el recorrid
 - Evidencia: `.tmp-ux-review/real-audit/real_audit.py` genera y valida los nueve PNG pero luego busca el selector retirado `copy-caption`.
 - Decisión: no modificar archivos preexistentes del usuario; usar las exportaciones válidas y las pruebas versionadas actuales.
 
+### A01-007 · Preview cortado en zoom equivalente y móvil horizontal
+
+- Estado: resuelto y verificado.
+- Severidad: alta, visual.
+- Evidencia: a 1024×606 el mínimo de altura ocultaba el poster tras las miniaturas; a 844×390 el máximo global lo reducía a 72×90 px.
+- Resultado: desktop puede reducir el frame sin superposición; móvil conserva el poster completo y usa scroll explícito.
+
+### A01-008 · Densidad máxima y fallback superpuestos
+
+- Estado: resuelto y verificado.
+- Severidad: alta, visual.
+- Evidencia: proyecto C con seis expositores en las nueve salidas.
+- Resultado: 01 compacta nombres y retratos; 03 conserva un aviso explícito sin solapar logo ni mensaje; las otras ocho piezas mantienen personas, moderación y footer dentro del canvas.
+
+## Limpieza
+
+Se eliminaron cinco familias CSS sin referencias en HTML, JavaScript ni pruebas: `collection-nav`, `stage-toolbar`, `segmented`, `page-intro` y `local-state`. El análisis estructural confirmó que las 15 funciones de `designs.js`, incluido el fallback legado, siguen siendo alcanzables; se conservaron.
+
+## Cierre
+
+- Suite funcional: 9/9 scripts en código 0.
+- Exportación: 9 PNG individuales, ZIP con 12 entradas, proyecto JSON y texto TXT verificados.
+- Geometría: cinco viewports, móvil horizontal 844×390 y equivalentes físicos de zoom 80%, 125% y 200%.
+- Consola: sin errores `SEVERE` durante los recorridos.
+- Alcance Git: cambios limitados a renderer, estilos, harness de captura, aserción de exportación y documentación del plan.
+
 ## Limitaciones
 
-La inspección visual y de teclado no constituye una certificación WCAG completa.
+La inspección visual y de teclado no constituye una certificación WCAG completa. WebDriver no aplicó los atajos de zoom nativo de Chrome; se probaron tamaños físicos equivalentes (1600×946, 1024×606 y 640×379) y se añadió además 844×390 en orientación horizontal.

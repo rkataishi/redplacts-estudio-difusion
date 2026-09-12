@@ -1,6 +1,6 @@
 # Audit 01: auditoría integral de Red PLACTS
 
-Estado: APROBADO, EN EJECUCIÓN
+Estado: EJECUCIÓN COMPLETA, PENDIENTE DE GRADUACIÓN
 Fecha de aprobación: 2026-09-12
 Propietario: Sol
 Rama: `main`
@@ -47,14 +47,14 @@ No incluye rediseñar la identidad, agregar features, migrar de tecnología, int
 | --- | --- |
 | Editor | 1280×757, 1440×900, 1920×1080, 768×1024, 390×844 |
 | Pieza 01 | 1080×1350 |
-| Pieza 02 | 1080×1920 |
-| Pieza 03 | 1080×1080 |
-| Pieza 04 | 1200×628 |
-| Pieza 05 | 1600×900 |
-| Pieza 06 | 1080×1080 |
-| Pieza 07 | 1200×628 |
-| Pieza 08 | 1080×1920 |
-| Pieza 09 | 1080×1350 |
+| Pieza 02 | 1350×1080 |
+| Pieza 03 | 1080×1350 |
+| Pieza 04 | 1080×1080 |
+| Pieza 05 | 1080×1350 |
+| Pieza 06 | 1080×1920 |
+| Pieza 07 | 1080×1350 |
+| Pieza 08 | 1080×1080 |
+| Pieza 09 | 1080×1920 |
 
 ## Fases y dependencias
 
@@ -140,15 +140,15 @@ La línea base registra tiempos de carga, dimensiones y duración de la suite. E
 - [x] Alcance y mapa aprobados por el usuario.
 - [x] Commit local del plan.
 - [x] Fase 1.
-- [ ] Fase 2.
-- [ ] Fase 3.
-- [ ] Fase 4.
-- [ ] Fase 5.
-- [ ] Fase 6.
-- [ ] Fase 7.
-- [ ] Fase 8.
-- [ ] Fase 9.
-- [ ] Fase 10.
-- [ ] Fase 11.
-- [ ] Fase 12.
+- [x] Fase 2.
+- [x] Fase 3.
+- [x] Fase 4.
+- [x] Fase 5.
+- [x] Fase 6.
+- [x] Fase 7.
+- [x] Fase 8.
+- [x] Fase 9.
+- [x] Fase 10.
+- [x] Fase 11.
+- [x] Fase 12.
 - [ ] Aprobación de graduación.

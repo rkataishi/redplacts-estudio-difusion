@@ -1,6 +1,6 @@
 # Fase 9: proyectos, diálogos y exportaciones
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -30,3 +30,10 @@ python3 tests/downloads_e2e.py
 ```
 
 Esperado: round-trip exacto y descargas válidas. Falla: pérdida silenciosa, diálogo sin cierre accesible, archivo corrupto o dimensiones incorrectas.
+
+## Resultado
+
+- Nuevo, cancelar/confirmar, demo, guardar, reiniciar e importar conservaron o reemplazaron el estado esperado.
+- Identidad, Acerca de, Demo y confirmación se abrieron y cerraron por botón y Escape.
+- Se verificaron nueve PNG, ZIP con 12 entradas, JSON por click y atajo, TXT y descarga desde zoom.
+- `project_actions_e2e.py`, `dialogs_e2e.py` y `downloads_e2e.py` terminaron en código 0.

@@ -1,6 +1,6 @@
 # Fase 5: fondo, hero, logo, carga y recorte
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -27,3 +27,10 @@ python3 tests/image_canvas_e2e.py
 ```
 
 Esperado: preview y export idénticos en contenido/recorte; errores recuperables. Falla: deformación, recorte divergente, desalineación o asset anterior perdido.
+
+## Resultado
+
+- Fondo y hero se cargaron, reemplazaron, recortaron, quitaron y volvieron a cargar por drag-and-drop y teclado.
+- El control de opacidad ahora respeta 0–60%; el valor 55% queda visible en las nueve exportaciones.
+- Fondo, hero y retratos modificaron realmente el fingerprint del canvas; los cuatro colores de prueba aparecen en cada PNG.
+- `asset_controls_e2e.py`, `image_canvas_e2e.py` y `downloads_e2e.py` terminaron en código 0.

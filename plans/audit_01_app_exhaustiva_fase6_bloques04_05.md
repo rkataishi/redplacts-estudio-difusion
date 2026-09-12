@@ -1,6 +1,6 @@
 # Fase 6: fecha/reunión y texto para compartir
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -28,3 +28,10 @@ python3 tests/downloads_e2e.py
 ```
 
 Esperado: bloque 05 estable, texto completo y geometría sin huecos. Falla: orden incorrecto, texto truncado o reflow del editor.
+
+## Resultado
+
+- Fecha, horarios, zona, acceso, URL, sede y QR se alternaron y validaron sin residuos.
+- El bloque 05 permanece en la barra lateral; su texto se copia y descarga completo como TXT.
+- El crecimiento del contenido no mueve el CTA ni impide alcanzar el final del panel.
+- `content_meeting_e2e.py`, `stage_controls_e2e.py` y `downloads_e2e.py` terminaron en código 0.

@@ -1,6 +1,6 @@
 # Fase 2: editor, navegación, menús y scroll
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -31,3 +31,10 @@ python3 tests/stage_controls_e2e.py
 ```
 
 Esperado: controles estables y alcanzables; sin salto estructural involuntario. Falla: desplazamiento no solicitado, scroll bloqueado, menú cortado o CTA flotando entre campos.
+
+## Resultado
+
+- Los cinco bloques se recorren por click y teclado; Inicio/Fin y flechas conservan el panel correcto.
+- Con seis expositores se alcanza exactamente el final del scroll (`1809 = 2184 - 375`) y el CTA permanece fijo en su zona inferior.
+- `Texto para compartir` permanece como bloque 05 y no existe el rótulo `3 expositores`.
+- `ui_smoke.py` y `stage_controls_e2e.py` terminaron en código 0.

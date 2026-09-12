@@ -1,6 +1,6 @@
 # Fase 10: responsive, teclado y accesibilidad básica
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -27,3 +27,10 @@ python3 tests/dialogs_e2e.py
 ```
 
 Esperado: tarea central realizable en todos los viewports. Falla: control inaccesible, foco perdido, scroll atrapado o reflow que oculta acciones.
+
+## Resultado
+
+- Se inspeccionaron 1920×1080, 1440×900, 1280×757, 768×1024 y 390×844, más móvil horizontal 844×390.
+- Los atajos de zoom nativo fueron ignorados por WebDriver; se verificaron tamaños físicos equivalentes a 80%, 125% y 200%.
+- No hay overflow horizontal; foco, teclado, disabled, Escape y navegación por pestañas quedaron cubiertos por los E2E.
+- Esta fase verifica accesibilidad básica y no declara conformidad WCAG.

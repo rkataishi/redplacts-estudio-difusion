@@ -1,6 +1,6 @@
 # Fase 11: limpieza probada
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -33,3 +33,9 @@ for test in tests/*_e2e.py tests/ui_smoke.py; do python3 "$test"; done
 ```
 
 Esperado: menos código sin cambio de conducta. Falla: eliminación basada sólo en intuición, compatibilidad especulativa o test roto.
+
+## Resultado
+
+- El índice estructural completo encontró 15 funciones exportadas/alcanzables en `designs.js`; no se borraron funciones ni el fallback legado.
+- La búsqueda literal probó cinco familias CSS sin referencia en HTML, JavaScript o pruebas: `collection-nav`, `stage-toolbar`, `segmented`, `page-intro` y `local-state`.
+- Se eliminaron solamente esas reglas y se repitieron las pruebas focales y la suite completa.

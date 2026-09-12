@@ -1,6 +1,6 @@
 # Fase 8: auditoría de las nueve piezas
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -35,3 +35,11 @@ python3 tests/image_canvas_e2e.py
 ```
 
 Esperado: nueve composiciones legibles y equilibradas. Falla: cualquier requisito explícito sin captura comparativa antes/después.
+
+## Resultado
+
+- Las nueve piezas se exportaron y compararon con el baseline usando hero, fondo y retratos reales.
+- 01/02/08/09 recuperan lectura vertical y uso integrado del hero; 04/05/07 alinean hero y título; 04/06/07 distribuyen el espacio de forma estable.
+- Sin hero, el contenido ocupa y centra el bloque disponible en vez de dejar componentes desplazados.
+- Con seis expositores no hay superposición; el único formato sin capacidad suficiente devuelve un aviso limpio.
+- Evidencia: `.audit/baseline/posters/` y `.audit/screenshots/phase08/`.

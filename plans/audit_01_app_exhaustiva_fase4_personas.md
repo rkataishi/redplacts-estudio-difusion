@@ -1,6 +1,6 @@
 # Fase 4: expositores y moderación
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -27,3 +27,10 @@ python3 tests/content_meeting_e2e.py
 ```
 
 Esperado: orden y datos coherentes; todos los controles alcanzables. Falla: scroll corto, CTA desplazado, tarjeta inaccesible, hueco en poster o foto asociada a otra persona.
+
+## Resultado
+
+- Altas, máximo 6/6, orden, bajas y protección del último expositor quedaron verificadas; moderación alcanzó y liberó 2/2.
+- Foto, recorte X/Y, zoom, activación por teclado y eliminación conservaron la persona correcta.
+- La pieza 01 compacta seis personas sin pisar moderación; la pieza incompatible muestra un fallback explícito y limpio.
+- `people_controls_e2e.py` terminó en código 0 y las nueve salidas máximas fueron abiertas e inspeccionadas.

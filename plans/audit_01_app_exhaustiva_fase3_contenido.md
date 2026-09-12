@@ -1,6 +1,6 @@
 # Fase 3: contenido, fecha, modalidad y validación
 
-Estado: PENDIENTE
+Estado: COMPLETA
 
 ## Objetivo
 
@@ -27,3 +27,10 @@ python3 tests/image_canvas_e2e.py
 ```
 
 Esperado: validación específica, estado recuperable y texto legible. Falla: truncado sin intención, solapamiento, valor oculto que reaparece o preview desincronizado.
+
+## Resultado
+
+- Título, subtítulo, refuerzo, fecha, horarios, zona, plataforma, URL, sede y QR actualizaron estado y canvas.
+- Hora final anterior al inicio y URL inválida mostraron errores específicos; al corregirlos, los errores desaparecieron.
+- El preview se regeneró automáticamente sin control residual de auto-preview.
+- `content_meeting_e2e.py` e `image_canvas_e2e.py` terminaron en código 0.
