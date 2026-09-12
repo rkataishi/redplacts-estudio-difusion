@@ -1,6 +1,6 @@
 # Audit 01: auditoría integral de Red PLACTS
 
-Estado: EJECUCIÓN COMPLETA, PENDIENTE DE GRADUACIÓN
+Estado: GRADUADO
 Fecha de aprobación: 2026-09-12
 Propietario: Sol
 Rama: `main`
@@ -58,19 +58,19 @@ No incluye rediseñar la identidad, agregar features, migrar de tecnología, int
 
 ## Fases y dependencias
 
-1. [Fase 1: línea base](audit_01_app_exhaustiva_fase1_baseline.md). No se edita producto antes de capturarla.
-2. [Fase 2: editor y navegación](audit_01_app_exhaustiva_fase2_editor.md). Depende de fase 1.
-3. [Fase 3: contenido](audit_01_app_exhaustiva_fase3_contenido.md). Depende de fase 2.
-4. [Fase 4: personas](audit_01_app_exhaustiva_fase4_personas.md). Depende de fase 2.
-5. [Fase 5: imágenes](audit_01_app_exhaustiva_fase5_imagenes.md). Depende de fase 2.
-6. [Fase 6: bloques 04 y 05](audit_01_app_exhaustiva_fase6_bloques04_05.md). Depende de fases 3 a 5.
-7. [Fase 7: preview](audit_01_app_exhaustiva_fase7_preview.md). Depende de fases 2 a 6.
-8. [Fase 8: nueve piezas](audit_01_app_exhaustiva_fase8_piezas.md). Depende de fase 7.
-9. [Fase 9: proyectos, diálogos y exportación](audit_01_app_exhaustiva_fase9_proyectos_exportacion.md). Depende de fases 3 a 8.
-10. [Fase 10: responsive y accesibilidad](audit_01_app_exhaustiva_fase10_responsive_accesibilidad.md). Depende de fases 2 a 9.
-11. [Fase 11: limpieza](audit_01_app_exhaustiva_fase11_limpieza.md). Depende de evidencia de fases anteriores.
-12. [Fase 12: validación final](audit_01_app_exhaustiva_fase12_validacion_final.md). Depende de todas las anteriores.
-13. [Fase 13: revalidación con Browser Use](audit_01_app_exhaustiva_fase13_browser_use.md). Reabre el producto terminado en un navegador aislado, recorre cada pantalla y corrige solamente regresiones reproducidas.
+1. [Fase 1: línea base](audit_01_app_exhaustiva_fase1_baseline_done.md). No se edita producto antes de capturarla.
+2. [Fase 2: editor y navegación](audit_01_app_exhaustiva_fase2_editor_done.md). Depende de fase 1.
+3. [Fase 3: contenido](audit_01_app_exhaustiva_fase3_contenido_done.md). Depende de fase 2.
+4. [Fase 4: personas](audit_01_app_exhaustiva_fase4_personas_done.md). Depende de fase 2.
+5. [Fase 5: imágenes](audit_01_app_exhaustiva_fase5_imagenes_done.md). Depende de fase 2.
+6. [Fase 6: bloques 04 y 05](audit_01_app_exhaustiva_fase6_bloques04_05_done.md). Depende de fases 3 a 5.
+7. [Fase 7: preview](audit_01_app_exhaustiva_fase7_preview_done.md). Depende de fases 2 a 6.
+8. [Fase 8: nueve piezas](audit_01_app_exhaustiva_fase8_piezas_done.md). Depende de fase 7.
+9. [Fase 9: proyectos, diálogos y exportación](audit_01_app_exhaustiva_fase9_proyectos_exportacion_done.md). Depende de fases 3 a 8.
+10. [Fase 10: responsive y accesibilidad](audit_01_app_exhaustiva_fase10_responsive_accesibilidad_done.md). Depende de fases 2 a 9.
+11. [Fase 11: limpieza](audit_01_app_exhaustiva_fase11_limpieza_done.md). Depende de evidencia de fases anteriores.
+12. [Fase 12: validación final](audit_01_app_exhaustiva_fase12_validacion_final_done.md). Depende de todas las anteriores.
+13. [Fase 13: revalidación con Browser Use](audit_01_app_exhaustiva_fase13_browser_use_done.md). Reabre el producto terminado en un navegador aislado, recorre cada pantalla y corrige solamente regresiones reproducidas.
 
 ## Método de ejecución
 
@@ -133,7 +133,7 @@ La línea base registra tiempos de carga, dimensiones y duración de la suite. E
 - Gate 1: commit local del plan antes de editar producto.
 - Gate 2: línea base capturada e inspeccionada.
 - Gate 3: cada fase queda cerrada con evidencia y estado actualizado.
-- Gate 4: el usuario debe aprobar la graduación/archivo del plan terminado.
+- Gate 4, aprobado: el usuario aprobó la graduación y el archivo del plan terminado.
 - Publicación y push quedan fuera de esta aprobación.
 
 ## Progreso
@@ -153,4 +153,4 @@ La línea base registra tiempos de carga, dimensiones y duración de la suite. E
 - [x] Fase 11.
 - [x] Fase 12.
 - [x] Fase 13.
-- [ ] Aprobación de graduación.
+- [x] Aprobación de graduación.

@@ -1,8 +1,8 @@
 # Informe de auditoría de Red PLACTS
 
 Fecha: 2026-09-12
-Plan: `plans/audit_01_app_exhaustiva.md`
-Estado: AUDITORÍA COMPLETA, PENDIENTE DE GRADUACIÓN
+Plan: `plans/done/audit_01_app_exhaustiva.md`
+Estado: AUDITORÍA GRADUADA
 
 ## Resumen
 
