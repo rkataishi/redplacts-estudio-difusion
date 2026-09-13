@@ -1,6 +1,6 @@
 # Fase 7: validación y limpieza
 
-Estado: PENDIENTE
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
@@ -19,3 +19,5 @@ Probar el sistema completo, comparar contra el baseline y retirar sólo código 
 ## Cierre
 
 Resultado esperado: 27 composiciones válidas, controles correctos, miniaturas completas, exportaciones reales y ninguna regresión. Cualquier resultado no inspeccionado es `INCONCLUSIVE`.
+
+Resultado: 27 capturas posteriores y tres hojas comparativas inspeccionadas. Pasaron diez recorridos E2E, nueve PNG individuales, zoom, ZIP de doce archivos, imágenes, proyecto, diálogos, personas, controles y smoke test sin errores severos de consola.

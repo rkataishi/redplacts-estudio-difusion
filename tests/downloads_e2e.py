@@ -544,7 +544,7 @@ def run():
             # click individual data-export and await PNG download
             before_png = _pre_files("*.png")
             export_btn = WebDriverWait(driver, TIMEOUT).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, ".poster-card.is-selected .poster-actions .btn[data-export]"))
+                EC.element_to_be_clickable((By.ID, "export-selected"))
             )
             real_click(driver, export_btn)
             png_path, png_sz = _wait_new_file("*.png", before_png, f"individual PNG variant {_i}", timeout=10, min_size=2000)

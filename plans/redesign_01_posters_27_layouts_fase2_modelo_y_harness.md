@@ -1,6 +1,6 @@
 # Fase 2: modelo y harness
 
-Estado: PENDIENTE
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
@@ -17,3 +17,5 @@ Representar la composición como una matriz explícita `variante × cantidad` y 
 ## Verificación
 
 El harness debe fallar contra la línea base por el poster 03 de cuatro personas y por layouts sin cambio geométrico. Luego debe pasar las 27 combinaciones sin falsear la comprobación.
+
+Resultado: `POSTER_LAYOUTS_OK states=27 variants=9`; las 27 firmas de composición son explícitas y los tres casos de cada variante son distintos.
