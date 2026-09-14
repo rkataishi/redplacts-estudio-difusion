@@ -1,6 +1,6 @@
 # Fase 5: posters 07–09
 
-Estado: EN EJECUCIÓN, TERCERA REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 

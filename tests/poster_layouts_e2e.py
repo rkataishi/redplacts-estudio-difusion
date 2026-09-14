@@ -120,6 +120,12 @@ def run():
         assert defaults["typeScale"] == 115
         assert set(defaults["boxes"]) == {"title", "speaker", "moderator", "meeting"}
 
+        def centered(items, top, height, tolerance=2):
+            visible = [item for item in items if item.get("h")]
+            group_top = min(item["y"] for item in visible)
+            group_bottom = max(item["y"] + item["h"] for item in visible)
+            return abs((group_top + group_bottom) / 2 - (top + height / 2)) <= tolerance
+
         for count in (2, 3, 4):
             replace_with_example(driver, count)
             plans = driver.execute_script("return window.PLACTSStudio.getPlans()")
@@ -137,6 +143,36 @@ def run():
                 assert len(sizes) == 1, (count, index, sizes)
                 text_sizes = [item["size"] for item in plan["audit"] if item.get("size")]
                 assert text_sizes and min(text_sizes) >= 17, (count, index, min(text_sizes))
+                labels = {item["label"]: item for item in plan["audit"]}
+                assert labels["event-type"]["size"] >= 23
+                assert labels["event-series"]["text"] == "ENCUENTROS VIRTUALES DE LA RED PLACTS"
+                assert "website" not in labels
+                assert "footer-logo" in labels
+                assert all(f"footer-network-{i}" in labels and f"footer-handle-{i}" in labels for i in range(4))
+                assert [(labels[f"footer-network-{i}"]["text"], labels[f"footer-handle-{i}"]["text"]) for i in range(4)] == [("Instagram", "@redplacts"), ("X", "@PlactsRed"), ("Facebook", "@redplacts"), ("YouTube", "@RedPLACTS")]
+                meeting = labels["meeting-box"]
+                assert centered([labels[name] for name in ("meeting-date", "meeting-time", "meeting-zone")], meeting["y"], meeting["h"])
+                for speaker in range(count):
+                    assert f"speaker-affiliation-{speaker}" in labels
+                    card, photo = labels[f"speaker-card-{speaker}"], labels.get(f"speaker-photo-{speaker}")
+                    content = [item for item in plan["audit"] if item["label"] in {f"speaker-name-{speaker}", f"speaker-affiliation-{speaker}", f"speaker-description-{speaker}"}]
+                    text_top = photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
+                    assert centered(content, text_top, card["y"] + card["h"] - text_top, 3), (count, index, speaker, content, card, photo)
+                if index == 0:
+                    title = labels["event-title"]
+                    assert title["h"] <= title["size"] * 1.08
+                    assert title["size"] >= 66
+                if index == 4:
+                    assert all(labels[f"speaker-photo-{i}"]["h"] >= labels[f"speaker-card-{i}"]["h"] * .59 for i in range(count))
+                if index == 5:
+                    assert min(labels[f"speaker-name-{i}"]["size"] for i in range(count)) >= 24
+                if index == 6:
+                    assert labels["moderator-box"]["h"] >= 120
+                    assert labels["mod-photo-0"]["h"] >= 52
+                if index in (7, 8):
+                    assert labels["title-box"]["w"] >= plan["width"] * .84
+                if index == 8 and "hero-image" in labels:
+                    assert labels["title-box"]["y"] < labels["hero-image"]["y"] + labels["hero-image"]["h"] / 2
                 rows = {}
                 for item in cards:
                     rows.setdefault(round(item["y"], 3), 0)
@@ -150,6 +186,23 @@ def run():
                     for item in cards
                 )
             driver.save_screenshot(str(CAPTURE_DIR / f"{count}-speakers.png"))
+
+        no_descriptions = driver.execute_async_script(
+            """
+            const done=arguments[arguments.length-1], state=PLACTSStudio.makeExample(3);
+            state.speakers.forEach(person => person.description='');
+            PLACTSStudio.replace(state).then(()=>done(PLACTSStudio.getPlans())).catch(error=>done({error:error.message}));
+            """
+        )
+        assert not isinstance(no_descriptions, dict), no_descriptions
+        for plan in no_descriptions:
+            labels = {item["label"]: item for item in plan["audit"]}
+            assert not any(label.startswith("speaker-description-") for label in labels)
+            for speaker in range(3):
+                card, photo = labels[f"speaker-card-{speaker}"], labels.get(f"speaker-photo-{speaker}")
+                content = [labels[f"speaker-name-{speaker}"], labels[f"speaker-affiliation-{speaker}"]]
+                text_top = photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
+                assert centered(content, text_top, card["y"] + card["h"] - text_top, 3)
 
         for index, values in signatures.items():
             assert len(set(values)) == 3, (index, values)
@@ -183,8 +236,10 @@ def run():
         assert not any(item["label"] == "hero-image" for item in hero_off["plans"][0]["audit"])
         assert any(item["label"] == "hero-image" for item in hero_on["plans"][0]["audit"])
         assert hero_off["hash"] != hero_on["hash"]
-        assert next(item for item in hero_off["plans"][8]["audit"] if item["label"] == "event-title")["y"] == 150
-        assert next(item for item in hero_on["plans"][8]["audit"] if item["label"] == "event-title")["y"] == 525
+        hero_title = next(item for item in hero_on["plans"][8]["audit"] if item["label"] == "title-box")
+        hero_image = next(item for item in hero_on["plans"][8]["audit"] if item["label"] == "hero-image")
+        assert hero_title["y"] < hero_image["y"] + hero_image["h"] / 2
+        assert next(item for item in hero_off["plans"][8]["audit"] if item["label"] == "title-box")["y"] == 132
 
         box_hashes = {
             (style, color): render_options(driver, box_style=style, box_color=color)["hash"]

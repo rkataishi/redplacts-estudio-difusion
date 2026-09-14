@@ -283,6 +283,7 @@ def run():
             saved_data = json.load(f)
         assert "event" in saved_data and "speakers" in saved_data, f"JSON guardado sin keys esperadas: {list(saved_data.keys())[:5]}"
         assert len(saved_data["speakers"])==2, f"JSON guardado speakers esperado 2 got {len(saved_data['speakers'])}"
+        assert saved_data["speakers"][0]["affiliation"], "JSON guardado perdió la pertenencia institucional"
         assert saved_data["options"]["typeScale"] == 125
         assert saved_data["options"]["boxes"]["title"] == {"style": "gradient", "color": "accent", "accent": "#8b4c78", "fontScale": 120}
         saved_title = saved_data["event"].get("title","")
@@ -349,6 +350,7 @@ def run():
         assert st_imported["event"]["title"]==saved_title, f"tras import title esperado '{saved_title}' got '{st_imported['event']['title']}'"
         # deeper: compare event json
         assert st_imported["event"]["subtitle"]==saved_data["event"]["subtitle"]
+        assert st_imported["speakers"][0]["affiliation"] == saved_data["speakers"][0]["affiliation"]
         assert st_imported["options"]["typeScale"] == 125
         assert st_imported["options"]["boxes"]["title"] == saved_data["options"]["boxes"]["title"]
         print(f"✓ import saved JSON confirm → state restored speakers=2 title='{st_imported['event']['title'][:30]}'")

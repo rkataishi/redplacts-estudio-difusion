@@ -1,6 +1,6 @@
 # Fase 4: posters 04–06
 
-Estado: EN EJECUCIÓN, TERCERA REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 

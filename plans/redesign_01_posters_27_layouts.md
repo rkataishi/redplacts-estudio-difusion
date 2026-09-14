@@ -1,6 +1,6 @@
 # Redesign 01: veintisiete composiciones de posters
 
-Estado: EN EJECUCIÓN, TERCERA REVISIÓN VISUAL
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 Fecha de aprobación: 2026-09-13
 Revisión aprobada: 2026-09-14
 Segunda revisión aprobada: 2026-09-14
@@ -143,7 +143,7 @@ La línea base registra duración de composición y 27 capturas. El cierre repit
 - Gate 3: cada grupo de tres posters tiene comparación visual antes/después.
 - Gate 4: recorrido completo, suite y exportaciones reales.
 - Gate 5: aprobación del usuario antes de marcar fases `_done` y graduar.
-- Push y publicación quedan fuera de esta aprobación.
+- El usuario autorizó commit y push de esta tercera revisión el 2026-09-14. La publicación o el despliegue siguen fuera de alcance.
 
 ## Progreso
 
@@ -156,9 +156,13 @@ La línea base registra duración de composición y 27 capturas. El cierre repit
 - [x] Segunda revisión 2026-09-14 aprobada: eliminar podios, aumentar tipografía y añadir controles por recuadro.
 - [x] Contrato sin jerarquía, tipografía y personalización implementado.
 - [x] Tercera revisión visual aprobada por el usuario.
-- [ ] Centrado dinámico, pertenencia, header, footer y ajustes 01–09 implementados.
+- [x] Centrado dinámico, pertenencia, header, footer y ajustes 01–09 implementados.
+- [x] Tercera revisión inspeccionada con imágenes reales y estado sin descripciones.
+- [x] Suite funcional y exportación de nueve PNG más ZIP verificadas sin errores severos.
 - [ ] Aprobación de graduación.
 
 Evidencia de la segunda revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14-typography/`. Browser Use generó e inspeccionó tres hojas con 27 pósters y mockups. El renderer informó `POSTER_LAYOUTS_OK states=27 variants=9 elapsed=15.87s`. Los cruces de estilo y color, los tres acentos y las cuatro escalas por grupo produjeron resultados distintos. Las pruebas de controles, persistencia, descargas, imágenes y flujo principal pasaron sin errores severos de consola.
 
 Baseline de la tercera revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14-layout-03/baseline/`. Se capturaron nueve variantes con tres expositores y nueve estados sin descripciones. Las imágenes confirman fotos pequeñas en 05, nombres pequeños en 06, centro vertical incorrecto en 01, 02 y 07, moderación mínima, fecha/acceso desalineados y bloques de título mal ubicados en 08 y 09.
+
+Resultado de la tercera revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14-layout-03/after/` y `after-sheet.png`. La inspección visual confirma cards equivalentes, contenido condicional recentrado, fotografías dominantes en 05, nombres legibles en 06, moderación ampliada en 07, cards mayores en 08 y título superior en 09. `POSTER_LAYOUTS_OK states=27 variants=9`; controles de personas, proyecto, escenario, assets, fecha/contenido, canvas, diálogos, smoke y descargas pasaron. La exportación real verificó las cuatro clases de imagen en cada una de las nueve piezas y un ZIP de doce entradas.

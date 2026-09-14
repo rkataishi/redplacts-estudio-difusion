@@ -164,7 +164,6 @@ def run():
         WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.ID, "tab-people").get_attribute("aria-selected") == "true")
         print("✓ tab Participantes abierto")
 
-        # --- name/description/counter ---
         st = get_state(driver)
         pid = st["speakers"][0]["id"]
         ensure_person_open(driver, pid)
@@ -179,22 +178,30 @@ def run():
         assert new_name in cap, f"caption no actualizó: {cap}"
         print(f"✓ name edit ok '{new_name}' -> state y caption")
 
+        affiliation_sel = f"#affiliation-{pid}"
+        new_affiliation = "Universidad Nacional · Política tecnológica"
+        js_set_value(driver, affiliation_sel, new_affiliation)
+        wait_state(driver, f"window.PLACTSStudio.getState().speakers.find(x=>x.id==='{pid}').affiliation===`{new_affiliation}`", msg="affiliation no reflejada")
+        affiliation_counter = f"{len(new_affiliation)}/110"
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.CSS_SELECTOR, f'[data-person="{pid}"] [data-person-counter="affiliation"]').text.strip()==affiliation_counter)
+        print(f"✓ affiliation edit ok counter {affiliation_counter}")
+
         # description + counter
         desc_sel = f"#description-{pid}"
         new_desc = "Investigadora · Red PLACTS · E2E people controls"
         js_set_value(driver, desc_sel, new_desc)
         wait_state(driver, f"window.PLACTSStudio.getState().speakers.find(x=>x.id==='{pid}').description===`{new_desc}`", msg="description no reflejado")
-        counter_el = driver.find_element(By.CSS_SELECTOR, f'[data-person="{pid}"] .person-counter')
+        counter_el = driver.find_element(By.CSS_SELECTOR, f'[data-person="{pid}"] [data-person-counter="description"]')
         exp_counter = f"{len(new_desc)}/200"
         # esperar counter actualización
-        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.CSS_SELECTOR, f'[data-person="{pid}"] .person-counter').text.strip()==exp_counter)
+        WebDriverWait(driver, TIMEOUT).until(lambda d: d.find_element(By.CSS_SELECTOR, f'[data-person="{pid}"] [data-person-counter="description"]').text.strip()==exp_counter)
         assert counter_el.text.strip()==exp_counter, f"counter esperado {exp_counter} got {counter_el.text}"
         print(f"✓ description edit ok len {len(new_desc)} counter {exp_counter}")
 
-        # verificar maxlength atributos 80/200 existen
         assert driver.find_element(By.ID, f"name-{pid}").get_attribute("maxlength")=="80"
+        assert driver.find_element(By.ID, f"affiliation-{pid}").get_attribute("maxlength")=="110"
         assert driver.find_element(By.ID, f"description-{pid}").get_attribute("maxlength")=="200"
-        print("✓ maxlength name 80 / description 200 verificado")
+        print("✓ maxlength name 80 / affiliation 110 / description 200 verificado")
 
         # --- add speakers hasta 6 disabled ---
         for expected in range(2, 7):
@@ -320,7 +327,6 @@ def run():
         assert len(get_state(driver)["moderators"])==2
         print("✓ moderators 2/2 alcanzado y #add-moderator disabled")
 
-        # La panorámica apila la moderación: cada bloque debe usar su banda calculada.
         mod_ids = [p["id"] for p in get_state(driver)["moderators"]]
         for i, mid in enumerate(mod_ids, 1):
             js_set_value(driver, f"#name-{mid}", f"Moderación de prueba {i} con nombre extendido")
@@ -331,11 +337,11 @@ def run():
         )
         mod_audit = driver.execute_script("return window.PLACTSStudio.getPlans().find(p=>p.variant==='poster-panoramica').audit.filter(x=>x.label.startsWith('mod-'))")
         panorama_issues = driver.execute_script("return window.PLACTSStudio.getPlans().find(p=>p.variant==='poster-panoramica').issues")
-        first_bottom = max(x["y"] + x["h"] for x in mod_audit if x["label"] in ("mod-name-0", "mod-desc-0"))
-        second_top = next(x["y"] for x in mod_audit if x["label"] == "mod-name-1")
-        assert second_top > first_bottom, f"moderadores superpuestos en panorámica: first_bottom={first_bottom}, second_top={second_top}"
+        first_name = next(x for x in mod_audit if x["label"] == "mod-name-0")
+        second_name = next(x for x in mod_audit if x["label"] == "mod-name-1")
+        assert second_name["x"] > first_name["x"] + first_name["w"], (first_name, second_name)
         assert not panorama_issues, f"la moderación válida bloqueó la panorámica: {panorama_issues}"
-        print(f"✓ panorama moderators separated: first_bottom={first_bottom:.1f}, second_top={second_top:.1f}")
+        print("✓ panorama moderators separated in equivalent columns")
 
         # eliminar hasta 0 (moderadores no tienen guard de mínimo, sí se puede llegar a 0)
         st_mod = get_state(driver)

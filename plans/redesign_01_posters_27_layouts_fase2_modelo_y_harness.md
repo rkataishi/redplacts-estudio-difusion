@@ -1,6 +1,6 @@
 # Fase 2: modelo y harness
 
-Estado: EN EJECUCIÓN, TERCERA REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
