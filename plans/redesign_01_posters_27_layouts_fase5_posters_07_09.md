@@ -1,6 +1,6 @@
 # Fase 5: posters 07–09
 
-Estado: EN REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
@@ -17,3 +17,5 @@ Dar identidad propia a las variantes Digital y eliminar duplicaciones con Ushuai
 Comparar 07 contra 05, 08 contra 04 y 09 contra 06. Falla si la estructura sigue siendo equivalente, si sólo cambian color o formato, o si una card tiene dimensiones distintas a sus pares.
 
 Resultado: nueve capturas posteriores inspeccionadas; 07 usa tarjetas/círculos/franja, 08 desplazamiento/satélites/mosaico y 09 composición narrativa vertical.
+
+Revisión 2026-09-14: 07 y 08 usan cards iguales en los nueve estados. 09 fue rehecha con bandas horizontales y retícula horizontal 2 × 2; sus tres firmas difieren de las columnas y bandas verticales de 06. Se inspeccionaron las nueve capturas.

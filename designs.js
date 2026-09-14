@@ -1,4 +1,3 @@
-/* designs.js — renderer de las nueve piezas con layouts por cantidad. */
 (function(){
  'use strict';
 
@@ -6,14 +5,14 @@
 
  var COMPOSITIONS=[
   {2:{id:'01-duo-fichas',kind:'duoCards'},3:{id:'01-tres-columnas',kind:'threeColumns'},4:{id:'01-reticula-dos-por-dos',kind:'grid'}},
-  {2:{id:'02-duo-lateral',kind:'duoSide'},3:{id:'02-triada-central',kind:'centerTrio'},4:{id:'02-franja-cuatro',kind:'rowFour'}},
+  {2:{id:'02-duo-lateral-igual',kind:'duoSide'},3:{id:'02-tres-panoramicas-iguales',kind:'panoramaTrio'},4:{id:'02-franja-cuatro-iguales',kind:'rowFour'}},
   {2:{id:'03-dos-columnas-editoriales',kind:'editorialDuo'},3:{id:'03-tres-columnas-editoriales',kind:'editorialColumns'},4:{id:'03-cuatro-retratos-a-sangre',kind:'fullBleedFour'}},
-  {2:{id:'04-duo-diagonal',kind:'diagonalDuo'},3:{id:'04-triangulo-jerarquico',kind:'triangle'},4:{id:'04-mosaico-dos-por-dos',kind:'mosaic'}},
-  {2:{id:'05-principal-y-acompanante',kind:'focusTwo'},3:{id:'05-principal-y-dos-secundarios',kind:'focusThree'},4:{id:'05-principal-y-tres-secundarios',kind:'focusFour'}},
+  {2:{id:'04-duo-diagonal-igual',kind:'diagonalDuo'},3:{id:'04-triangulo-tres-iguales',kind:'triangle'},4:{id:'04-mosaico-dos-por-dos-igual',kind:'mosaic'}},
+  {2:{id:'05-duo-escalonado-igual',kind:'equalOffsetTwo'},3:{id:'05-escalera-tres-iguales',kind:'equalStairThree'},4:{id:'05-reticula-dos-por-dos-igual',kind:'equalGridFour'}},
   {2:{id:'06-dos-retratos-verticales',kind:'verticalTwo'},3:{id:'06-tres-columnas-verticales',kind:'verticalThree'},4:{id:'06-cuatro-bandas-fotograficas',kind:'verticalFour'}},
-  {2:{id:'07-dos-tarjetas-amplias',kind:'digitalDuo'},3:{id:'07-tres-circulos-jerarquizados',kind:'circleTrio'},4:{id:'07-franja-horizontal-cuatro',kind:'digitalFour'}},
-  {2:{id:'08-duo-desplazado',kind:'offsetDuo'},3:{id:'08-centro-y-satelites',kind:'satellites'},4:{id:'08-mosaico-dinamico',kind:'dynamicGrid'}},
-  {2:{id:'09-titulo-y-dos-tarjetas',kind:'storyDuo'},3:{id:'09-tres-columnas-bajo-hero',kind:'storyTrio'},4:{id:'09-cuatro-retratos-superiores',kind:'storyFour'}}
+  {2:{id:'07-dos-tarjetas-iguales',kind:'digitalDuo'},3:{id:'07-tres-circulos-iguales',kind:'circleTrio'},4:{id:'07-franja-cuatro-iguales',kind:'digitalFour'}},
+  {2:{id:'08-duo-desplazado-igual',kind:'offsetDuo'},3:{id:'08-triangulo-tres-iguales',kind:'satellites'},4:{id:'08-mosaico-escalonado-igual',kind:'dynamicGrid'}},
+  {2:{id:'09-dos-bandas-horizontales',kind:'storyRowsTwo'},3:{id:'09-tres-bandas-horizontales',kind:'storyRowsThree'},4:{id:'09-reticula-horizontal-dos-por-dos',kind:'storyGridFour'}}
  ];
 
  function recipe(v,n){
@@ -96,29 +95,29 @@
   if(kind==='threeColumns')return gridRects(3,1,.025);
   if(kind==='grid')return gridRects(2,2,.035);
   if(kind==='duoSide')return [rect(0,.06,.47,.88,'cover'),rect(.53,.06,.47,.88,'cover')];
-  if(kind==='centerTrio')return [rect(0,.16,.29,.72,'top'),rect(.315,0,.37,1,'cover'),rect(.71,.16,.29,.72,'top')];
+  if(kind==='panoramaTrio')return [rect(0,.08,.31,.84,'cover'),rect(.345,.08,.31,.84,'cover'),rect(.69,.08,.31,.84,'cover')];
   if(kind==='rowFour')return gridRects(4,1,.02).map(function(r){r.mode='cover';return r;});
   if(kind==='editorialDuo')return [rect(0,0,.485,1,'cover'),rect(.515,0,.485,1,'cover')];
   if(kind==='editorialColumns')return gridRects(3,1,.025).map(function(r){r.mode='cover';return r;});
   if(kind==='fullBleedFour')return gridRects(4,1,.012).map(function(r){r.mode='cover';return r;});
   if(kind==='diagonalDuo')return [rect(0,0,.54,.76,'cover'),rect(.46,.24,.54,.76,'cover')];
-  if(kind==='triangle')return [rect(0,.38,.31,.62,'top'),rect(.315,0,.37,.82,'cover'),rect(.69,.38,.31,.62,'top')];
-  if(kind==='mosaic')return [rect(0,0,.48,.47,'left'),rect(.52,.05,.48,.42,'left'),rect(.04,.53,.44,.47,'left'),rect(.52,.50,.48,.50,'left')];
-  if(kind==='focusTwo')return [rect(.38,0,.62,1,'cover'),rect(0,.20,.34,.60,'top')];
-  if(kind==='focusThree')return [rect(.40,0,.60,1,'cover'),rect(0,0,.36,.47,'left'),rect(0,.53,.36,.47,'left')];
-  if(kind==='focusFour')return [rect(.43,0,.57,1,'cover'),rect(0,0,.39,.30,'left'),rect(0,.35,.39,.30,'left'),rect(0,.70,.39,.30,'left')];
+  if(kind==='triangle')return [rect(0,.38,.31,.62,'top'),rect(.345,0,.31,.62,'top'),rect(.69,.38,.31,.62,'top')];
+  if(kind==='mosaic')return [rect(0,0,.46,.46,'left'),rect(.54,.04,.46,.46,'left'),rect(.04,.54,.46,.46,'left'),rect(.54,.50,.46,.46,'left')];
+  if(kind==='equalOffsetTwo')return [rect(0,0,.68,.46,'left'),rect(.32,.54,.68,.46,'left')];
+  if(kind==='equalStairThree')return [rect(0,0,.68,.29,'left'),rect(.16,.355,.68,.29,'left'),rect(.32,.71,.68,.29,'left')];
+  if(kind==='equalGridFour')return gridRects(2,2,.04).map(function(r){r.mode='left';return r;});
   if(kind==='verticalTwo')return [rect(0,0,.485,1,'cover'),rect(.515,0,.485,1,'cover')];
   if(kind==='verticalThree')return gridRects(3,1,.025).map(function(r){r.mode='cover';return r;});
   if(kind==='verticalFour')return gridRects(4,1,.018).map(function(r){r.mode='cover';return r;});
   if(kind==='digitalDuo')return [rect(0,.08,.48,.84,'top'),rect(.52,.08,.48,.84,'top')];
-  if(kind==='circleTrio')return [rect(0,.20,.29,.68,'circle'),rect(.315,0,.37,1,'circle'),rect(.71,.20,.29,.68,'circle')];
+  if(kind==='circleTrio')return [rect(0,.18,.30,.78,'circle'),rect(.35,0,.30,.78,'circle'),rect(.70,.18,.30,.78,'circle')];
   if(kind==='digitalFour')return gridRects(4,1,.02);
   if(kind==='offsetDuo')return [rect(.02,0,.55,.72,'cover'),rect(.43,.28,.55,.72,'cover')];
-  if(kind==='satellites')return [rect(.31,0,.38,.78,'circle'),rect(0,.36,.28,.60,'circle'),rect(.72,.36,.28,.60,'circle')];
-  if(kind==='dynamicGrid')return [rect(0,0,.58,.48,'cover'),rect(.62,0,.38,.48,'left'),rect(0,.52,.38,.48,'left'),rect(.42,.52,.58,.48,'cover')];
-  if(kind==='storyDuo')return [rect(0,0,.48,1,'cover'),rect(.52,0,.48,1,'cover')];
-  if(kind==='storyTrio')return gridRects(3,1,.025).map(function(r){r.mode='cover';return r;});
-  if(kind==='storyFour')return gridRects(4,1,.018).map(function(r){r.mode='cover';return r;});
+  if(kind==='satellites')return [rect(.34,0,.32,.62,'circle'),rect(0,.38,.32,.62,'circle'),rect(.68,.38,.32,.62,'circle')];
+  if(kind==='dynamicGrid')return [rect(0,.08,.46,.46,'cover'),rect(.54,0,.46,.46,'cover'),rect(0,.54,.46,.46,'cover'),rect(.54,.46,.46,.46,'cover')];
+  if(kind==='storyRowsTwo')return [rect(0,0,1,.47,'left'),rect(0,.53,1,.47,'left')];
+  if(kind==='storyRowsThree')return [rect(0,0,1,.30,'left'),rect(0,.35,1,.30,'left'),rect(0,.70,1,.30,'left')];
+  if(kind==='storyGridFour')return gridRects(2,2,.04).map(function(r){r.mode='left';return r;});
   return gridRects(n>4?3:Math.max(1,n),Math.ceil(n/3),.025);
  }
 
@@ -149,6 +148,7 @@
   var x=area.x+item.x*area.w,y=area.y+item.y*area.h,w=item.w*area.w,h=item.h*area.h,person=p.s.speakers[index];
   if(!person)return;
   api.box(ctx,x,y,w,h,'rgba(255,255,255,.94)',12);
+  audit.push({label:'speaker-card-'+index,x:x,y:y,w:w,h:h,maxLine:0});
   var social=p.v>=3,showPhoto=!social||p.s.options.socialPhotos,nameSize=Math.max(17,Math.min(social?27:29,w*.075));
   if(!showPhoto){
    drawTracked(ctx,fitted(person.name||'Nombre',x+16,y+h*.34,w-32,h*.32,nameSize+3,16,700,api.C.ink,p.font,'center',1.08),'speaker-name-'+index,audit);

@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 try:
     from tests.ui_smoke import BASE_URL, _driver, assert_no_severe_logs
 except ImportError:
-    from ui_smoke import BASE_URL, _driver, assert_no_severe_logs  # type: ignore
+    from ui_smoke import BASE_URL, _driver, assert_no_severe_logs
 
 
 TIMEOUT = 20
@@ -81,6 +81,7 @@ def run():
     driver = _driver()
     started = time.time()
     signatures = {index: [] for index in range(9)}
+    geometries = {}
     try:
         CAPTURE_DIR.mkdir(parents=True, exist_ok=True)
         driver.get(BASE_URL)
@@ -106,10 +107,20 @@ def run():
                 signature = plan.get("composition")
                 assert signature, (count, index, "missing composition")
                 signatures[index].append(signature)
+                cards = [item for item in plan["audit"] if item["label"].startswith("speaker-card-")]
+                assert len(cards) == count, (count, index, len(cards))
+                sizes = {(round(item["w"], 3), round(item["h"], 3)) for item in cards}
+                assert len(sizes) == 1, (count, index, sizes)
+                geometries[count, index] = tuple(
+                    (round(item["x"], 3), round(item["y"], 3), round(item["w"], 3), round(item["h"], 3))
+                    for item in cards
+                )
             driver.save_screenshot(str(CAPTURE_DIR / f"{count}-speakers.png"))
 
         for index, values in signatures.items():
             assert len(set(values)) == 3, (index, values)
+        for count in (2, 3, 4):
+            assert geometries[count, 5] != geometries[count, 8], (count, "variants 06 and 09 match")
 
         photos_on = render_options(driver, social_photos=True)
         photos_off = render_options(driver, social_photos=False)

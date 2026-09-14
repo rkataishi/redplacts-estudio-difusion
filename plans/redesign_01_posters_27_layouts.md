@@ -1,6 +1,6 @@
 # Redesign 01: veintisiete composiciones de posters
 
-Estado: EN REVISIÓN POR CORRECCIONES VISUALES
+Estado: REVISIÓN 2026-09-14 IMPLEMENTADA, PENDIENTE DE APROBACIÓN VISUAL
 Fecha de aprobación: 2026-09-13
 Revisión aprobada: 2026-09-14
 Propietario: Sol
@@ -103,5 +103,7 @@ La línea base registra duración de composición y 27 capturas. El cierre repit
 - [x] Baseline visual de 27 estados capturado.
 - [x] Gates 2–4 y fases 2–7 ejecutados y verificados.
 - [x] Revisión 2026-09-14 aprobada por el usuario: cards iguales, 06 y 09 distintas y cursor local corregido.
-- [ ] Revisión 2026-09-14 implementada y recorrida en 27 estados.
+- [x] Revisión 2026-09-14 implementada y recorrida en 27 estados con Browser Use.
 - [ ] Aprobación de graduación.
+
+Evidencia de la revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14/after/`. El renderer informó `POSTER_LAYOUTS_OK states=27 variants=9 elapsed=7.84s`. Las pruebas de controles, descargas, imágenes y flujo principal pasaron. El localhost quedó abierto con tres expositores y el layer local visible.

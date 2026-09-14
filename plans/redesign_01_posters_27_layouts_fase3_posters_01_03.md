@@ -1,6 +1,6 @@
 # Fase 3: posters 01–03
 
-Estado: EN REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
@@ -17,3 +17,5 @@ Reconstruir las variantes editoriales y eliminar el fallback del poster 03.
 Ejecutar el harness después de cada variante y abrir sus tres capturas. Falla por texto ilegible, biografía cortada, retrato menor que el mínimo visual, fallback o jerarquía indistinguible.
 
 Resultado: nueve capturas posteriores inspeccionadas; 03 con cuatro expositores ya usa cuatro retratos editoriales y no cae en fallback.
+
+Revisión 2026-09-14: 01 y 03 conservaron sus cards iguales. 02 reemplazó el centro dominante por dos, tres o cuatro retratos de idénticas dimensiones. Se inspeccionaron las nueve capturas.

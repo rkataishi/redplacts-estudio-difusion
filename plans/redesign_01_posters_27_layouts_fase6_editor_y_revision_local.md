@@ -1,6 +1,6 @@
 # Fase 6: editor y revisión local
 
-Estado: EN REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
@@ -22,3 +22,5 @@ Resolver los dos comentarios del usuario y permitir comentarios asociados a una 
 Seleccionar las nueve variantes desde el layer y desde la app, guardar un comentario y comprobar el JSON. Verificar por teclado la selección y ambas acciones de exportación. Inspeccionar que las nueve miniaturas estén completas a 1440 × 790.
 
 Resultado: selector 01–09 probado desde el layer. Una selección real sobre el título resaltó sólo su caja de 972 × 100 px dentro del póster y el comentario temporal confirmó elemento, coordenadas, composición y variante; después fue retirado sin tocar los dos comentarios del usuario. Las nueve miniaturas quedan dentro de una banda de 64 px y ambos botones de exportación están visibles y contiguos.
+
+Revisión 2026-09-14: el selector interno mostró `crosshair` mientras estuvo activo y recuperó `zoom-in` al seleccionar o cancelar con Escape. Los fallos de inicio del selector ahora aparecen en el estado del layer.

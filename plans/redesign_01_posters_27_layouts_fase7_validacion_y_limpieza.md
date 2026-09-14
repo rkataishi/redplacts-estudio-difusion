@@ -1,6 +1,6 @@
 # Fase 7: validación y limpieza
 
-Estado: EN REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
@@ -24,3 +24,5 @@ Probar el sistema completo, comparar contra el baseline y retirar sólo código 
 Resultado esperado: 27 composiciones válidas, controles correctos, miniaturas completas, exportaciones reales y ninguna regresión. Cualquier resultado no inspeccionado es `INCONCLUSIVE`.
 
 Resultado: 27 capturas posteriores y tres hojas comparativas inspeccionadas. Pasaron diez recorridos E2E, nueve PNG individuales, zoom, ZIP de doce archivos, imágenes, proyecto, diálogos, personas, controles y smoke test sin errores severos de consola.
+
+Revisión 2026-09-14: Browser Use guardó e inspeccionó 27 capturas nuevas y tres hojas de nueve estados. Pasaron `poster_layouts_e2e.py`, `stage_controls_e2e.py`, `downloads_e2e.py`, `image_canvas_e2e.py` y `ui_smoke.py`. La revisión eliminó las recetas jerárquicas reemplazadas, un comentario redundante y una supresión amplia del test.
