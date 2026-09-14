@@ -203,6 +203,7 @@ def run():
         person = next((p for p in (st["speakers"] + st["moderators"]) if p["id"] == person_id), None)
         assert person is not None, f"speaker {person_id} no encontrado en state tras upload"
         assert person.get("photo") is not None, f"photo null tras carga grande para {person_id}"
+        assert person["crop"]["y"] == 20, f"encuadre vertical inicial esperado 20, got {person['crop']['y']}"
         assert person["photo"].get("data", "").startswith("data:image"), f"photo.data no es data URL para {person_id}"
         w = person["photo"].get("width")
         h = person["photo"].get("height")

@@ -115,6 +115,8 @@ def run():
             "window.PLACTSStudio.whenReady().then(()=>done(true)).catch(error=>done('error:'+error.message));"
         )
         assert len(driver.execute_script("return window.PLACTSStudio.makeExample().speakers")) == 3
+        assert driver.execute_script("return window.PLACTSStudio.makeExample().speakers.every(person => person.crop.y === 20)")
+        assert driver.execute_script("const state=window.PLACTSStudio.makeExample();state.speakers.forEach(person=>delete person.crop);return window.PLACTSStudio.validateProject(state).speakers.every(person=>person.crop.y===20)")
         defaults = driver.execute_script("return window.PLACTSStudio.makeExample().options")
         assert defaults["font"] == "Lato"
         assert defaults["typeScale"] == 115
