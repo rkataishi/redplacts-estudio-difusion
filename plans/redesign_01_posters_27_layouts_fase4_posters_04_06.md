@@ -1,6 +1,6 @@
 # Fase 4: posters 04–06
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -8,8 +8,8 @@ Dar a las variantes Ushuaia tres composiciones reales y aprovechar correctamente
 
 ## Trabajo por variante
 
-- 04: dúo diagonal, tríada jerárquica y mosaico 2 × 2.
-- 05: persona principal con uno, dos o tres secundarios.
+- 04: dúo diagonal, triángulo y mosaico 2 × 2 con cards iguales.
+- 05: dúo escalonado, escalera de tres y retícula 2 × 2 con cards iguales y sin persona principal.
 - 06: dos retratos verticales, tres columnas y cuatro bandas.
 
 ## Verificación

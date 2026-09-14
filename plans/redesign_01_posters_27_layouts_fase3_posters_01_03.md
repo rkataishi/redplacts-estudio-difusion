@@ -1,6 +1,6 @@
 # Fase 3: posters 01–03
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -9,7 +9,7 @@ Reconstruir las variantes editoriales y eliminar el fallback del poster 03.
 ## Trabajo por variante
 
 - 01: fichas institucionales amplias, tres columnas y retícula 2 × 2.
-- 02: dúo lateral, centro dominante y franja de cuatro.
+- 02: dúo lateral, tres retratos panorámicos y franja de cuatro; todas las cards son iguales dentro de cada composición.
 - 03: dos columnas, tres columnas editoriales y cuatro retratos a sangre.
 
 ## Verificación

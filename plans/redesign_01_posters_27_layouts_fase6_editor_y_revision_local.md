@@ -1,6 +1,6 @@
 # Fase 6: editor y revisión local
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -15,6 +15,7 @@ Resolver los dos comentarios del usuario y permitir comentarios asociados a una 
 5. Añadir botones 01–09 y selección de elementos internos del póster renderizado en `.local-review/overlay.js`.
 6. Guardar `posterElement`, `posterRect`, `composition`, `variantIndex`, `variantName` y `speakerCount` con cada comentario.
 7. Cambiar el ejemplo local automático de seis a tres expositores.
+8. Reemplazar el cursor `zoom-in` por un cursor de selección mientras está activo el selector de elementos internos del póster.
 
 ## Verificación
 

@@ -1,6 +1,6 @@
 # Fase 7: validación y limpieza
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -15,6 +15,9 @@ Probar el sistema completo, comparar contra el baseline y retirar sólo código 
 5. Revisar consola, foco, reflujo y zoom.
 6. Medir la composición antes y después.
 7. Buscar funciones o ramas ya inaccesibles y eliminarlas únicamente con evidencia.
+8. Comprobar en los 27 estados que todas las cards de una composición comparten ancho y alto.
+9. Comparar 06 y 09 con 2, 3 y 4 expositores y rechazar cualquier firma equivalente.
+10. Activar el selector local, comprobar el cursor de selección y confirmar que vuelve a `zoom-in` al terminar.
 
 ## Cierre
 

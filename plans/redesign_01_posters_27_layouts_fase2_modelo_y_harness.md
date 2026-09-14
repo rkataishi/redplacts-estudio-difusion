@@ -1,6 +1,6 @@
 # Fase 2: modelo y harness
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -13,6 +13,8 @@ Representar la composición como una matriz explícita `variante × cantidad` y 
 3. Mantener fallbacks seguros para 1, 5 y 6.
 4. Añadir `tests/poster_layouts_e2e.py` para capturar dimensiones, issues y firma geométrica.
 5. Exigir que las tres firmas de una variante sean distintas.
+6. Registrar la caja de cada card y exigir ancho y alto iguales dentro de cada uno de los 27 estados.
+7. Exigir que las firmas geométricas de 06 y 09 sean distintas para cada cantidad.
 
 ## Verificación
 

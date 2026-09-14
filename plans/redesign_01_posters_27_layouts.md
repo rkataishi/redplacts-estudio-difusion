@@ -1,7 +1,8 @@
 # Redesign 01: veintisiete composiciones de posters
 
-Estado: IMPLEMENTADO, PENDIENTE DE APROBACIÓN VISUAL
+Estado: EN REVISIÓN POR CORRECCIONES VISUALES
 Fecha de aprobación: 2026-09-13
+Revisión aprobada: 2026-09-14
 Propietario: Sol
 Rama: `main`
 Punto de partida: `0981ba7`
@@ -22,6 +23,9 @@ Reconstruir las nueve variantes para que cada una tenga composiciones explícita
 8. El layer local permite elegir 01–09, seleccionar elementos internos del póster renderizado y adjunta elemento, coordenadas, composición, variante y cantidad de expositores a cada comentario.
 9. Preview, ampliación, thumbnail y PNG representan el mismo layout.
 10. Los flujos existentes de edición, proyecto y exportación continúan funcionando.
+11. Todas las cards de expositores de una composición tienen exactamente el mismo ancho y alto; ninguna persona recibe una card principal, dominante o secundaria.
+12. Las variantes 06 y 09 usan geometrías distintas con 2, 3 y 4 expositores.
+13. El selector local de elementos internos usa cursor de selección y no conserva el cursor de ampliación del canvas mientras está activo.
 
 ## Alcance
 
@@ -34,14 +38,14 @@ No incluye cambiar colores o identidad Red PLACTS, copiar marcas de las referenc
 | Variante | 2 expositores | 3 expositores | 4 expositores |
 | --- | --- | --- | --- |
 | 01 Institucional | dos fichas amplias | tres columnas equilibradas | retícula 2 × 2 |
-| 02 Panorámica | dúo lateral amplio | tríada con centro dominante | franja de cuatro retratos |
+| 02 Panorámica | dúo lateral igual | tres retratos panorámicos iguales | franja de cuatro retratos iguales |
 | 03 Editorial | dos columnas con biografía | tres columnas editoriales | cuatro retratos a sangre |
-| 04 Ushuaia cuadrada | dúo diagonal | triángulo jerárquico | mosaico 2 × 2 |
-| 05 Ushuaia publicación | principal y acompañante | principal y dos secundarios | principal y tres secundarios |
+| 04 Ushuaia cuadrada | dúo diagonal igual | triángulo de tres cards iguales | mosaico 2 × 2 igual |
+| 05 Ushuaia publicación | dúo escalonado igual | escalera de tres cards iguales | retícula 2 × 2 igual |
 | 06 Ushuaia historia | dos retratos verticales | tres columnas verticales | cuatro bandas fotográficas |
-| 07 Digital publicación | dos tarjetas amplias | tres círculos jerarquizados | franja horizontal de cuatro |
-| 08 Digital cuadrada | dúo desplazado | centro y dos satélites | mosaico dinámico 2 × 2 |
-| 09 Digital historia | título y dos tarjetas | tres columnas bajo hero | cuatro retratos superiores |
+| 07 Digital publicación | dos tarjetas iguales | tres círculos iguales | franja horizontal de cuatro iguales |
+| 08 Digital cuadrada | dúo desplazado igual | triángulo de tres cards iguales | mosaico escalonado 2 × 2 igual |
+| 09 Digital historia | dos bandas horizontales | tres bandas horizontales | retícula horizontal 2 × 2 |
 
 ## Fases
 
@@ -68,7 +72,7 @@ python3 tests/ui_smoke.py
 git diff --check
 ```
 
-Además, Browser Use recorre 01–09 con 2, 3 y 4 expositores, guarda 27 capturas comparables e inspecciona cada imagen. Falla cualquier canvas vacío, fallback, warning, geometría repetida por cantidad, corte, superposición, miniatura incompleta, descarga incorrecta o error de consola.
+Además, Browser Use recorre 01–09 con 2, 3 y 4 expositores, guarda 27 capturas comparables e inspecciona cada imagen. Falla cualquier canvas vacío, fallback, warning, card de distinto ancho o alto dentro de una composición, igualdad geométrica entre 06 y 09, corte, superposición, miniatura incompleta, descarga incorrecta o error de consola.
 
 ## Robustez y eficiencia
 
@@ -98,4 +102,6 @@ La línea base registra duración de composición y 27 capturas. El cierre repit
 - [x] Gate 1: plan versionado en `9d1057e` antes de editar producción.
 - [x] Baseline visual de 27 estados capturado.
 - [x] Gates 2–4 y fases 2–7 ejecutados y verificados.
+- [x] Revisión 2026-09-14 aprobada por el usuario: cards iguales, 06 y 09 distintas y cursor local corregido.
+- [ ] Revisión 2026-09-14 implementada y recorrida en 27 estados.
 - [ ] Aprobación de graduación.
