@@ -1,6 +1,6 @@
 # Fase 2: modelo y harness
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -15,6 +15,9 @@ Representar la composición como una matriz explícita `variante × cantidad` y 
 5. Exigir que las tres firmas de una variante sean distintas.
 6. Registrar la caja de cada card y exigir ancho y alto iguales dentro de cada uno de los 27 estados.
 7. Exigir que las firmas geométricas de 06 y 09 sean distintas para cada cantidad.
+8. Modelar cuatro grupos editables de recuadros con estilo, modo de color, acento y escala tipográfica.
+9. Validar listas cerradas, escalas acotadas y compatibilidad con proyectos anteriores.
+10. Rechazar podios, cards elevadas y cualquier texto auditado menor a 17 px.
 
 ## Verificación
 

@@ -1,6 +1,6 @@
 # Fase 7: validación y limpieza
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -18,6 +18,10 @@ Probar el sistema completo, comparar contra el baseline y retirar sólo código 
 8. Comprobar en los 27 estados que todas las cards de una composición comparten ancho y alto.
 9. Comparar 06 y 09 con 2, 3 y 4 expositores y rechazar cualquier firma equivalente.
 10. Activar el selector local, comprobar el cursor de selección y confirmar que vuelve a `zoom-in` al terminar.
+11. Medir línea superior e inferior, tamaño, foto y tipografía de todas las cards en los 27 estados.
+12. Probar los nueve cruces de estilo y modo de color, los tres acentos y los cuatro grupos editables.
+13. Guardar y abrir un proyecto con ajustes no predeterminados.
+14. Revisar la sidebar después de cambios consecutivos y scroll para detectar reflujo o menús rotos.
 
 ## Cierre
 

@@ -1,6 +1,6 @@
 # Fase 5: posters 07–09
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -8,8 +8,8 @@ Dar identidad propia a las variantes Digital y eliminar duplicaciones con Ushuai
 
 ## Trabajo por variante
 
-- 07: tarjetas iguales, tres círculos iguales y franja de cuatro iguales.
-- 08: dúo desplazado, triángulo y mosaico escalonado; todas las cards son iguales dentro de cada composición.
+- 07: tarjetas y círculos iguales sobre un eje común, sin centro elevado.
+- 08: dúo y trío sobre un eje común; retícula 2 × 2 regular, sin vértice ni escalonamiento.
 - 09: dos o tres bandas horizontales y retícula horizontal 2 × 2, distinta de las columnas verticales de 06.
 
 ## Verificación

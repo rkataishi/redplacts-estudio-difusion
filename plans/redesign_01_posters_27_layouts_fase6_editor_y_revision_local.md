@@ -1,6 +1,6 @@
 # Fase 6: editor y revisión local
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN REVISIÓN
 
 ## Objetivo
 
@@ -16,6 +16,10 @@ Resolver los dos comentarios del usuario y permitir comentarios asociados a una 
 6. Guardar `posterElement`, `posterRect`, `composition`, `variantIndex`, `variantName` y `speakerCount` con cada comentario.
 7. Cambiar el ejemplo local automático de seis a tres expositores.
 8. Reemplazar el cursor `zoom-in` por un cursor de selección mientras está activo el selector de elementos internos del póster.
+9. Convertir el paso 03 en `Diseño` y mantener allí las imágenes existentes.
+10. Añadir fuente y escala general, con `Lato` y 115 % como valores iniciales.
+11. Añadir un editor por grupo para título, expositores, moderación y fecha/acceso.
+12. Ofrecer tres estilos, tres modos de color, tres acentos fijos y escala tipográfica por grupo.
 
 ## Verificación
 
