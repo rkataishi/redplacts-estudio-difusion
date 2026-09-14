@@ -1,6 +1,6 @@
 # Fase 6: editor y revisión local
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN EJECUCIÓN, TERCERA REVISIÓN
 
 ## Objetivo
 
@@ -20,6 +20,8 @@ Resolver los dos comentarios del usuario y permitir comentarios asociados a una 
 10. Añadir fuente y escala general, con `Lato` y 115 % como valores iniciales.
 11. Añadir un editor por grupo para título, expositores, moderación y fecha/acceso.
 12. Ofrecer tres estilos, tres modos de color, tres acentos fijos y escala tipográfica por grupo.
+13. Añadir pertenencia institucional o especialidad a cada expositor y moderador.
+14. Mantener el orden nombre, pertenencia y descripción en formulario, proyecto y canvas.
 
 ## Verificación
 

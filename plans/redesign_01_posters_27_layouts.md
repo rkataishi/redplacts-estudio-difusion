@@ -1,9 +1,10 @@
 # Redesign 01: veintisiete composiciones de posters
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN EJECUCIÓN, TERCERA REVISIÓN VISUAL
 Fecha de aprobación: 2026-09-13
 Revisión aprobada: 2026-09-14
 Segunda revisión aprobada: 2026-09-14
+Tercera revisión aprobada: 2026-09-14
 Propietario: Sol
 Rama: `main`
 Punto de partida: `0981ba7`
@@ -31,6 +32,17 @@ Reconstruir las nueve variantes para que cada una tenga composiciones explícita
 15. `Lato` es la fuente inicial de proyectos nuevos. La tipografía del póster tiene escala general de 115 % y ningún texto auditado baja de 17 px en el lienzo base.
 16. El paso 03 de la sidebar permite editar título, expositores, moderación y fecha/acceso. Cada grupo admite estilo `Vibrante`, `Transparente` o `Degradado`; color `Predeterminado`, `Oscuro` o `Acento`; acento verde, azul o ciruela; y escala tipográfica propia.
 17. Los estilos y tamaños se guardan en el proyecto, se validan al abrirlo y actualizan preview, ampliación, miniaturas y exportaciones.
+18. Cada expositor admite nombre, pertenencia institucional o especialidad y descripción. Los proyectos anteriores sin el nuevo campo siguen abriendo.
+19. Títulos, fichas de personas, moderación, fecha/acceso, header y footer calculan el alto real de sus textos y centran el grupo dentro de su zona. No usan posiciones verticales fijas que dejen huecos arbitrarios.
+20. Si una descripción o pertenencia está vacía, los textos restantes se recentran dentro de la misma card sin reservar el espacio ausente.
+21. El header usa una etiqueta de tipo visible y la leyenda `ENCUENTROS VIRTUALES DE LA RED PLACTS`.
+22. El footer muestra sólo el isotipo de Red PLACTS, deja una separación clara y distribuye las cuatro redes en dos renglones centrados.
+23. El bloque de fecha/acceso reparte sus dos columnas por altura de contenido, mantiene márgenes iguales y centra cada conjunto.
+24. La variante 01 usa un título mayor y en una sola línea cuando el contenido de ejemplo cabe. Sus descripciones aprovechan el alto disponible.
+25. La variante 02 acerca `EXPONEN` a las cards y centra nombre, pertenencia y descripción en altura.
+26. La variante 05 dedica al menos la mitad de cada card a la fotografía y elimina miniaturas aisladas dentro de grandes cajas vacías.
+27. La variante 06 muestra nombres legibles. La variante 07 centra nombres debajo de los círculos y agranda el área, la foto y el texto de moderación.
+28. La variante 08 agranda las cards y ensancha el bloque de título. La variante 09 mueve el bloque de título a la mitad superior del hero y centra su contenido.
 
 ## Alcance
 
@@ -87,6 +99,29 @@ Además, Browser Use recorre 01–09 con 2, 3 y 4 expositores, guarda 27 captura
 4. Contraste: cada combinación de estilo y color mantiene texto, fondo y borde distinguibles; los modos oscuros y de acento usan texto claro.
 5. Estabilidad: cambiar estilo, color, acento o tamaño no mueve controles, rompe menús ni altera el orden de participantes.
 6. Persistencia: guardar y volver a abrir conserva todos los ajustes visuales.
+7. Centrado vertical: el centro del conjunto de textos queda alineado con el centro de su zona, con tolerancia máxima del 8 % de la altura disponible.
+8. Contenido condicional: quitar descripción o pertenencia no cambia la card ni deja una reserva vacía; cambia sólo el centro del conjunto restante.
+9. Proporción fotográfica: ninguna card de 05 usa una foto menor al 50 % de su alto. Las cards de 08 crecen respecto de la revisión anterior sin invadir moderación o fecha.
+10. Jerarquía tipográfica: los nombres de 06 y las etiquetas de header y moderación superan el mínimo general de 17 px y se comprueban por etiqueta en el audit del canvas.
+11. Header y footer: ambos mantienen alineación óptica, márgenes laterales y dos niveles de lectura sin texto pegado a sus bordes.
+
+## Tercera revisión visual por superficie
+
+| Superficie | Defecto observado | Contrato de salida |
+| --- | --- | --- |
+| Header | Tipo de evento y leyenda demasiado pequeños | Tipo mayor, leyenda nueva y grupo centrado en altura |
+| Título | Texto pegado arriba o abajo dentro de cajas altas | Grupo completo medido y centrado; ancho específico en 08 y posición superior en 09 |
+| Cards | Nombre, pertenencia y descripción no comparten un ritmo vertical | Un único grupo de textos medido por card y recentrado cuando faltan líneas |
+| Moderación | Área mínima, sobre todo en 07 | Caja más alta, avatar mayor y nombre legible |
+| Fecha y acceso | Coordenadas fijas producen columnas desalineadas | Dos grupos independientes centrados dentro del mismo bloque |
+| Footer | Texto de dominio y handles sueltos sin centro | Isotipo, aire y cuatro columnas con red y handle en dos renglones |
+| 01 | Título partido y biografías pequeñas | Título de ejemplo en una línea y cuerpo con mejor uso del alto |
+| 02 | `EXPONEN` separado y textos altos | Etiqueta junto a las cards y textos centrados |
+| 05 | Fotos pequeñas dentro de cards vacías | Fotografía dominante y texto agrupado |
+| 06 | Nombres ilegibles | Tamaño mínimo específico y centro vertical |
+| 07 | Nombres y moderación descentrados | Nombres centrados bajo círculos y moderación ampliada |
+| 08 | Cards chicas y título angosto | Área de personas mayor y título horizontal |
+| 09 | Título bajo y descentrado | Título en la mitad superior del hero y grupo centrado |
 
 ## Robustez y eficiencia
 
@@ -120,6 +155,10 @@ La línea base registra duración de composición y 27 capturas. El cierre repit
 - [x] Revisión 2026-09-14 implementada y recorrida en 27 estados con Browser Use.
 - [x] Segunda revisión 2026-09-14 aprobada: eliminar podios, aumentar tipografía y añadir controles por recuadro.
 - [x] Contrato sin jerarquía, tipografía y personalización implementado.
+- [x] Tercera revisión visual aprobada por el usuario.
+- [ ] Centrado dinámico, pertenencia, header, footer y ajustes 01–09 implementados.
 - [ ] Aprobación de graduación.
 
 Evidencia de la segunda revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14-typography/`. Browser Use generó e inspeccionó tres hojas con 27 pósters y mockups. El renderer informó `POSTER_LAYOUTS_OK states=27 variants=9 elapsed=15.87s`. Los cruces de estilo y color, los tres acentos y las cuatro escalas por grupo produjeron resultados distintos. Las pruebas de controles, persistencia, descargas, imágenes y flujo principal pasaron sin errores severos de consola.
+
+Baseline de la tercera revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14-layout-03/baseline/`. Se capturaron nueve variantes con tres expositores y nueve estados sin descripciones. Las imágenes confirman fotos pequeñas en 05, nombres pequeños en 06, centro vertical incorrecto en 01, 02 y 07, moderación mínima, fecha/acceso desalineados y bloques de título mal ubicados en 08 y 09.

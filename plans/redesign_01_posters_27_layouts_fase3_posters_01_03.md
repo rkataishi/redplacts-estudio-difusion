@@ -1,6 +1,6 @@
 # Fase 3: posters 01–03
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN EJECUCIÓN, TERCERA REVISIÓN
 
 ## Objetivo
 
@@ -11,6 +11,9 @@ Reconstruir las variantes editoriales y eliminar el fallback del poster 03.
 - 01: fichas institucionales amplias, tres columnas y retícula 2 × 2.
 - 02: dúo lateral, tres retratos panorámicos y franja de cuatro; todas las cards son iguales dentro de cada composición.
 - 03: dos columnas, tres columnas editoriales y cuatro retratos a sangre.
+- 01, revisión 3: título mayor sin salto forzado; nombre, pertenencia y descripción centrados en el espacio libre de cada card.
+- 02, revisión 3: `EXPONEN` junto a las cards; fotografía y conjunto de textos centrados en altura.
+- 03, revisión 3: aplicar el mismo centro dinámico sin perder la estructura editorial.
 
 ## Verificación
 

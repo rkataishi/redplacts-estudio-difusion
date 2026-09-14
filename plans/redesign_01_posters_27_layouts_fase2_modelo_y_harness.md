@@ -1,6 +1,6 @@
 # Fase 2: modelo y harness
 
-Estado: EN REVISIÓN
+Estado: EN EJECUCIÓN, TERCERA REVISIÓN
 
 ## Objetivo
 
@@ -18,6 +18,10 @@ Representar la composición como una matriz explícita `variante × cantidad` y 
 8. Modelar cuatro grupos editables de recuadros con estilo, modo de color, acento y escala tipográfica.
 9. Validar listas cerradas, escalas acotadas y compatibilidad con proyectos anteriores.
 10. Rechazar podios, cards elevadas y cualquier texto auditado menor a 17 px.
+11. Añadir `affiliation` a personas y conservar compatibilidad con proyectos sin ese campo.
+12. Registrar zonas internas de texto para comprobar el centro vertical del grupo completo.
+13. Ejecutar la matriz con descripción completa, sin descripción y sin pertenencia.
+14. Medir por etiqueta header, footer, moderación, fecha, acceso, nombre, pertenencia y descripción.
 
 ## Verificación
 

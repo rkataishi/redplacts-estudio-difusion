@@ -1,6 +1,6 @@
 # Fase 7: validación y limpieza
 
-Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
+Estado: EN EJECUCIÓN, TERCERA REVISIÓN
 
 ## Objetivo
 
@@ -22,6 +22,10 @@ Probar el sistema completo, comparar contra el baseline y retirar sólo código 
 12. Probar los nueve cruces de estilo y modo de color, los tres acentos y los cuatro grupos editables.
 13. Guardar y abrir un proyecto con ajustes no predeterminados.
 14. Revisar la sidebar después de cambios consecutivos y scroll para detectar reflujo o menús rotos.
+15. Capturar nueve variantes con tres expositores, con y sin descripciones.
+16. Comprobar por geometría el centro vertical de cada grupo de textos.
+17. Verificar proporción fotográfica de 05, nombres de 06, moderación de 07 y títulos de 08 y 09.
+18. Inspeccionar header, footer y fecha/acceso en los nueve formatos.
 
 ## Cierre
 
