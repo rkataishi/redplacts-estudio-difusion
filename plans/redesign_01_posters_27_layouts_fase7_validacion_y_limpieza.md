@@ -1,6 +1,6 @@
 # Fase 7: validación y limpieza
 
-Estado: EN REVISIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 
 ## Objetivo
 
@@ -30,3 +30,5 @@ Resultado esperado: 27 composiciones válidas, controles correctos, miniaturas c
 Resultado: 27 capturas posteriores y tres hojas comparativas inspeccionadas. Pasaron diez recorridos E2E, nueve PNG individuales, zoom, ZIP de doce archivos, imágenes, proyecto, diálogos, personas, controles y smoke test sin errores severos de consola.
 
 Revisión 2026-09-14: Browser Use guardó e inspeccionó 27 capturas nuevas y tres hojas de nueve estados. Pasaron `poster_layouts_e2e.py`, `stage_controls_e2e.py`, `downloads_e2e.py`, `image_canvas_e2e.py` y `ui_smoke.py`. La revisión eliminó las recetas jerárquicas reemplazadas, un comentario redundante y una supresión amplia del test.
+
+Segunda revisión 2026-09-14: Browser Use cargó los mockups locales y guardó `final-2-speakers-sheet.png`, `final-3-speakers-sheet.png` y `final-4-speakers-sheet.png`. Las 27 composiciones informaron `valid=true` y ninguna card de 2 o 3 expositores en 04, 05, 07 u 08 quedó elevada. La prueba principal exige fuentes de 17 px o más, cards iguales, filas regulares, nueve cruces de estilo y color, tres acentos y escalas propias en cuatro grupos. `project_actions_e2e.py` guardó y volvió a abrir un proyecto con escala general 125 % y título degradado con acento ciruela.

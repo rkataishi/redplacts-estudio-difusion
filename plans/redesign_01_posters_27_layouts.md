@@ -1,6 +1,6 @@
 # Redesign 01: veintisiete composiciones de posters
 
-Estado: EN EJECUCIÓN, REVISIÓN DE JERARQUÍA Y PERSONALIZACIÓN
+Estado: EJECUTADA, PENDIENTE DE APROBACIÓN
 Fecha de aprobación: 2026-09-13
 Revisión aprobada: 2026-09-14
 Segunda revisión aprobada: 2026-09-14
@@ -119,7 +119,7 @@ La línea base registra duración de composición y 27 capturas. El cierre repit
 - [x] Revisión 2026-09-14 aprobada por el usuario: cards iguales, 06 y 09 distintas y cursor local corregido.
 - [x] Revisión 2026-09-14 implementada y recorrida en 27 estados con Browser Use.
 - [x] Segunda revisión 2026-09-14 aprobada: eliminar podios, aumentar tipografía y añadir controles por recuadro.
-- [ ] Contrato sin jerarquía, tipografía y personalización implementado.
+- [x] Contrato sin jerarquía, tipografía y personalización implementado.
 - [ ] Aprobación de graduación.
 
-Evidencia de la revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14/after/`. El renderer informó `POSTER_LAYOUTS_OK states=27 variants=9 elapsed=7.84s`. Las pruebas de controles, descargas, imágenes y flujo principal pasaron. El localhost quedó abierto con tres expositores y el layer local visible.
+Evidencia de la segunda revisión: `.audit/poster-redesign-2026-09-12/revision-2026-09-14-typography/`. Browser Use generó e inspeccionó tres hojas con 27 pósters y mockups. El renderer informó `POSTER_LAYOUTS_OK states=27 variants=9 elapsed=15.87s`. Los cruces de estilo y color, los tres acentos y las cuatro escalas por grupo produjeron resultados distintos. Las pruebas de controles, persistencia, descargas, imágenes y flujo principal pasaron sin errores severos de consola.

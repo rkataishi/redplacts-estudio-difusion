@@ -1,17 +1,5 @@
 #!/usr/bin/env python3
-"""
-E2E: controles de stage sin descarga (no-export).
-- Fresh valid all fields → Generar canvas
-- assert no data-collection buttons, no #auto-preview element
-- exactly 9 variant buttons + 9 overview cards (unique 0..8)
-- iterate click all 9 variants, wait selected card each
-- exercise export-scale 1 / 2
-- socialPhotos / socialQR toggles via JS/state
-- zoom dialog: open via poster-frame only, close
-- caption dialog: open, copy, close
-- screenshot 30-stage.png
-- console no severe; py_compile
-"""
+"""Verify stage, design, variant, zoom, and caption controls without exporting."""
 import os
 import sys
 import time
@@ -20,6 +8,7 @@ from pathlib import Path
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -217,6 +206,30 @@ def run():
             message="canvas no apareció tras Generar",
         )
         print("✓ Generar → canvas visible")
+
+        design_tab = driver.find_element(By.ID, "tab-images")
+        real_click(driver, design_tab)
+        WebDriverWait(driver, TIMEOUT).until(
+            lambda d: not d.find_element(By.ID, "panel-images").get_attribute("hidden")
+        )
+        assert Select(driver.find_element(By.ID, "design-font")).first_selected_option.get_attribute("value") == "Lato"
+        Select(driver.find_element(By.ID, "box-style")).select_by_value("gradient")
+        Select(driver.find_element(By.ID, "box-color")).select_by_value("accent")
+        Select(driver.find_element(By.ID, "box-accent")).select_by_value("#8b4c78")
+        scale = driver.find_element(By.ID, "box-font-scale")
+        scale.click()
+        scale.send_keys(Keys.END)
+        wait_state(driver, "window.PLACTSStudio.getState().options.boxes.speaker.style==='gradient'")
+        wait_state(driver, "window.PLACTSStudio.getState().options.boxes.speaker.color==='accent'")
+        wait_state(driver, "window.PLACTSStudio.getState().options.boxes.speaker.accent==='#8b4c78'")
+        wait_state(driver, "window.PLACTSStudio.getState().options.boxes.speaker.fontScale===140")
+        assert driver.find_element(By.ID, "box-accent").is_enabled()
+        assert all(plan["valid"] and not plan["issues"] for plan in driver.execute_script("return PLACTSStudio.getPlans()"))
+        print("✓ Diseño: degradado, acento ciruela y texto 140% persistidos sin romper variantes")
+
+        Select(driver.find_element(By.ID, "box-style")).select_by_value("transparent")
+        Select(driver.find_element(By.ID, "box-color")).select_by_value("default")
+        js_set_value(driver, "#box-font-scale", 100)
 
         # ============================================================
         # 1. ASSERT NO collection-toggle, NO auto-preview

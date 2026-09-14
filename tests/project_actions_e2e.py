@@ -259,6 +259,14 @@ def run():
             real_click(driver, WebDriverWait(driver,TIMEOUT).until(EC.element_to_be_clickable((By.ID,"confirm-ok"))))
             WebDriverWait(driver,TIMEOUT).until(lambda d: not d.execute_script("return document.getElementById('confirm-dialog').open"))
         wait_state(driver, "window.PLACTSStudio.getState().speakers.length===2", msg="re-demo2 speakers no 2")
+        driver.execute_async_script(
+            """
+            const done=arguments[arguments.length-1],state=PLACTSStudio.getState();
+            state.options.typeScale=125;
+            state.options.boxes.title={style:'gradient',color:'accent',accent:'#8b4c78',fontScale:120};
+            PLACTSStudio.replace(state).then(()=>done(true)).catch(error=>done('error:'+error.message));
+            """
+        )
         st_for_save = get_state(driver)
         print(f"✓ re-demo2 for save → speakers=2 listo para Guardar")
 
@@ -275,6 +283,8 @@ def run():
             saved_data = json.load(f)
         assert "event" in saved_data and "speakers" in saved_data, f"JSON guardado sin keys esperadas: {list(saved_data.keys())[:5]}"
         assert len(saved_data["speakers"])==2, f"JSON guardado speakers esperado 2 got {len(saved_data['speakers'])}"
+        assert saved_data["options"]["typeScale"] == 125
+        assert saved_data["options"]["boxes"]["title"] == {"style": "gradient", "color": "accent", "accent": "#8b4c78", "fontScale": 120}
         saved_title = saved_data["event"].get("title","")
         print(f"✓ save-project download JSON ok: {Path(json_path).name} ({json_sz} bytes) title='{saved_title[:30]}' speakers=2")
 
@@ -339,6 +349,8 @@ def run():
         assert st_imported["event"]["title"]==saved_title, f"tras import title esperado '{saved_title}' got '{st_imported['event']['title']}'"
         # deeper: compare event json
         assert st_imported["event"]["subtitle"]==saved_data["event"]["subtitle"]
+        assert st_imported["options"]["typeScale"] == 125
+        assert st_imported["options"]["boxes"]["title"] == saved_data["options"]["boxes"]["title"]
         print(f"✓ import saved JSON confirm → state restored speakers=2 title='{st_imported['event']['title'][:30]}'")
 
         # ============================================================

@@ -22,7 +22,15 @@ def replace_with_example(driver, count):
         """
         const count = arguments[0];
         const done = arguments[arguments.length - 1];
-        window.PLACTSStudio.replace(window.PLACTSStudio.makeExample(count))
+        const state = window.PLACTSStudio.makeExample(count);
+        const source = document.createElement('canvas');
+        source.width = source.height = 16;
+        const sourceCtx = source.getContext('2d');
+        sourceCtx.fillStyle = '#e21c62'; sourceCtx.fillRect(0, 0, 8, 16);
+        sourceCtx.fillStyle = '#18a76b'; sourceCtx.fillRect(8, 0, 8, 16);
+        const image = {data: source.toDataURL('image/png'), name: 'speaker.png', width: 16, height: 16, crop: {x: 50, y: 50, zoom: 1}};
+        state.speakers.forEach(person => { person.photo = image; person.crop = {x: 50, y: 50, zoom: 1}; });
+        window.PLACTSStudio.replace(state)
           .then(() => done(true))
           .catch(error => done('error:' + error.message));
         """,
@@ -34,10 +42,10 @@ def replace_with_example(driver, count):
     )
 
 
-def render_options(driver, selected=3, social_photos=True, qr=False, opacity=32, background=True, hero=False, url="https://redplacts.org/encuentro"):
+def render_options(driver, selected=3, social_photos=True, qr=False, opacity=32, background=True, hero=False, url="https://redplacts.org/encuentro", box_group="speaker", box_style="transparent", box_color="default", accent="#0062ad", font_scale=100, type_scale=115):
     result = driver.execute_async_script(
         """
-        const [selected, socialPhotos, qr, opacity, background, hero, url] = arguments;
+        const [selected, socialPhotos, qr, opacity, background, hero, url, boxGroup, boxStyle, boxColor, accent, fontScale, typeScale] = arguments;
         const done = arguments[arguments.length - 1];
         (async () => {
           const state = PLACTSStudio.makeExample(3);
@@ -54,6 +62,8 @@ def render_options(driver, selected=3, social_photos=True, qr=False, opacity=32,
           state.options.socialPhotos = socialPhotos;
           state.options.showQR = qr;
           state.options.socialQR = qr;
+          state.options.typeScale = typeScale;
+          state.options.boxes[boxGroup] = {style: boxStyle, color: boxColor, accent, fontScale};
           state.event.url = url;
           state.event.urlLabel = '';
           await PLACTSStudio.replace(state);
@@ -61,7 +71,11 @@ def render_options(driver, selected=3, social_photos=True, qr=False, opacity=32,
           const canvas = document.querySelector('.poster-card.is-selected canvas');
           const pixels = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
           let hash = 2166136261;
-          for (let i = 0; i < pixels.length; i += 388) hash = Math.imul(hash ^ pixels[i], 16777619) >>> 0;
+          for (let i = 0; i < pixels.length; i += 388) {
+            hash = Math.imul(hash ^ pixels[i], 16777619) >>> 0;
+            hash = Math.imul(hash ^ pixels[i + 1], 16777619) >>> 0;
+            hash = Math.imul(hash ^ pixels[i + 2], 16777619) >>> 0;
+          }
           done({hash, plans: PLACTSStudio.getPlans()});
         })().catch(error => done({error: error.message}));
         """,
@@ -72,6 +86,12 @@ def render_options(driver, selected=3, social_photos=True, qr=False, opacity=32,
         background,
         hero,
         url,
+        box_group,
+        box_style,
+        box_color,
+        accent,
+        font_scale,
+        type_scale,
     )
     assert not result.get("error"), result
     return result
@@ -95,6 +115,10 @@ def run():
             "window.PLACTSStudio.whenReady().then(()=>done(true)).catch(error=>done('error:'+error.message));"
         )
         assert len(driver.execute_script("return window.PLACTSStudio.makeExample().speakers")) == 3
+        defaults = driver.execute_script("return window.PLACTSStudio.makeExample().options")
+        assert defaults["font"] == "Lato"
+        assert defaults["typeScale"] == 115
+        assert set(defaults["boxes"]) == {"title", "speaker", "moderator", "meeting"}
 
         for count in (2, 3, 4):
             replace_with_example(driver, count)
@@ -111,6 +135,16 @@ def run():
                 assert len(cards) == count, (count, index, len(cards))
                 sizes = {(round(item["w"], 3), round(item["h"], 3)) for item in cards}
                 assert len(sizes) == 1, (count, index, sizes)
+                text_sizes = [item["size"] for item in plan["audit"] if item.get("size")]
+                assert text_sizes and min(text_sizes) >= 17, (count, index, min(text_sizes))
+                rows = {}
+                for item in cards:
+                    rows.setdefault(round(item["y"], 3), 0)
+                    rows[round(item["y"], 3)] += 1
+                if index in (3, 4, 6, 7) and count in (2, 3):
+                    assert len(rows) == 1, (count, index, rows)
+                if count == 4:
+                    assert sorted(rows.values()) in ([2, 2], [4]), (count, index, rows)
                 geometries[count, index] = tuple(
                     (round(item["x"], 3), round(item["y"], 3), round(item["w"], 3), round(item["h"], 3))
                     for item in cards
@@ -151,6 +185,23 @@ def run():
         assert hero_off["hash"] != hero_on["hash"]
         assert next(item for item in hero_off["plans"][8]["audit"] if item["label"] == "event-title")["y"] == 150
         assert next(item for item in hero_on["plans"][8]["audit"] if item["label"] == "event-title")["y"] == 525
+
+        box_hashes = {
+            (style, color): render_options(driver, box_style=style, box_color=color)["hash"]
+            for style in ("vibrant", "transparent", "gradient")
+            for color in ("default", "dark", "accent")
+        }
+        assert len(set(box_hashes.values())) == 9, box_hashes
+        accent_hashes = {
+            accent: render_options(driver, box_color="accent", accent=accent)["hash"]
+            for accent in ("#009542", "#0062ad", "#8b4c78")
+        }
+        assert len(set(accent_hashes.values())) == 3, accent_hashes
+        for group in ("title", "speaker", "moderator", "meeting"):
+            scaled = render_options(driver, box_group=group, font_scale=135)
+            base = render_options(driver, box_group=group, font_scale=100)
+            assert scaled["hash"] != base["hash"], group
+            assert all(plan["valid"] and not plan["issues"] for plan in scaled["plans"]), group
 
         assert_no_severe_logs(driver)
         print(f"POSTER_LAYOUTS_OK states=27 variants=9 elapsed={time.time()-started:.2f}s")
