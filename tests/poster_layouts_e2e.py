@@ -168,7 +168,11 @@ def run():
                     content = [item for item in plan["audit"] if item["label"] in {f"speaker-name-{speaker}", f"speaker-affiliation-{speaker}", f"speaker-description-{speaker}"}]
                     zone = labels.get(f"speaker-text-zone-{speaker}")
                     text_top = zone["y"] if zone else photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
-                    assert centered(content, text_top, card["y"] + card["h"] - text_top, 3), (count, index, speaker, content, card, photo)
+                    assert all(centered([item], card["y"], card["h"], 3) for item in content) if index in (3, 7, 8) else centered(content, text_top, card["y"] + card["h"] - text_top, 3), (count, index, speaker, content, card, photo)
+                    if index in (3, 7, 8):
+                        name, detail = labels[f"speaker-name-{speaker}"], labels[f"speaker-affiliation-{speaker}"]
+                        assert abs(name["w"] / (detail["x"] + detail["w"] - name["x"]) - .33) < .001
+                        assert name["x"] + name["w"] < detail["x"]
                 if index == 0:
                     title = labels["event-title"]
                     assert title["h"] <= title["size"] * 1.08
@@ -189,9 +193,11 @@ def run():
                 for item in cards:
                     rows.setdefault(round(item["y"], 3), 0)
                     rows[round(item["y"], 3)] += 1
-                if index in (3, 4, 6, 7) and count in (2, 3):
+                if index in (4, 6) and count in (2, 3):
                     assert len(rows) == 1, (count, index, rows)
-                if count == 4:
+                if index in (3, 7, 8):
+                    assert len(rows) == count
+                elif count == 4:
                     assert sorted(rows.values()) in ([2, 2], [4]), (count, index, rows)
                 geometries[count, index] = tuple(
                     (round(item["x"], 3), round(item["y"], 3), round(item["w"], 3), round(item["h"], 3))
@@ -209,6 +215,20 @@ def run():
                     content = [item for item in plan["audit"] if item["label"] in {f"speaker-name-{speaker}", f"speaker-affiliation-{speaker}", f"speaker-description-{speaker}"}]
                     assert all(item["y"] >= card["y"] and item["y"]+item["h"] <= card["y"]+card["h"] for item in content), ("with-hero", count, index, speaker, content, card)
 
+        long_affiliations = driver.execute_async_script(
+            """
+            const done=arguments[arguments.length-1], state=PLACTSStudio.makeExample(4);
+            state.options.typeScale=135;
+            state.speakers.forEach(person=>{
+                person.affiliation='Investigador del CONICET | Profesor de la UNLP (IdIHCS / IRI-UNLP) | Miembro de CLACSO y Red PLACTS.';
+                person.crop={x:50,y:20,zoom:.4,fit:'contain'};
+            });
+            PLACTSStudio.replace(state).then(()=>done({plans:PLACTSStudio.getPlans(),zoom:PLACTSStudio.getState().speakers[0].crop.zoom})).catch(error=>done({error:error.message}));
+            """
+        )
+        assert long_affiliations["zoom"] == .4
+        assert all(plan["valid"] and not plan["issues"] for plan in long_affiliations["plans"]), long_affiliations
+
         no_descriptions = driver.execute_async_script(
             """
             const done=arguments[arguments.length-1], state=PLACTSStudio.makeExample(3);
@@ -225,7 +245,7 @@ def run():
                 content = [labels[f"speaker-name-{speaker}"], labels[f"speaker-affiliation-{speaker}"]]
                 zone = labels.get(f"speaker-text-zone-{speaker}")
                 text_top = zone["y"] if zone else photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
-                assert centered(content, text_top, card["y"] + card["h"] - text_top, 3)
+                assert all(centered([item], card["y"], card["h"], 3) for item in content) if plan["variant"] in ("ushuaia-estado", "digital-historia", "digital-publicacion") else centered(content, text_top, card["y"] + card["h"] - text_top, 3)
 
         for index, values in signatures.items():
             assert len(set(values)) == 3, (index, values)

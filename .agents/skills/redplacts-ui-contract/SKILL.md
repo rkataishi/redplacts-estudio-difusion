@@ -54,8 +54,8 @@ la regla conflictiva; no acumular otro bloque de overrides para ocultarla.
   2, 3 (default) y 4 expositores. Cambiar la cantidad cambia el layout.
 - Cards y fotos del mismo tamaño y tratamiento para todos los expositores.
   Reservar espacio según el texto visible; no imponer una fracción fija de foto.
-  En 04/08, afiliaciones largas permiten filas horizontales iguales con aire.
-  Títulos y grupos de nombres/afiliaciones centrados; enlace con cápsula,
+  En 04/08/09, filas horizontales iguales con foto y dos columnas de texto: nombre 33% en negrita, afiliación 67%; ambas alineadas a la izquierda y centradas verticalmente.
+  Títulos y grupos de nombres/afiliaciones centrados salvo las columnas de 04/08/09; enlace con cápsula,
   degradado y reproducción. Máscaras redondeadas, bisel oscuro y sombras sobre el marco visible de cada foto; variantes elevadas o clásicas. Sombras de separación bajo el header y sobre el footer.
   Los nueve diseños muestran las fotos cargadas; la preferencia antigua
   `socialPhotos` no puede ocultar los retratos de 04–09. No ofrecer el control
@@ -66,10 +66,10 @@ la regla conflictiva; no acumular otro bloque de overrides para ocultarla.
   no colores. Mantener los assets y la paleta de Red PLACTS.
 - Retratos sin cortar de más cabeza, frente o cabello, especialmente 01/04/08.
   Default actual `{x:50,y:20,zoom:1,fit:'contain'}` en `defaultPersonCrop`. La foto nueva se muestra completa; el control “Mostrar foto completa” permite
-  volver al recorte. Preservar encuadres explícitos de proyectos; slider y render usan el mismo valor.
+  volver al recorte. Preservar encuadres explícitos de proyectos; slider y render usan el mismo valor. Zoom de participantes de 40% a 200%, persistido al guardar/importar.
   No deducir que un encuadre está sin editar por un número como 50.
 - Nombre centrado en su zona; segundo texto opcional para institución o
-  especialidad; omitir las descripciones de investigación en todos los pósters. Moderación alineada a la izquierda, nombre y afiliación solamente. Actividad con título y subtítulo, sin tercera línea. Al faltar textos, recentrar el
+  especialidad; omitir las descripciones de investigación en todos los pósters. Moderación alineada a la izquierda, nombre y afiliación solamente, tipografía menor y afiliación sin negrita. Actividad con título y subtítulo, sin tercera línea. Al faltar textos, recentrar el
   conjunto visible sin reservar huecos. Centrar el grupo verticalmente,
   no cada línea de forma independiente. No pegar nombres a la foto.
 - 01: título grande sin quiebre forzado y mejor aprovechamiento de las cards.
