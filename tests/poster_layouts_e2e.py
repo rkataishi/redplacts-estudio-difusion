@@ -228,8 +228,9 @@ def run():
         photos_on = render_options(driver, social_photos=True)
         photos_off = render_options(driver, social_photos=False)
         assert sum(item["label"].startswith("speaker-photo-") for item in photos_on["plans"][3]["audit"]) == 3
-        assert not any(item["label"].startswith("speaker-photo-") for item in photos_off["plans"][3]["audit"])
-        assert photos_on["hash"] != photos_off["hash"]
+        for plan in photos_off["plans"]:
+            assert sum(item["label"].startswith("speaker-photo-") for item in plan["audit"]) == 3
+        assert photos_on["hash"] == photos_off["hash"]
 
         qr_on = render_options(driver, qr=True)
         assert any(item["label"] == "meeting-qr" for item in qr_on["plans"][0]["audit"])

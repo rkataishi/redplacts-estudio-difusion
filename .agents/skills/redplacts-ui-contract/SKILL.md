@@ -53,6 +53,9 @@ la regla conflictiva; no acumular otro bloque de overrides para ocultarla.
 - Nueve variantes diferentes, cada una con composiciones explícitas para
   2, 3 (default) y 4 expositores. Cambiar la cantidad cambia el layout.
 - Cards y fotos del mismo tamaño y tratamiento para todos los expositores.
+  Los nueve diseños muestran las fotos cargadas; la preferencia antigua
+  `socialPhotos` no puede ocultar los retratos de 04–09. No ofrecer el control
+  de miniaturas de redes como si afectara a estas composiciones.
   Nunca expositor estrella, podio, escalones ni una card central elevada.
   Revisar especialmente 04, 07 y 08. 06 y 09 deben seguir siendo distintas.
 - `insumos/inspiraciones poster` guía distribución, posiciones y proporciones,
