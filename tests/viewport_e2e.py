@@ -29,8 +29,7 @@ def run():
                   const rect=s=>{const r=document.querySelector(s).getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}};
                   const frame=document.querySelector('.poster-frame'),style=getComputedStyle(frame),canvas=document.querySelector('.poster-frame canvas');
                   const availableW=frame.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight);
-                  const availableH=frame.clientHeight-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom);
-                  return {vw:innerWidth,vh:innerHeight,scrollW:document.documentElement.scrollWidth,workspace:rect('.workspace'),editor:rect('.editor'),stage:rect('.stage'),grid:rect('.poster-grid'),canvas:rect('.poster-frame canvas'),overview:rect('.overview'),ratio:canvas.width/canvas.height,maxW:Math.min(availableW,availableH*canvas.width/canvas.height)};
+                  return {vw:innerWidth,vh:innerHeight,scrollW:document.documentElement.scrollWidth,workspace:rect('.workspace'),editor:rect('.editor'),stage:rect('.stage'),grid:rect('.poster-grid'),frame:rect('.poster-frame'),canvas:rect('.poster-frame canvas'),overview:rect('.overview'),ratio:canvas.width/canvas.height,maxW:availableW};
                 ''')
                 assert result['scrollW'] <= result['vw'] + 1, result
                 canvas = result['canvas']
@@ -44,11 +43,40 @@ def run():
                     assert stage['bottom'] <= result['vh']+1 and result['overview']['bottom'] <= result['vh']+1, result
                     assert abs(result['grid']['w']-stage['w']) < 2, result
                     assert canvas['w'] > 0 and canvas['h'] > 0 and abs(canvas['w']-result['maxW']) < 3, result
+                    assert result['frame']['bottom'] <= result['vh']+1, result
+                    reachable = driver.execute_script('''
+                      const frame=document.querySelector('.poster-frame');frame.scrollTop=frame.scrollHeight;
+                      return frame.querySelector('canvas').getBoundingClientRect().bottom <= frame.getBoundingClientRect().bottom+1;
+                    ''')
+                    assert reachable, result
                 else:
                     assert result['stage']['y'] >= result['editor']['bottom']-1, result
             driver.save_screenshot(str(captures / f'{width}x{height}.png'))
+        # Long content and enlarged fonts must not let warnings consume the preview.
+        driver.set_window_size(970, 650)
+        driver.execute_async_script('''
+          const done=arguments[0],state=PLACTSStudio.makeExample(4);
+          state.options.typeScale=140;state.options.boxes.title.fontScale=140;
+          state.event.title='Una conversacion latinoamericana sobre ciencia tecnologia desarrollo y soberania';
+          state.speakers.forEach(p=>p.description='Descripcion extensa institucional para evaluar la distribucion y legibilidad de los textos del encuentro');
+          PLACTSStudio.replace(state).then(()=>done(true));
+        ''')
+        for variant in range(9):
+            driver.find_element('css selector', f'[data-variant-select="{variant}"]').click()
+            result = driver.execute_script('''
+              const warnings=document.querySelector('#warnings'),frame=document.querySelector('.poster-frame'),style=getComputedStyle(frame),canvas=frame.querySelector('canvas');
+              const r=canvas.getBoundingClientRect(),overview=document.querySelector('.overview').getBoundingClientRect();
+              return {warningVisible:!warnings.hidden,warningH:warnings.getBoundingClientRect().height,scroll: warnings.scrollHeight>warnings.clientHeight,
+                w:r.width,h:r.height,frameBottom:frame.getBoundingClientRect().bottom,ratio:canvas.width/canvas.height,overviewBottom:overview.bottom,vh:innerHeight,
+                maxW:frame.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)};
+            ''')
+            assert result['warningVisible'] and result['warningH'] <= 81 and result['scroll'], result
+            assert result['w'] > 0 and result['h'] > 50 and abs(result['w']-result['maxW']) < 3, result
+            assert abs(result['w']/result['h']-result['ratio']) < .01, result
+            assert result['frameBottom'] <= result['vh']+1 and result['overviewBottom'] <= result['vh']+1, result
+        driver.save_screenshot(str(captures / '970x650-content-warnings.png'))
         assert_no_severe_logs(driver)
-        print('VIEWPORT_OK sizes=8 variants=9 resize=desktop-mobile-desktop')
+        print('VIEWPORT_OK sizes=8 variants=9 resize=desktop-mobile-desktop content-warnings=9')
     finally:
         driver.quit()
 

@@ -25,10 +25,14 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Package production app only
+        run: |
+          mkdir -p /tmp/redplacts-production
+          cp index.html designs.js /tmp/redplacts-production/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "."
+          path: /tmp/redplacts-production
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

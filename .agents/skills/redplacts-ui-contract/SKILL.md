@@ -1,128 +1,132 @@
 ---
 name: redplacts-ui-contract
-description: Preserve the approved Red PLACTS editor, responsive viewport behavior and nine adaptive poster identities when editing this repository's UI, styles, rendering or assets.
+description: Preserve Red PLACTS viewport expansion and the agreed visual identity when editing this repository's editor, posters, typography, photos or review controls.
 ---
 
 # Contrato visual de Red PLACTS
 
-Aplica sólo a `flyers_redplacts`. Lee esta skill antes de modificar la UI,
-los pósters, los estilos, las fotos o sus controles. Conserva las reformas
-explícitas del usuario. Una nueva instrucción suya puede cambiar este contrato.
-No uses este documento para implementar tareas adicionales sin pedido.
+Aplica sólo a `flyers_redplacts`. Leer antes de editar UI, estilos, renderizado,
+pósters, fotos o sus controles. Una instrucción nueva del usuario prevalece.
+Este contrato evita regresiones; no autoriza reformas adicionales ni push.
 
-## Expansión al navegador
+## Vista correcta y expandida
 
-- Desde 900 px, la app ocupa todo el viewport. La cabecera mide 60 px y el
-  workspace ocupa el ancho completo y la altura restante. No restaures un
-  `max-width` centrado ni mezcles el layout apilado con el de escritorio.
-- Editor izquierdo y preview derecho permanecen dentro del viewport. El
-  formulario tiene scroll interno. Sus tabs y controles no se desplazan ni
-  desaparecen al editar texto, cargar imágenes, cambiar estilos o hacer scroll.
-- El área de preview usa todo el espacio disponible, sin el antiguo tope de
-  620 px. El póster conserva su proporción y alcanza el mayor tamaño que cabe
-  en el área restante, después de controles, avisos y nueve miniaturas.
-  Espacio lateral por la proporción del póster es válido. Un límite fijo que
-  impide crecer al redimensionar el navegador no lo es.
-- El rectángulo DOM del canvas debe coincidir con la pieza visible. No hagas
-  una caja deformada con `object-fit` que desplace las coordenadas del selector.
-- Por debajo de 900 px, editor y preview se apilan y la página puede scrollear.
-  No debe existir scroll horizontal ni controles fuera de pantalla.
-- La expansión no depende de maximizar Chrome, resetear zoom ni emulación CDP.
-  Ajustar el navegador no sustituye un arreglo de la app.
+- La expansión se evalúa sobre el CONTENIDO visible, no sólo sobre el
+  workspace, el frame o sus rectángulos DOM. Un contenedor de ancho completo
+  con un póster diminuto, controles pequeños o grandes zonas desaprovechadas
+  no cumple el pedido aunque los tests geométricos pasen.
+- Desde 900 px, la app ocupa todo el ancho y alto del viewport: cabecera de
+  60 px y workspace en el espacio restante. Sin `max-width` centrado ni
+  mezcla de escritorio con las reglas antiguas de layout apilado.
+- Editor izquierdo y preview derecho dentro de la pantalla. El formulario
+  scrollea internamente; tabs, navegación y botón Generar permanecen accesibles.
+  Escribir, subir/quitar imágenes, cambiar estilos y hacer scroll no mueve
+  menús ni cambia accidentalmente la distribución de la UI.
+- La preview ocupa el espacio restante después de sus controles, avisos y
+  nueve miniaturas. En escritorio, el canvas ocupa TODO el ancho interior
+  del frame conservando su proporción; si supera la altura, el frame tiene
+  scroll vertical interno para llegar al footer. No reducirlo para encajarlo
+  entero en altura ni reinstalar topes de 450/520/620 px. El editor, los
+  controles y las miniaturas permanecen fijos al scrollear la pieza.
+- Ajustar toda la pieza a la altura disponible NO es por sí solo el criterio
+  de aceptación. Comparar visualmente escala, lectura y espacio aprovechado
+  antes/después en la ventana real. Si el contenido sigue pequeño, resolver
+  su escala y el reparto del área de edición sin deformar la pieza ni cambiar
+  las dimensiones de exportación para disimular el problema.
+- Avisos de contenido excedido no pueden colapsar la preview ni ocultar sus
+  controles. El error debe ser consultable sin desplazar el workspace.
+- El rectángulo DOM del canvas coincide con la pieza visible. No deformar
+  su caja con `object-fit` ni desfasar coordenadas del selector local.
+- Bajo 900 px, editor y preview se apilan con scroll normal de página.
+  Ancho completo disponible, sin scroll horizontal ni controles recortados.
+- Redimensionar vuelve a calcular el espacio disponible. No resolver un
+  fallo de la app maximizando el navegador, reseteando zoom o emulando otra
+  pantalla. Verificar también el tamaño y navegador donde falló el usuario.
 
 El bloque responsive final de `index.html` es el punto de integración actual.
-Revisa reglas anteriores que puedan contradecirlo, especialmente 710, 900,
-970, 1210 y 1650 px. `renderPreview` transmite la proporción real del póster
-al frame. No añadas otro bloque de overrides para tapar una contradicción.
+Revisar reglas anteriores y su especificidad, en especial 710, 899/900, 970,
+1210 y 1650 px. `renderPreview` proporciona `--poster-ratio` real. Corregir
+la regla conflictiva; no acumular otro bloque de overrides para ocultarla.
 
-## Identidad y distribución de los pósters
+## Nueve pósters, sin jerarquía entre expositores
 
-- Son nueve variantes distintas. Cada una debe tener tres composiciones
-  explícitas para 2, 3 y 4 expositores. Tres es el ejemplo predeterminado.
-  Cambiar la cantidad cambia la distribución, no sólo escala el mismo diseño.
-- Todos los expositores tienen igual tamaño de card y foto e igual tratamiento
-  de texto. No hay expositor estrella. No escalones verticales, podios,
-  card central elevada ni otra jerarquía visual. Revisa especialmente 04, 07 y 08.
-- 06 y 09 no pueden volver a ser la misma composición.
-- Las referencias del directorio `insumos/inspiraciones poster` orientan
-  posiciones, proporciones y relaciones de texto y foto, no colores.
-- Los retratos conservan frente y cabello. Revisa especialmente 01, 04 y 08.
-  El default actual de retratos es `{x:50,y:20,zoom:1}`, centralizado en
-  `defaultPersonCrop`. Conserva encuadres explícitos de proyectos existentes.
-  El valor visible del slider es exactamente el usado por el render.
-  No deduzcas “sin editar” de un valor numérico como 50.
-- Nombres centrados en su zona. Pertenencia institucional o especialidad
-  opcional debajo del nombre. Descripción breve opcional. Si falta un texto,
-  el contenido restante se recentra sin conservar huecos vacíos.
-- Todos los textos se centran verticalmente en su zona y según la alineación
-  horizontal elegida para la composición. No centres cada línea ignorando el
-  conjunto ni dejes nombres pegados al borde de la foto.
-- 01 mantiene un título grande sin quiebre forzado y aprovecha el aire de las
-  cards. 02 acerca EXPONEN a las cards, no a la cabecera. 05 mantiene fotos
-  amplias. 06 mantiene nombres legibles. 07 mantiene moderación amplia en
-  área, texto y foto. 08 permite cards más grandes y título ancho y centrado.
-  09 sitúa su título arriba o centrado verticalmente, nunca al fondo por defecto.
-- Cabecera con tipo “Conversatorio” legible y la serie “Encuentros virtuales
-  de la Red PLACTS”. No reduzcas la serie hasta volverla decorativa ilegible.
-- Fecha, hora y zona horaria forman un grupo ordenado y centrado en su box.
-  Plataforma, acceso y URL usan su propia zona sin colisiones ni quiebres absurdos.
-- Footer con el logo original, sin agregar un texto `redplacts.org` separado,
-  aire y redes en dos renglones. Conserva Instagram @redplacts,
-  X @PlactsRed, Facebook @redplacts y YouTube @RedPLACTS.
+- Nueve variantes diferentes, cada una con composiciones explícitas para
+  2, 3 (default) y 4 expositores. Cambiar la cantidad cambia el layout.
+- Cards y fotos del mismo tamaño y tratamiento para todos los expositores.
+  Nunca expositor estrella, podio, escalones ni una card central elevada.
+  Revisar especialmente 04, 07 y 08. 06 y 09 deben seguir siendo distintas.
+- `insumos/inspiraciones poster` guía distribución, posiciones y proporciones,
+  no colores. Mantener los assets y la paleta de Red PLACTS.
+- Retratos sin cortar de más cabeza, frente o cabello, especialmente 01/04/08.
+  Default actual `{x:50,y:20,zoom:1}` en `defaultPersonCrop`. Preservar
+  encuadres explícitos de proyectos; slider y render usan el mismo valor.
+  No deducir que un encuadre está sin editar por un número como 50.
+- Nombre centrado en su zona; segundo texto opcional para institución o
+  especialidad y descripción opcional. Al faltar textos, recentrar el
+  conjunto visible sin reservar huecos. Centrar el grupo verticalmente,
+  no cada línea de forma independiente. No pegar nombres a la foto.
+- 01: título grande sin quiebre forzado y mejor aprovechamiento de las cards.
+  02: EXPONEN cerca de las cards y textos centrados verticalmente.
+  05: fotos amplias. 06: nombres legibles. 07: nombres centrados y moderación
+  amplia en área, fuente y foto. 08: cards amplias y bloque de título ancho,
+  centrado y bien distribuido. 09: título arriba o centrado, no abajo por defecto.
+- Header: “Conversatorio” legible y “Encuentros virtuales de la Red PLACTS”.
+  Fecha, hora y zona horaria centradas como grupo dentro de su box.
+  Plataforma, acceso y enlace en su propia zona, sin choques ni quiebres absurdos.
+- Footer de TODOS: logo original y URL visible `redplacts.org` a la izquierda,
+  aire central, TODAS las redes concentradas a la derecha en dos renglones
+  (nombre y handle). Nunca repartirlas a lo ancho de todo el footer.
+  Instagram @redplacts; X @PlactsRed; Facebook @redplacts; YouTube @RedPLACTS.
+  Esta regla reemplaza la antigua indicación de omitir la URL junto al logo.
 
-## Tipografía y estilos editables
+## Legibilidad y edición
 
-- El usuario pidió “lota”. La implementación actual usa Lato, no Lota.
-  No documentes esa diferencia como aprobada ni sustituyas silenciosamente
-  la familia. Si el trabajo requiere resolverla, verifica el asset tipográfico
-  real y aclara la diferencia. No cambies la fuente por un arreglo de viewport.
-- Conserva la ampliación de textos pequeños, al menos cuatro puntos frente
-  al diseño antiguo. Baseline actual de tests: escala general 115%, mínimo
-  técnico 17 px en el canvas. Ese mínimo no prueba legibilidad visual.
-- Evalúa texto a escala de exportación y en la preview real. Nombres,
-  pertenencias, fecha, moderación y footer deben leerse sin zoom. Si no caben,
-  redistribuye el área o reporta el contenido excedido. No recortes texto ni
-  lo reduzcas silenciosamente hasta hacerlo ilegible.
-- Mantén edición desde la sidebar por grupo de recuadros, estilos vibrant,
-  transparent y degrade, y modos default, dark y accent. La implementación
-  llama `gradient` al estilo degrade. Acentos actuales de marca
-  `#009542`, `#0062ad`, `#8b4c78`. Conserva assets originales y contraste legible.
-- Mantén escala general y tamaños editables de todos los grupos de texto.
-  Cambiar un estilo no debe mover controles ni redistribuir la UI accidentalmente.
+- El usuario pidió “lota”; hoy el código usa Lato. No declarar aprobada esa
+  diferencia ni cambiarla silenciosamente al arreglar el viewport.
+- Preservar la ampliación de textos pequeños, al menos cuatro puntos sobre
+  el diseño antiguo. Baseline actual: escala 115%, mínimo técnico 17 px de
+  canvas. Ese mínimo NO demuestra que el texto se lea en la preview.
+- Evaluar proporciones, contraste y lectura en exportación y preview real:
+  nombres, institución, fecha, moderación y footer. Si no caben, redistribuir
+  el área o informar exceso; no recortar ni achicar hasta hacerlo ilegible.
+- Sidebar: estilos vibrant, transparent y degrade (`gradient` en código);
+  modos default, dark y accent; acentos de marca actuales `#009542`,
+  `#0062ad`, `#8b4c78`. Mantener tamaños editables de todos los grupos de
+  texto y recuadros, sin mover menús al activar opciones.
 
-## Layer de revisión local
+## Overlay de revisión, sólo local
 
-- `.local-review/` sólo funciona en localhost, no es producción y no se pushea.
-  Mantén su exclusión local. Nunca incluyas comentarios, rutas privadas,
-  imágenes personales o mocks en el bundle o commit de producción.
-- El selector permite comentar elementos DOM de la UI y elementos semánticos
-  del póster resultante, no seleccionar una imagen de referencia.
-- Debe poder cambiar entre las nueve variantes. Seleccionar una zona del
-  póster no abre el zoom. Conserva cursor crosshair, no lupa `+`.
-- Comentarios persisten en el archivo local de revisión. Mantén los botones
-  de cargar y quitar caras, background y hero mockup desde marzo2026.
-- Minimiza el panel cuando bloquea la inspección visual. No confundas su
-  superposición con un problema de dimensiones de la app.
+- `.local-review/` sólo en localhost y excluido de producción y del push.
+  No incluir comentarios, imágenes personales, mocks ni rutas privadas.
+- Selección DOM de la app y selección semántica del póster RESULTANTE;
+  permite comentar cada variante, no seleccionar imágenes de referencia.
+  Cursor crosshair; seleccionar el póster no activa zoom ni lupa `+`.
+- Conservar persistencia local de comentarios, selector de nueve variantes
+  y botones para cargar/quitar caras, fondos y hero mockup de marzo2026.
+  Minimizar el overlay para revisar la app, sin confundir superposición y layout.
 
-## Puerta de verificación antes de entregar
+## Verificación que obliga a mirar el resultado
 
-1. Resuelve Git root y status. Conserva cambios ajenos. Revisa qué reforma
-   previa puede romper el diff; no reviertas un requisito para arreglar otro.
-2. Ejecuta `python3 tests/viewport_e2e.py`. Prueba tamaños reales, resize,
-   límites responsive, las nueve variantes, proporción y ocupación máxima.
-3. Ejecuta `python3 tests/ui_smoke.py`. Si cambias pósters, tipografía,
-   estilos o encuadre, ejecuta también `python3 tests/poster_layouts_e2e.py`.
-4. Usa browser-use sobre localhost para inspección visual. Comprueba desktop
-   ancho, desktop bajo, límites 899/900/970 px y móvil. Cambia variantes,
-   escribe texto, carga y quita imágenes, activa estilos y scrollea el formulario.
-   La estabilidad y legibilidad se comprueban visualmente, no sólo con rectángulos.
-5. Si cambias composiciones, revisa 9 variantes por 2/3/4 expositores,
-   con y sin hero y textos opcionales relevantes. Mira cabezas, tamaños
-   iguales, ausencia de podio, centrado de grupos, contraste y footer completo.
-6. No declares verificado lo que no inspeccionaste. Un test verde no reemplaza
-   la auditoría visual. Conserva capturas locales cuando aporten evidencia.
-7. Haz commit/push sólo cuando el usuario lo pida. Añade rutas exactas,
-   nunca `git add .`, y verifica sincronización con origin tras el push.
+Aplicar también la skill `ui-gui-visual-verification` para fixes y tareas de
+interfaz. La inspección visual es una condición de cierre, no opcional.
 
-Esta skill preserva decisiones. El test ejecutable detecta regresiones de
-viewport, pero ninguno garantiza por sí solo que toda edición futura sea correcta.
+1. Revisar Git root, status y diff. Preservar cambios ajenos y requisitos
+   previos; no revertir una reforma para resolver otra.
+2. Ejecutar `python3 tests/viewport_e2e.py` y `python3 tests/ui_smoke.py`.
+   Si se toca render, textos, estilos, fotos o footer, ejecutar también
+   `python3 tests/poster_layouts_e2e.py`.
+3. Inspeccionar capturas y el localhost real: escritorio ancho, bajo,
+   límites 899/900/970 y móvil; resize de ida y vuelta. Probar las nueve
+   variantes, texto, fotos, opciones y scroll. Incluir avisos visibles y
+   el proyecto actual, no sólo un ejemplo limpio en un navegador nuevo.
+4. Si cambian composiciones: revisar 9 × 2/3/4, con/sin hero y textos
+   opcionales. Evaluar tamaño igual, no podio, encuadre, centrado como
+   grupo, proporciones, contraste, legibilidad y footer completo.
+5. Un test verde ni un workspace de ancho completo sustituyen la inspección
+   del contenido visible. Si la expansión sigue siendo insatisfactoria,
+   la tarea sigue sin resolver. Si faltan permisos del
+   navegador o no se reproduce el fallo, decirlo y pedir captura o tamaño
+   exacto; no afirmar que quedó arreglado ni culpar al zoom sin evidencia.
+
+Actualizar este contrato al cambiar un requisito, retirando la regla
+contradictoria. No reconstruir las otras skills eliminadas sin pedido.

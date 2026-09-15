@@ -17,7 +17,7 @@ TIMEOUT = 20
 CAPTURE_DIR = Path("/tmp/ui-e2e/poster-layouts")
 
 
-def replace_with_example(driver, count):
+def replace_with_example(driver, count, hero=False):
     result = driver.execute_async_script(
         """
         const count = arguments[0];
@@ -29,12 +29,14 @@ def replace_with_example(driver, count):
         sourceCtx.fillStyle = '#e21c62'; sourceCtx.fillRect(0, 0, 8, 16);
         sourceCtx.fillStyle = '#18a76b'; sourceCtx.fillRect(8, 0, 8, 16);
         const image = {data: source.toDataURL('image/png'), name: 'speaker.png', width: 16, height: 16, crop: {x: 50, y: 50, zoom: 1}};
+        state.images.hero = arguments[1] ? image : null;
         state.speakers.forEach(person => { person.photo = image; person.crop = {x: 50, y: 50, zoom: 1}; });
         window.PLACTSStudio.replace(state)
           .then(() => done(true))
           .catch(error => done('error:' + error.message));
         """,
         count,
+        hero,
     )
     assert result is True, result
     WebDriverWait(driver, TIMEOUT).until(
@@ -148,7 +150,9 @@ def run():
                 labels = {item["label"]: item for item in plan["audit"]}
                 assert labels["event-type"]["size"] >= 23
                 assert labels["event-series"]["text"] == "ENCUENTROS VIRTUALES DE LA RED PLACTS"
-                assert "website" not in labels
+                assert labels["footer-website"]["text"] == "redplacts.org"
+                assert labels["footer-website"]["x"] + labels["footer-website"]["w"] < labels["footer-network-0"]["x"]
+                assert all(labels[f"footer-network-{i}"]["x"] >= plan["width"] * .45 for i in range(4))
                 assert "footer-logo" in labels
                 assert all(f"footer-network-{i}" in labels and f"footer-handle-{i}" in labels for i in range(4))
                 assert [(labels[f"footer-network-{i}"]["text"], labels[f"footer-handle-{i}"]["text"]) for i in range(4)] == [("Instagram", "@redplacts"), ("X", "@PlactsRed"), ("Facebook", "@redplacts"), ("YouTube", "@RedPLACTS")]
@@ -188,6 +192,16 @@ def run():
                     for item in cards
                 )
             driver.save_screenshot(str(CAPTURE_DIR / f"{count}-speakers.png"))
+
+        for count in (2, 3, 4):
+            replace_with_example(driver, count, hero=True)
+            for index, plan in enumerate(driver.execute_script("return PLACTSStudio.getPlans()")):
+                assert plan["valid"] and not plan["issues"], ("with-hero", count, index, plan["issues"])
+                cards = [item for item in plan["audit"] if item["label"].startswith("speaker-card-")]
+                assert len({(round(item["w"], 3), round(item["h"], 3)) for item in cards}) == 1
+                for speaker, card in enumerate(cards):
+                    content = [item for item in plan["audit"] if item["label"] in {f"speaker-name-{speaker}", f"speaker-affiliation-{speaker}", f"speaker-description-{speaker}"}]
+                    assert all(item["y"] >= card["y"] and item["y"]+item["h"] <= card["y"]+card["h"] for item in content), ("with-hero", count, index, speaker, content, card)
 
         no_descriptions = driver.execute_async_script(
             """
@@ -261,7 +275,7 @@ def run():
             assert all(plan["valid"] and not plan["issues"] for plan in scaled["plans"]), group
 
         assert_no_severe_logs(driver)
-        print(f"POSTER_LAYOUTS_OK states=27 variants=9 elapsed={time.time()-started:.2f}s")
+        print(f"POSTER_LAYOUTS_OK states=54 variants=9 with-and-without-hero elapsed={time.time()-started:.2f}s")
     finally:
         driver.quit()
 

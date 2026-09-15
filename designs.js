@@ -112,7 +112,7 @@
   var shrink=count===4?1:count===3?.55:0;
   var g={headerH:p.v===1?118:128,footerTop:footerTop,meetingY:meetingY,meetingH:meetingH,modsY:modsY,modsH:modsH};
   if(p.v===0){g.title={x:54,y:151,w:w-108,h:178};g.hero={x:54,y:345,w:w-108,h:278-54*shrink};g.people={x:54,y:g.hero.y+g.hero.h+26,w:w-108,h:bottom-(g.hero.y+g.hero.h+26)};}
-  if(p.v===1){g.title={x:54,y:146,w:510,h:276};g.hero={x:600,y:143,w:w-654,h:292};g.people={x:54,y:466,w:w-108,h:bottom-466};}
+  if(p.v===1){g.title={x:54,y:146,w:510,h:276};g.hero={x:600,y:143,w:w-654,h:292};var peopleY=count===4?448:466;g.people={x:54,y:peopleY,w:w-108,h:bottom-peopleY};}
   if(p.v===2){g.title={x:54,y:148,w:w-108,h:155};g.hero={x:54,y:315,w:w-108,h:205-35*shrink};g.people={x:54,y:g.hero.y+g.hero.h+24,w:w-108,h:bottom-(g.hero.y+g.hero.h+24)};}
   if(p.v===3){g.title={x:54,y:148,w:445,h:278};g.hero={x:526,y:146,w:500,h:286-30*shrink};g.people={x:54,y:454-22*shrink,w:w-108,h:bottom-(454-22*shrink)};}
   if(p.v===4){g.title={x:54,y:150,w:430,h:365};g.hero={x:510,y:148,w:516,h:382-32*shrink};g.people={x:54,y:558-22*shrink,w:w-108,h:bottom-(558-22*shrink)};}
@@ -140,9 +140,9 @@
   if(kind==='duoCards')return [rect(0,0,.48,1,'left'),rect(.52,0,.48,1,'left')];
   if(kind==='threeColumns')return gridRects(3,1,.025);
   if(kind==='grid')return gridRects(2,2,.035);
-  if(kind==='duoSide')return [rect(0,.06,.47,.88,'cover'),rect(.53,.06,.47,.88,'cover')];
+  if(kind==='duoSide')return [rect(0,.06,.47,.88,'left'),rect(.53,.06,.47,.88,'left')];
   if(kind==='panoramaTrio')return [rect(0,.08,.31,.84,'left'),rect(.345,.08,.31,.84,'left'),rect(.69,.08,.31,.84,'left')];
-  if(kind==='rowFour')return gridRects(4,1,.02);
+  if(kind==='rowFour')return gridRects(4,1,.02).map(function(r){r.mode='left';return r;});
   if(kind==='editorialDuo')return [rect(0,0,.485,1,'cover'),rect(.515,0,.485,1,'cover')];
   if(kind==='editorialColumns')return gridRects(3,1,.025).map(function(r){r.mode='cover';return r;});
   if(kind==='fullBleedFour')return gridRects(4,1,.012).map(function(r){r.mode='cover';return r;});
@@ -199,8 +199,8 @@
   var social=p.v>=3,showPhoto=!social||p.s.options.socialPhotos,nameSize=Math.max(p.v===5?24:20,Math.min(social?29:31,w*.082));
   function personStack(tx,tw,zoneH,align){
    var items=[{spec:fittedType(p,'speaker',person.name||'Nombre',tx,0,tw,zoneH*.42,nameSize,18,700,theme.text,p.font,align,1.06),label:'speaker-name-'+index}];
-   if(person.affiliation)items.push({spec:fittedType(p,'speaker',person.affiliation,tx,0,tw,zoneH*.28,Math.max(18,nameSize*.72),16,700,theme.muted,p.font,align,1.1),label:'speaker-affiliation-'+index});
-   if(!social&&person.description)items.push({spec:fittedType(p,'speaker',person.description,tx,0,tw,zoneH*.42,Math.max(18,nameSize*.68),16,400,theme.muted,p.font,align,1.14),label:'speaker-description-'+index});
+   if(person.affiliation)items.push({spec:fittedType(p,'speaker',person.affiliation,tx,0,tw,social?Math.max(0,zoneH-items[0].spec.h-6):zoneH*.28,Math.max(18,nameSize*.72),16,700,theme.muted,p.font,align,1.1),label:'speaker-affiliation-'+index});
+   if(!social&&person.description)items.push({spec:fittedType(p,'speaker',person.description,tx,0,tw,Math.max(0,zoneH-items.reduce(function(sum,item){return sum+item.spec.h;},0)-items.length*7),Math.max(18,nameSize*.68),16,400,theme.muted,p.font,align,1.14),label:'speaker-description-'+index});
    return items;
   }
   if(!showPhoto){
@@ -208,7 +208,7 @@
    return;
   }
   if(item.mode==='left'){
-   var photo=Math.min(h-16,w*.38);
+   var photo=Math.min(h-16,w*(p.v===1&&p.s.speakers.length===4?.33:.38));
    await api.drawAvatar(ctx,person,x+8,y+(h-photo)/2,photo,p.font,'rect');
    audit.push({label:'speaker-photo-'+index,x:x+8,y:y+(h-photo)/2,w:photo,h:photo,maxLine:0});
    var tx=x+photo+20,tw=w-photo-28;
@@ -300,10 +300,11 @@
   api.line(ctx,44,y,p.w-44,y,'#d4d9e5');
   await api.containImage(ctx,api.BRAND_ASSETS['isotipo-color'],54,y+18,66,height-36);
   audit.push({label:'footer-logo',x:54,y:y+18,w:66,h:height-36,maxLine:0});
-  var networks=[['Instagram','@redplacts'],['X','@PlactsRed'],['Facebook','@redplacts'],['YouTube','@RedPLACTS']],start=200,step=(p.w-start-48)/networks.length;
+  drawStack(ctx,[{spec:typed(p,null,'redplacts.org',140,0,300,22,700,api.C.ink,p.font,'left'),label:'footer-website'}],y+14,height-28,0,audit);
+  var networks=[['Instagram','@redplacts'],['X','@PlactsRed'],['Facebook','@redplacts'],['YouTube','@RedPLACTS']],step=132,start=p.w-54-step*networks.length;
   for(var i=0;i<networks.length;i++)drawStack(ctx,[
-   {spec:typed(p,null,networks[i][0],start+i*step,0,step-12,15,700,api.C.ink,p.font,'center'),label:'footer-network-'+i},
-   {spec:typed(p,null,networks[i][1],start+i*step,0,step-12,14,400,api.C.muted,p.font,'center'),label:'footer-handle-'+i}
+   {spec:typed(p,null,networks[i][0],start+i*step,0,step-10,15,700,api.C.ink,p.font,'center'),label:'footer-network-'+i},
+   {spec:typed(p,null,networks[i][1],start+i*step,0,step-10,14,400,api.C.muted,p.font,'center'),label:'footer-handle-'+i}
   ],y+14,height-28,3,audit);
  }
 
