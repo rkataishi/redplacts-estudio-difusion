@@ -7,6 +7,11 @@
 
 ## Pstack local
 
+- Antes de editar UI, estilos, renderizado, pósters o assets, leer y aplicar
+  `.agents/skills/redplacts-ui-contract/SKILL.md`. Preserva las reformas
+  acordadas y exige `python3 tests/viewport_e2e.py` antes de entregar cambios
+  que puedan afectar el layout. Una nueva instrucción del usuario prevalece.
+
 - Las skills importadas de [cursor/plugins/pstack](https://github.com/cursor/plugins/tree/main/pstack) viven en `.agents/skills/` y se usan sólo en este repositorio.
 - Para trabajo no trivial, usar `poteto-mode` como selector del playbook de `pstack`. Invocar una skill más específica cuando el pedido coincida directamente con ella.
 - Aplicar los principios de `pstack` como criterios de diseño, implementación y verificación. No ejecutar mecánicamente instrucciones escritas para Cursor cuando la capacidad equivalente no exista en Codex.

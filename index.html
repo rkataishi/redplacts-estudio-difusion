@@ -111,23 +111,26 @@ dialog{padding:0;border:1px solid #e2e4ec;border-radius:16px;box-shadow:0 22px 1
   .topbar{position:fixed!important;top:0;left:0;right:0;height:60px!important;box-sizing:border-box!important;z-index:20}
   .brand-titles b{font-size:12px}
   .brand-titles span{font-size:10px}
+  .brand-home{flex:1}
+  .brand-titles{min-width:0}
+  .top-actions{flex-shrink:0}
   .app-logo{width:56px;height:44px}
-  .workspace{position:fixed!important;top:60px;left:0;right:0;bottom:0;height:auto!important;max-width:none!important;max-height:none!important}
+  .workspace{position:fixed!important;inset:60px 0 0;display:grid!important;grid-template-columns:clamp(320px,38vw,560px) minmax(0,1fr);width:100%;height:auto!important;min-width:0;max-width:none!important;max-height:none!important;box-sizing:border-box}
   .editor{display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0!important;height:100%!important;align-self:stretch!important;overflow:hidden!important}
   #event-form{display:grid;grid-template-rows:minmax(0,1fr) auto;min-height:0}
   .form-scroll{min-height:0;max-height:none;height:100%;box-sizing:border-box}
-  .stage{position:relative;display:flex;flex-direction:column;min-height:0!important;height:100%!important;align-self:stretch!important;box-sizing:border-box!important;max-height:calc(100vh - 52px);overflow:hidden!important;padding-top:0}
+  .stage{position:relative;display:flex;flex-direction:column;min-width:0;min-height:0!important;height:100%!important;align-self:stretch!important;box-sizing:border-box!important;max-height:none;overflow:hidden!important;padding-top:0}
   .stage-top{padding:0;margin:0 0 2px;align-items:center;flex:0 0 auto}
   .variant-tabs{gap:4px}
   .variant-tabs .btn{font-size:10px;padding:6px 10px}
   #export-all{position:static;display:flex}
-  .poster-grid{min-height:0;overflow:hidden;flex:1 1 auto}
+  .poster-grid{width:100%;max-width:none;margin:0;min-height:0;overflow:hidden;flex:1 1 auto}
   .poster-card{height:100%;min-height:0}
   .poster-card.is-selected{display:grid!important;grid-template-rows:auto minmax(0,1fr)!important;overflow:hidden!important}
   .poster-card.is-selected canvas{width:auto;max-width:100%;height:auto;max-height:calc(100% - 0px);object-fit:contain}
   .poster-detail,.canvas-size{display:none!important}
-  .poster-frame{min-height:0!important;height:100%;overflow:hidden;padding:8px!important;box-sizing:border-box!important}
-  .poster-frame canvas{height:100%!important;width:auto!important;max-height:100%!important;max-width:100%!important;object-fit:contain!important}
+  .poster-frame{container-type:size;min-height:0!important;height:100%;overflow:hidden;padding:8px!important;box-sizing:border-box!important}
+  .poster-frame canvas{width:min(100cqw,calc(100cqh * var(--poster-ratio)))!important;height:auto!important;max-height:100%!important;max-width:100%!important;object-fit:contain!important}
   .overview{height:64px;max-height:64px;overflow:hidden;padding:5px 10px;flex:0 0 64px;margin:0}
   .overview-grid{grid-template-columns:repeat(9,minmax(0,1fr));gap:6px;height:100%!important;box-sizing:border-box!important}
   .overview-card{height:100%!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;padding:3px!important;min-width:0;box-sizing:border-box!important}
@@ -2030,7 +2033,7 @@ function renderPreview(){const grid=$('#poster-grid'),p=compiled[selected];
  if(!p){grid.innerHTML='';return;}
  // El canvas compilado se reutiliza: solo se mueve al marco de la vista seleccionada.
  grid.innerHTML=`<article class="poster-card is-selected" data-card="${selected}"><div class="poster-label"><span class="index">0${selected+1}</span><strong>${esc(VARIANTS[selected].name)}</strong><button type="button" class="view-button" data-zoom="${selected}">Ampliar ↗</button></div><div class="poster-frame" role="button" tabindex="0" data-zoom="${selected}" aria-label="Ampliar diseño ${esc(VARIANTS[selected].name)}" id="frame-${selected}"></div><p class="poster-detail">${esc(VARIANTS[selected].description)}</p><div class="canvas-size"><span>${p.plan.w} × ${p.plan.h} px</span><span class="quality">${p.issues.length?'Revisar contenido':'Formato fijo'}</span></div></article>`;
- $('#frame-'+selected).append(p.canvas);}
+ const frame=$('#frame-'+selected);frame.style.setProperty('--poster-ratio',p.plan.w/p.plan.h);frame.append(p.canvas);}
 function renderOverview(){const grid=$('#overview-grid');if(!grid)return;
  // Nuevo: miniaturas copiadas para no reutilizar el canvas de la vista grande.
  $$('canvas',grid).forEach(canvas=>{canvas.width=0;canvas.height=0;});
