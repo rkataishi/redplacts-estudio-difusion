@@ -156,20 +156,26 @@ def run():
                 assert "footer-logo" in labels
                 assert all(f"footer-network-{i}" in labels and f"footer-handle-{i}" in labels for i in range(4))
                 assert [(labels[f"footer-network-{i}"]["text"], labels[f"footer-handle-{i}"]["text"]) for i in range(4)] == [("Instagram", "@redplacts"), ("X", "@PlactsRed"), ("Facebook", "@redplacts"), ("YouTube", "@RedPLACTS")]
+                assert 'event-reinforcement' not in labels
+                assert not any(label.startswith(('speaker-description-', 'mod-desc-')) for label in labels)
+                if index == 1:
+                    assert all(labels[f"speaker-photo-{i}"]["h"] >= 160 for i in range(count))
                 meeting = labels["meeting-box"]
                 assert centered([labels[name] for name in ("meeting-date", "meeting-time", "meeting-zone")], meeting["y"], meeting["h"])
                 for speaker in range(count):
                     assert f"speaker-affiliation-{speaker}" in labels
                     card, photo = labels[f"speaker-card-{speaker}"], labels.get(f"speaker-photo-{speaker}")
                     content = [item for item in plan["audit"] if item["label"] in {f"speaker-name-{speaker}", f"speaker-affiliation-{speaker}", f"speaker-description-{speaker}"}]
-                    text_top = photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
+                    zone = labels.get(f"speaker-text-zone-{speaker}")
+                    text_top = zone["y"] if zone else photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
                     assert centered(content, text_top, card["y"] + card["h"] - text_top, 3), (count, index, speaker, content, card, photo)
                 if index == 0:
                     title = labels["event-title"]
                     assert title["h"] <= title["size"] * 1.08
                     assert title["size"] >= 66
                 if index == 4:
-                    assert all(labels[f"speaker-photo-{i}"]["h"] >= labels[f"speaker-card-{i}"]["h"] * .59 for i in range(count))
+                    assert len({(round(labels[f"speaker-photo-{i}"]["w"], 3), round(labels[f"speaker-photo-{i}"]["h"], 3)) for i in range(count)}) == 1
+                    assert all(labels[f"speaker-photo-{i}"]["h"] >= 52 for i in range(count))
                 if index == 5:
                     assert min(labels[f"speaker-name-{i}"]["size"] for i in range(count)) >= 24
                 if index == 6:
@@ -217,7 +223,8 @@ def run():
             for speaker in range(3):
                 card, photo = labels[f"speaker-card-{speaker}"], labels.get(f"speaker-photo-{speaker}")
                 content = [labels[f"speaker-name-{speaker}"], labels[f"speaker-affiliation-{speaker}"]]
-                text_top = photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
+                zone = labels.get(f"speaker-text-zone-{speaker}")
+                text_top = zone["y"] if zone else photo["y"] + photo["h"] if photo and abs(photo["y"] - card["y"]) < 2 else card["y"]
                 assert centered(content, text_top, card["y"] + card["h"] - text_top, 3)
 
         for index, values in signatures.items():
@@ -246,7 +253,7 @@ def run():
 
         long_url = "https://redplacts.org/" + "encuentro-federal-de-ciencia-y-tecnologia/" * 4
         long_url_qr = render_options(driver, qr=True, url=long_url)
-        assert all(plan["valid"] and not plan["issues"] for plan in long_url_qr["plans"])
+        assert all(plan["valid"] and not plan["issues"] for plan in long_url_qr["plans"]), [(p["variant"], p["issues"]) for p in long_url_qr["plans"]]
 
         hero_off = render_options(driver, selected=0, hero=False)
         hero_on = render_options(driver, selected=0, hero=True)

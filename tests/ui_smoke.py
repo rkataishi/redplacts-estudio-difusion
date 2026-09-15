@@ -464,6 +464,31 @@ def run():
             "el título social largo debe conservar composiciones válidas y sin overflow"
         print("✓ checkpoint título social largo ok: variantes 3, 4, 6 y 8 válidas")
 
+        # Closed cards expose order controls; photo, full affiliation and caption survive edits.
+        result = driver.execute_async_script("""
+          const done=arguments[arguments.length-1],s=PLACTSStudio.makeExample(3);
+          s.speakers[0].affiliation='Investigador Adjunto CONICET | Profesor Asociado y Coordinador Académico del Doctorado en Cs. Económicas (IDEI - UNTDF).';
+          s.shareText='*Conversatorio Red PLACTS*\\n\\n*LA TRAMPA DE LA IA*';
+          PLACTSStudio.replace(s).then(()=>done(true));
+        """)
+        assert result is True
+        before = get_state(driver)
+        assert before['speakers'][0]['crop']['fit'] == 'contain'
+        driver.find_element(By.ID, 'tab-people').click()
+        driver.execute_script("document.querySelectorAll('details.person').forEach(card=>card.open=false)")
+        first = driver.find_element(By.CSS_SELECTOR, '#speakers-list details.person')
+        real_click(driver, first.find_element(By.CSS_SELECTOR, 'summary [data-move="1"]'))
+        after = get_state(driver)
+        assert [p['name'] for p in after['speakers']] == [before['speakers'][1]['name'], before['speakers'][0]['name'], before['speakers'][2]['name']]
+        assert after['speakers'][1]['affiliation'] == before['speakers'][0]['affiliation']
+        driver.find_element(By.ID, 'tab-share').click()
+        caption = driver.find_element(By.ID, 'caption-text')
+        assert caption.get_attribute('value') == before['shareText']
+        driver.execute_script("arguments[0].value += '\\nEditado';arguments[0].dispatchEvent(new Event('input',{bubbles:true}))", caption)
+        assert get_state(driver)['shareText'].endswith('Editado')
+        assert driver.execute_script("return PLACTSStudio.validateProject(PLACTSStudio.getState()).shareText") == get_state(driver)['shareText']
+        print('✓ orden visible, afiliaciones completas, foto completa y texto editable persistente')
+
         # 9) capturar browser console severe final
         assert_no_severe_logs(driver)
         print("✓ checkpoint 8/8: consola limpia sin SEVERE")

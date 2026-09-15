@@ -53,6 +53,10 @@ la regla conflictiva; no acumular otro bloque de overrides para ocultarla.
 - Nueve variantes diferentes, cada una con composiciones explícitas para
   2, 3 (default) y 4 expositores. Cambiar la cantidad cambia el layout.
 - Cards y fotos del mismo tamaño y tratamiento para todos los expositores.
+  Reservar espacio según el texto visible; no imponer una fracción fija de foto.
+  En 04/08, afiliaciones largas permiten filas horizontales iguales con aire.
+  Títulos y grupos de nombres/afiliaciones centrados; enlace con cápsula,
+  degradado y reproducción. Máscaras redondeadas, bisel oscuro y sombras sobre el marco visible de cada foto; variantes elevadas o clásicas. Sombras de separación bajo el header y sobre el footer.
   Los nueve diseños muestran las fotos cargadas; la preferencia antigua
   `socialPhotos` no puede ocultar los retratos de 04–09. No ofrecer el control
   de miniaturas de redes como si afectara a estas composiciones.
@@ -61,15 +65,15 @@ la regla conflictiva; no acumular otro bloque de overrides para ocultarla.
 - `insumos/inspiraciones poster` guía distribución, posiciones y proporciones,
   no colores. Mantener los assets y la paleta de Red PLACTS.
 - Retratos sin cortar de más cabeza, frente o cabello, especialmente 01/04/08.
-  Default actual `{x:50,y:20,zoom:1}` en `defaultPersonCrop`. Preservar
-  encuadres explícitos de proyectos; slider y render usan el mismo valor.
+  Default actual `{x:50,y:20,zoom:1,fit:'contain'}` en `defaultPersonCrop`. La foto nueva se muestra completa; el control “Mostrar foto completa” permite
+  volver al recorte. Preservar encuadres explícitos de proyectos; slider y render usan el mismo valor.
   No deducir que un encuadre está sin editar por un número como 50.
 - Nombre centrado en su zona; segundo texto opcional para institución o
-  especialidad y descripción opcional. Al faltar textos, recentrar el
+  especialidad; omitir las descripciones de investigación en todos los pósters. Moderación alineada a la izquierda, nombre y afiliación solamente. Actividad con título y subtítulo, sin tercera línea. Al faltar textos, recentrar el
   conjunto visible sin reservar huecos. Centrar el grupo verticalmente,
   no cada línea de forma independiente. No pegar nombres a la foto.
 - 01: título grande sin quiebre forzado y mejor aprovechamiento de las cards.
-  02: EXPONEN cerca de las cards y textos centrados verticalmente.
+  02: fotos grandes sobre nombres y afiliaciones para 2/3/4 expositores; EXPONEN cerca de las cards y textos centrados verticalmente.
   05: fotos amplias. 06: nombres legibles. 07: nombres centrados y moderación
   amplia en área, fuente y foto. 08: cards amplias y bloque de título ancho,
   centrado y bien distribuido. 09: título arriba o centrado, no abajo por defecto.

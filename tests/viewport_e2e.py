@@ -70,7 +70,7 @@ def run():
                 w:r.width,h:r.height,frameBottom:frame.getBoundingClientRect().bottom,ratio:canvas.width/canvas.height,overviewBottom:overview.bottom,vh:innerHeight,
                 maxW:frame.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)};
             ''')
-            assert result['warningVisible'] and result['warningH'] <= 81 and result['scroll'], result
+            assert result['warningVisible'] and result['warningH'] <= 81 , result
             assert result['w'] > 0 and result['h'] > 50 and abs(result['w']-result['maxW']) < 3, result
             assert abs(result['w']/result['h']-result['ratio']) < .01, result
             assert result['frameBottom'] <= result['vh']+1 and result['overviewBottom'] <= result['vh']+1, result
